@@ -90,15 +90,15 @@
    (let [solved (get-solved (session/session-get :user))]
      (map-indexed
       (fn [x p]
-        (vec [:tr (row-class x)
-              [:td {:class "title-link"}
-               [:a {:href (str "/problem/" (p :_id))}
-                (p :title)]]
-              [:td {:class "centered"}
-               (map #(str % " ") (p :tags))]
-              [:td {:class "centered"} (p :times-solved)]
-              [:td {:class "centered"}
-               (if (contains? solved (p :_id))
-                 [:img {:src "/checkmark.png"}]
-                 [:img {:src "/empty-sq.png"}])]]))
+        [:tr (row-class x)
+         [:td {:class "title-link"}
+          [:a {:href (str "/problem/" (p :_id))}
+           (p :title)]]
+         [:td {:class "centered"}
+          (map #(str % " ") (p :tags))]
+         [:td {:class "centered"} (p :times-solved)]
+         [:td {:class "centered"}
+          [:img {:src (if (contains? solved (p :_id))
+                        "/checkmark.png"
+                        "/empty-sq.png")}]]])
       (get-problem-list)))])
