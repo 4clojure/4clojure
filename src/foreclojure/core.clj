@@ -6,7 +6,8 @@
         [foreclojure.register]
         [foreclojure.users]
         [ring.adapter jetty]
-        [somnium.congomongo])
+        [somnium.congomongo]
+        [ring.middleware.reload :only [wrap-reload]])
   (:require [compojure.route :as route]
             [compojure.handler :as handler]
             [sandbar.stateful-session :as session]
@@ -41,7 +42,8 @@
 
 (def app
   (handler/site
-   (session/wrap-stateful-session main-routes)))
+   (session/wrap-stateful-session
+    (wrap-reload #'main-routes '(foreclojure.core)))))
 
 (defn run []
   (run-jetty (var app) {:join? false :ssl? true :port 8080 :ssl-port 8443
