@@ -1,5 +1,5 @@
 (ns foreclojure.static
-  (:use [foreclojure.utils])) 
+  (:use [foreclojure.utils]))
 
 (def-page links-page []
   [:div
@@ -12,17 +12,16 @@
 
 (def-page welcome-page []
   [:div
-   [:b "What is 4Clojure?"]
-   [:br]
-   "4Clojure is a resource to help fledgling clojurians learn the language through interactive problems.  The first few problems are easy enough that even someone with no prior experience should find the learning curve forgiving.  See 'Getting Started' for more information."
-   [:br][:br]
-   [:b "Is this site written in Clojure?"]
-   [:br]
-   "Absolutely!  This site was created using a variety of open source Clojure (and Java) libraries.  In fact, the source code for the site itself is open source.  Once you've mastered the language, feel free to contribute something back to the community."
-   [:br][:br]
-   [:b "So wait, I can't buy cheap real estate here?"]
-   [:br]
-   "At this time, 4clojure.com does not provide information regarding the sale of foreclosed homes, and has no plans of doing so in the future."])
+   [:div
+    [:h3 "What is 4Clojure?"]
+    "4Clojure is a resource to help fledgling clojurians learn the language through interactive problems.  The first few problems are easy enough that even someone with no prior experience should find the learning curve forgiving.  See 'Getting Started' for more information."]
+
+   [:div
+    [:h3 "Is this site written in Clojure?"]
+    "Absolutely!  This site was created using a variety of open source Clojure (and Java) libraries.  In fact, the code for this site is itself open source.  Once you've mastered the language, feel free to contribute something back to the community."]
+   [:div
+    [:h3 "So wait, I can't buy cheap real estate here?"]
+    "At this time, 4clojure.com does not provide information regarding the sale of foreclosed homes, and has no plans of doing so in the future."]])
 
 (def-page getting-started-page []
   [:div
@@ -44,7 +43,7 @@
    "Some problems will expect you to fill-in-the-blanks with a function.  Here is a problem which asks you to provide a function to double a number:"
    [:br][:br]
    [:div {:id "testcases"}
-     [:li {:class "testcase"} "(= (__ 2) 4)"]
+    [:li {:class "testcase"} "(= (__ 2) 4)"]
     [:li {:class "testcase"} "(= (__ 3) 6)"]]
    [:br][:br][:br][:br]
    "Any of the following forms are valid solutions:"
