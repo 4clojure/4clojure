@@ -4,15 +4,16 @@
   (:require [sandbar.stateful-session :as session]
             (ring.util [response :as response])))
 
-(defmacro dbg[x] `(let [x# ~x] (println '~x "=" x#) x#))
+(defmacro dbg [x]
+  `(let [x# ~x] (println '~x "=" x#) x#))
 
-(defn flash-error [msg url]
-  (do (session/flash-put! :error msg)
-      (response/redirect url)))
+(defn flash-fn [type]
+  (fn [msg url]
+    (session/flash-put! type msg)
+    (response/redirect url)))
 
-(defn flash-msg [msg url]
-  (do (session/flash-put! :message msg)
-      (response/redirect url)))
+(def flash-error (flash-fn :error))
+(def flash-msg (flash-fn :message))
 
 (defmacro def-page [page-name [& args] & code]
   `(defn ~page-name [~@args]
