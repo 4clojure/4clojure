@@ -1,0 +1,155 @@
+span.error, div.error {
+  color: red;
+}
+
+div.congrats {
+  color: red;
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+html body {
+  margin-top: 0px;
+  margin-bottom: 0px;
+  margin-left:auto;
+  margin-right:auto;
+  padding-top: 8px;
+  padding-left: 8px;
+  width: 820px;
+}
+
+div#menu {
+  padding-left: 7px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  padding-right: 15px;
+  float: left;
+  font-family: sans-serif;
+}
+
+div#menu li {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 8px;
+  padding-right: 8px;
+  list-style-type: none;
+  background-color: #eee;
+}
+
+div#menu li:hover {
+  background-color: #BCEE68;
+}
+
+div#content {
+  float: right;
+  width: 650px;
+  padding-bottom: 10px;
+  font-family: serif;
+  font-size: 14px;
+}
+
+span#prob-title {
+  font-size: 20px;
+  font-family: sans-serif;
+  font-weight: bold;
+}
+
+div#prob-desc {
+  overflow: hidden;
+}
+
+div#testcases {
+  float: left;
+  margin: 10px;
+}
+
+li.testcase {
+  font-size: 15px;
+  padding: 3px;
+  list-style-type: none;
+  background-color: #eee;
+  font-family: Courier;
+}
+
+div#restrictions {
+  list-style-type: none;
+  border-style: dashed;
+  border-color: DarkRed;
+  border-width: normal;
+  margin-right: 45px;
+  margin-bottom: 15px;
+  margin-top: 15px;
+  margin-left: 15px;
+  padding: 10px;
+  color: red;
+  float: right;
+  font-size: 16px;
+}
+
+a:hover   {
+  text-decoration: underline;
+}
+
+a {
+  text-decoration: none;
+  color: blue;
+} 
+
+a#logout {
+  margin-right: 5px;
+  float: right;
+}
+
+span#user-info {
+  background-color: #eee;
+  margin-top: 15px;
+  padding: 5px;
+  float: right;
+  width: 570px;
+  font-size: 14px;
+  font-family: sans-serif;
+  text-align: center;
+}
+
+span#footer {
+   float: right;
+   width: 813px;
+   background-color: #eee;
+   text-align: center;
+}
+
+ textarea#code-box {
+  width: 600px;
+  height: 250px;
+}
+
+table.my-table {
+  padding: 2px;
+  border-collapse: collapse;
+}
+
+table.my-table td {
+  padding: 2px;
+}
+
+table.my-table td.centered {
+  text-align: center;
+}
+
+td.title-link {
+  font-size: 16px;
+}
+
+table.my-table tr.oddrow { 
+  background-color: #eee;
+}
+
+table.my-table tr.evenrow {
+  background-color: #F8F8FF;
+}
+
+table.my-table th {
+  background-color: #BCEE68;
+  padding: 2px;
+  border-collapse: collapse;
+}

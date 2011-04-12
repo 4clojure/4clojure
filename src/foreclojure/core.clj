@@ -1,0 +1,52 @@
+(ns foreclojure.core
+  (:use [compojure.core]
+        [foreclojure.static]
+        [foreclojure.problems]
+        [foreclojure.login]
+        [foreclojure.register]
+        [foreclojure.users]
+        [ring.adapter jetty]
+        [somnium.congomongo])
+  (:require [compojure.route :as route]
+            [compojure.handler :as handler]
+            [sandbar.stateful-session :as session]
+            (ring.util [response :as response])))
+(mongo!
+ :db "mydb")
+
+(defroutes main-routes
+  (GET "/" [] (welcome-page))
+  
+  (GET  "/login" [] (my-login-page))
+  (POST "/login" {{:strs [user pwd]} :form-params}
+        (do-login user pwd))
+  (GET "/logout" []
+       (do (session/session-delete-key! :user)
+           (response/redirect "/")))
+  (GET  "/register" [] (register-page))
+  (POST "/register" {{:strs [user pwd repeat-pwd email]} :form-params}
+        (do-register user pwd repeat-pwd email))
+
+  (GET "/problems" [] (problem-page))
+  (GET "/problem/:id" [id] (code-box id))
+  (POST "/run-code" {{:strs [id code]} :form-params}
+        (run-code (Integer. id) code))
+
+  (GET "/users" [] (users-page))
+  (GET "/links" [] (links-page))
+  (GET "/directions" [] (getting-started-page))
+
+  (route/resources "/")
+  (route/not-found "Page not found"))
+
+(def app
+  (handler/site
+   (session/wrap-stateful-session main-routes)))
+
+(defn run []
+  (run-jetty (var app) {:join? false :ssl? true :port 8080 :ssl-port 8443
+                        :keystore "keystore"
+                        :key-password "dev_pass"}))
+
+(defn -main [& args]
+  (run))
