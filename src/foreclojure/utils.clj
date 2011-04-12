@@ -20,7 +20,7 @@
       ~@code)))
 
 (defn row-class [x]
-  {:class (if (zero? (mod x 2))
+  {:class (if (even? x)
             "evenrow"
             "oddrow")})
   
