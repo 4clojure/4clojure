@@ -90,7 +90,7 @@
    (let [solved (get-solved (session/session-get :user))
          problems (get-problem-list)]
      (map-indexed
-      (fn [x {:keys [title times-solved tags], id :id}]
+      (fn [x {:keys [title times-solved tags], id :_id}]
         [:tr (row-class x)
          [:td {:class "title-link"}
           [:a {:href (str "/problem/" id)}
