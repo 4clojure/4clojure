@@ -64,11 +64,12 @@
      [:div {:id "prob-desc"}
       (problem :description)[:br]
       [:div {:id "testcases"}
-       (map #(vec [:li {:class "testcase"} %]) (problem :tests))]
+       (for [test (:tests problem)]
+         [:li {:class "testcase"} test])]
       (if-let [restricted (problem :restricted)]
         [:div {:id "restrictions"}
          [:u "Special Restrictions"] [:br]
-         (map #(vec [:li %]) restricted)])]
+         (map (partial vector :li) restricted)])]
      [:div
       [:b "Enter your code:" [:br]
        [:span {:class "error"} (session/flash-get :error)]]]
@@ -86,7 +87,8 @@
    [:th "Tags"]
    [:th "Count"]
    [:th "Solved?"]
-   (let [solved (get-solved (session/session-get :user))]
+   (let [solved (get-solved (session/session-get :user))
+         problems (get-problem-list)]
      (map-indexed
       (fn [x p]
         [:tr (row-class x)
@@ -100,4 +102,4 @@
           [:img {:src (if (contains? solved (p :_id))
                         "/checkmark.png"
                         "/empty-sq.png")}]]])
-      (get-problem-list)))])
+      problems))])
