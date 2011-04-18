@@ -114,7 +114,7 @@ a#logout {
   margin-left: 2em;
   padding: 5px;
   float: left;
-  width: 60%;
+  width: 40%;
   font-size: 14px;
   font-family: sans-serif;
   text-align: center;
@@ -128,7 +128,7 @@ span#footer {
 }
 
 textarea#code-box {
-  width: 600px;
+  width: 350px;
   height: 250px;
 }
 
