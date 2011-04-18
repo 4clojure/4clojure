@@ -2,9 +2,9 @@
   (:use [foreclojure.utils]
         [clojail core testers]
 	[somnium.congomongo]
-        [clojure.contrib.string :only [replace-str]]
         [hiccup form-helpers])
-  (:require [sandbar.stateful-session :as session]))
+  (:require [sandbar.stateful-session :as session]
+            [clojure.string :as s]))
 
 (defn get-solved [user]
   (set
@@ -43,7 +43,7 @@
       (loop [[test & more] tests]
         (if-not test
           (mark-completed id)
-          (let [testcase (replace-str "__" code test)]
+          (let [testcase (s/replace test "__" (str code))]
             (if (sb sb-tester (read-string testcase))
               (recur more)
               (do
