@@ -298,4 +298,14 @@
             :tags ["easy" "seqs"]
             :tests ["(= (apply str (__ \"Leeeeeerrroyyy\")) \"Leroy\")"
                     "(= (__ [1 1 2 3 3 2 2 3]) '(1 2 3 2 3))"]
-            :secret-tests ["(= (__ [[1 2] [1 2] [3 4] [1 2]]) '([1 2] [3 4] [1 2]))"]}))
+            :secret-tests ["(= (__ [[1 2] [1 2] [3 4] [1 2]]) '([1 2] [3 4] [1 2]))"]})
+
+  (insert! :problems
+           {:_id 31
+            :title "Pack a Sequence"
+            :times-solved 0
+            :description "Write a function which packs consecutive duplicates into sub-lists."
+            :tags ["easy" "seqs"]
+            :tests ["(= (__ [1 1 2 1 1 1 3 3]) '((1 1) (2) (1 1 1) (3 3)))"
+		    "(= (__ [:a :a :b :b :c]) '((:a :a) (:b :b) (:c)))"]
+            :secret-tests ["(= (__ [[1 2] [1 2] [3 4]]) '(([1 2] [1 2]) ([3 4])))"]}))
