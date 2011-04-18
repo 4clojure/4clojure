@@ -8,5 +8,9 @@
                  [sandbar "0.4.0-SNAPSHOT"]
                  [congomongo "0.1.3-SNAPSHOT"]
                  [org.jasypt/jasypt "1.7"]]
-  :dev-dependencies [[lein-ring "0.4.0"]]
+  :dev-dependencies [[lein-ring "0.4.0"]
+                     [org.clojars.gjahad/swank-clojure "1.3.1.1-SNAPSHOT"]
+                     [clojure-source "1.2.1"]
+                     [clj-stacktrace "0.2.0"]]
+  :jvm-opts ["-agentlib:jdwp=transport=dt_socket,server=y,suspend=n"]
   :main foreclojure.core)

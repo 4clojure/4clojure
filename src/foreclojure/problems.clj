@@ -2,9 +2,9 @@
   (:use [foreclojure.utils]
         [clojail core testers]
 	[somnium.congomongo]
-        [clojure.contrib.string :only [replace-str]]
         [hiccup form-helpers])
-  (:require [sandbar.stateful-session :as session]))
+  (:require [sandbar.stateful-session :as session]
+            [clojure.string :as s]))
 
 (defn get-solved [user]
   (set
@@ -43,7 +43,7 @@
       (loop [[test & more] tests]
         (if-not test
           (mark-completed id)
-          (let [testcase (replace-str "__" code test)]
+          (let [testcase (s/replace test "__" (str code))]
             (if (sb sb-tester (read-string testcase))
               (recur more)
               (do
@@ -64,11 +64,12 @@
      [:div {:id "prob-desc"}
       (problem :description)[:br]
       [:div {:id "testcases"}
-       (map #(vec [:li {:class "testcase"} %]) (problem :tests))]
+       (for [test (:tests problem)]
+         [:li {:class "testcase"} test])]
       (if-let [restricted (problem :restricted)]
         [:div {:id "restrictions"}
          [:u "Special Restrictions"] [:br]
-         (map #(vec [:li %]) restricted)])]
+         (map (partial vector :li) restricted)])]
      [:div
       [:b "Enter your code:" [:br]
        [:span {:class "error"} (session/flash-get :error)]]]
@@ -86,18 +87,20 @@
    [:th "Tags"]
    [:th "Count"]
    [:th "Solved?"]
-   (let [solved (get-solved (session/session-get :user))]
+   (let [solved (get-solved (session/session-get :user))
+         problems (get-problem-list)]
      (map-indexed
-      (fn [x p]
+      (fn [x {:keys [title times-solved tags], id :id}]
         [:tr (row-class x)
          [:td {:class "title-link"}
-          [:a {:href (str "/problem/" (p :_id))}
-           (p :title)]]
+          [:a {:href (str "/problem/" id)}
+           title]]
          [:td {:class "centered"}
-          (map #(str % " ") (p :tags))]
-         [:td {:class "centered"} (p :times-solved)]
+          (s/join " " (map #(str "<span class='tag'>" % "</span>")
+                           tags))]
+         [:td {:class "centered"} (int times-solved)]
          [:td {:class "centered"}
-          [:img {:src (if (contains? solved (p :_id))
+          [:img {:src (if (contains? solved id)
                         "/checkmark.png"
                         "/empty-sq.png")}]]])
-      (get-problem-list)))])
+      problems))])
