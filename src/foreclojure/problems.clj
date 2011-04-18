@@ -82,7 +82,7 @@
 
 (def-page problem-page []
   [:div {:class "congrats"} (session/flash-get :message)]
-  [:table {:class "my-table" :width "100%"}
+  [:table {:class "my-table" :width "60%"}
    [:th "Title"]
    [:th "Tags"]
    [:th "Count"]
