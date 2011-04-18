@@ -90,16 +90,17 @@
    (let [solved (get-solved (session/session-get :user))
          problems (get-problem-list)]
      (map-indexed
-      (fn [x p]
+      (fn [x {:keys [title times-solved tags], id :id}]
         [:tr (row-class x)
          [:td {:class "title-link"}
-          [:a {:href (str "/problem/" (p :_id))}
-           (p :title)]]
+          [:a {:href (str "/problem/" id)}
+           title]]
          [:td {:class "centered"}
-          (map #(str % " ") (p :tags))]
-         [:td {:class "centered"} (p :times-solved)]
+          (s/join " " (map #(str "<span class='tag'>" % "</span>")
+                           tags))]
+         [:td {:class "centered"} (int times-solved)]
          [:td {:class "centered"}
-          [:img {:src (if (contains? solved (p :_id))
+          [:img {:src (if (contains? solved id)
                         "/checkmark.png"
                         "/empty-sq.png")}]]])
       problems))])
