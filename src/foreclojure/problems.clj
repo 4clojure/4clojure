@@ -8,17 +8,20 @@
 
 (defn get-solved [user]
   (set
-   (:solved (fetch-one :users
-                       :where {:user user}
-                       :only [:solved]))))
+   (:solved (from-mongo
+             (fetch-one :users
+                        :where {:user user}
+                        :only [:solved])))))
 
 (defn get-problem [x]
-  (fetch-one :problems :where {:_id x}))
+  (from-mongo
+   (fetch-one :problems :where {:_id x})))
 
 (defn get-problem-list []
-  (fetch :problems
-         :only [:_id :title :tags :times-solved]
-         :sort {:id 1}))
+  (from-mongo
+   (fetch :problems
+          :only [:_id :title :tags :times-solved]
+          :sort {:id 1})))
 
 (defn mark-completed [id]
   (if-let [user (session/session-get :user)]
