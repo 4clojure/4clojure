@@ -2,6 +2,7 @@
   (:use [somnium.congomongo]))
 
 (do
+  
   (insert! :problems
            {:_id 1
             :title "Nothing but the Truth"
