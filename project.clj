@@ -7,6 +7,7 @@
                  [clojail "0.4.0-SNAPSHOT"]
                  [sandbar "0.4.0-SNAPSHOT"]
                  [congomongo "0.1.3-SNAPSHOT"]
-                 [org.jasypt/jasypt "1.7"]]
+                 [org.jasypt/jasypt "1.7"]
+                 [amalloy/utils "[0.3.7,)"]]
   :dev-dependencies [[lein-ring "0.4.0"]]
   :main foreclojure.core)

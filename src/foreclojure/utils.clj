@@ -1,8 +1,10 @@
 (ns foreclojure.utils
   (:use (hiccup [core :only [html]]
-                [page-helpers :only [doctype include-css]]))
+                [page-helpers :only [doctype include-css]])
+        [amalloy.utils.transform :only [transform-if]])
   (:require [sandbar.stateful-session :as session]
-            (ring.util [response :as response])))
+            (ring.util [response :as response])
+            [clojure.walk :as walk]))
 
 (defmacro dbg [x]
   `(let [x# ~x] (println '~x "=" x#) x#))
@@ -34,6 +36,10 @@
   `(defn ~page-name [~@args]
      (html-doc
       ~@code)))
+
+(defn from-mongo [data]
+  (walk/postwalk (transform-if float? int)
+                 data))
 
 (defn row-class [x]
   {:class (if (even? x)

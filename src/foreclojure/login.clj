@@ -17,10 +17,11 @@
              [:td (label :pwd "Password")]
              [:td (password-field :pwd)]]
             [:tr
-             [:td (submit-button {:type "image" :src "/login.png"} "Log In")]]]))
+             [:td (submit-button {:type "image" :src "/login.png"}
+                                 "Log In")]]]))
 
 (defn do-login [user pwd]
-  (if-let [db-user (fetch-one :users :where {:user user})]
+  (if-let [db-user (from-mongo (fetch-one :users :where {:user user}))]
     (if (.checkPassword (StrongPasswordEncryptor.) pwd (db-user :pwd))
       (do (session/session-put! :user user)
           (response/redirect "/problems"))
