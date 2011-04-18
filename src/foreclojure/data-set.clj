@@ -329,4 +329,15 @@
             :tests ["(= (__ [1 2 3] 2) '(1 1 2 2 3 3))"
 		    "(= (__ [:a :b] 4) '(:a :a :a :a :b :b :b :b))
                      (= (__ [4 5 6] 1) '(4 5 6))"]
-            :secret-tests ["(= (__ [[1 2] [3 4]] 2) '([1 2] [1 2] [3 4] [3 4]))"]}))
+            :secret-tests ["(= (__ [[1 2] [3 4]] 2) '([1 2] [1 2] [3 4] [3 4]))"]})
+
+  (insert! :problems
+           {:_id 34
+            :title "Implement a range"
+            :times-solved 0
+	    :restricted ["range"]
+            :description "Write a function which creates a list of all integers in a given range."
+            :tags ["easy" "seqs" "core-functions"]
+            :tests ["(= (__ 1 4) '(1 2 3))"
+		    "(= (__ -2 2) '(-2 -1 0 1))"]
+            :secret-tests ["(= (__ 5 8) '(5 6 7))"]}))
