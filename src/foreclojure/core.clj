@@ -7,8 +7,7 @@
         [foreclojure.users]
         [ring.adapter jetty]
         [somnium.congomongo]
-        (ring.middleware (reload :only [wrap-reload])
-                         (stacktrace :only [wrap-stacktrace])))
+        [ring.middleware.reload :only [wrap-reload]])
   (:require [compojure.route :as route]
             [compojure.handler :as handler]
             [sandbar.stateful-session :as session]
@@ -42,11 +41,9 @@
   (route/not-found "Page not found"))
 
 (def app
-  (-> #'main-routes
-      (wrap-reload '(foreclojure.core))
-      (wrap-stacktrace)
-      (session/wrap-stateful-session)
-      (handler/site)))
+  (handler/site
+   (session/wrap-stateful-session
+    (wrap-reload #'main-routes '(foreclojure.core)))))
 
 (defn run []
   (run-jetty (var app) {:join? false :ssl? true :port 8080 :ssl-port 8443
