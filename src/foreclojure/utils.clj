@@ -57,7 +57,7 @@
      [:div {:id "header"}
       [:img {:id "logo" :src "/logo.png"}]
       [:div {:id "user-info"}
-       (if-let [user (dbg (session/session-get :user))]
+       (if-let [user (session/session-get :user)]
          [:div
           (str "Logged in as " user)
           [:a {:id "logout" :href "/logout"} "Logout"]]
