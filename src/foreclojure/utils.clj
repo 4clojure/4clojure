@@ -7,6 +7,21 @@
 (defmacro dbg [x]
   `(let [x# ~x] (println '~x "=" x#) x#))
 
+(defmacro assuming
+  "Guard body with a series of tests. Each clause is a test-expression
+  followed by a failure value. Tests will be performed in order; if
+  each test succeeds, then body is evaluated. Otherwise, fail-expr is
+  evaluated with the symbol 'why bound to the failure value associated
+  with the failing test."
+  [[& clauses] body & [fail-expr]]
+  `(if-let [[~'why]
+            (cond
+             ~@(mapcat (fn [[test fail-value]]
+                         [`(not ~test) [fail-value]])
+                       (partition 2 clauses)))]
+     ~fail-expr
+     ~body))
+
 (defn flash-fn [type]
   (fn [msg url]
     (session/flash-put! type msg)
