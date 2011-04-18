@@ -308,4 +308,14 @@
             :tags ["easy" "seqs"]
             :tests ["(= (__ [1 1 2 1 1 1 3 3]) '((1 1) (2) (1 1 1) (3 3)))"
 		    "(= (__ [:a :a :b :b :c]) '((:a :a) (:b :b) (:c)))"]
-            :secret-tests ["(= (__ [[1 2] [1 2] [3 4]]) '(([1 2] [1 2]) ([3 4])))"]}))
+            :secret-tests ["(= (__ [[1 2] [1 2] [3 4]]) '(([1 2] [1 2]) ([3 4])))"]})
+
+  (insert! :problems
+           {:_id 32
+            :title "Duplicate a Sequence"
+            :times-solved 0
+            :description "Write a function which duplicates each element of a sequence."
+            :tags ["easy" "seqs"]
+            :tests ["(= (__ [1 2 3]) '(1 1 2 2 3 3))"
+		    "(= (__ [:a :a :b :b]) '(:a :a :a :a :b :b :b :b))"]
+            :secret-tests ["(= (__ [[1 2] [3 4]]) '([1 2] [1 2] [3 4] [3 4]))"]}))
