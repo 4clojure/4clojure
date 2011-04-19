@@ -361,4 +361,12 @@
             :tags ["elementary" "math" "syntax"]
             :tests ["(= 10 (let __ (+ x y)))"
 		    "(= 4 (let __ (+ y z)))"
-                    "(= 1 (let __ z))"]})))
+                    "(= 1 (let __ z))"]})
+
+    (insert! :problems
+           {:_id 37
+            :title "Regular Expressions"
+            :times-solved 0
+            :description "Regex patterns are supported with a special reader macro."
+            :tags ["elementary" "math" "syntax"]
+            :tests ["(= __ (apply str (re-seq #\"[A-Z]+\" \"bA1B3Ce\")))"]})))
