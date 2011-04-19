@@ -15,6 +15,9 @@
 (mongo!
  :db "mydb")
 
+(add-index! :users [:user] :unique true)
+(add-index! :users [:solved])
+
 (defroutes main-routes
   (GET "/" [] (welcome-page))
   
