@@ -2,10 +2,12 @@
   (:use [foreclojure.utils]
         [clojail core testers]
 	[somnium.congomongo]
-        [hiccup form-helpers])
+        [hiccup form-helpers]
+        [amalloy.utils.debug :only [?]])
   (:require [sandbar.stateful-session :as session]
             [clojure.string :as s]
-            [clj-github.gists :as gist]))
+            [clj-github.gists :as gist])
+  (:import (java.net URLEncoder)))
 
 (defn get-solved [user]
   (set
@@ -40,6 +42,14 @@
            (str "https://gist.github.com/"))
       (catch Throwable _ nil))))
 
+(defn tweet-link [id gist-url & [link-text]]
+  (let [status-msg (str "Check out how I solved http://4clojure.com/problem/"
+                        id " - " gist-url " #clojure #4clojure")]
+    (str "<a href=\"http://twitter.com/home?status="
+         (URLEncoder/encode status-msg) "\">"
+         (or link-text "Twitter")
+         "</a>")))
+
 (defn mark-completed [id code & [user]]
   (let [user (or user (session/session-get :user))
         gist-url (gist! user id code)
@@ -47,7 +57,7 @@
                     (str "<div class='share'>"
                          "Share this "
                          "<a href='" gist-url "'>solution</a>"
-                         " on <a href='http://twitter.com'>Twitter</a>!"
+                         " on " (tweet-link id gist-url) "!"
                          "</div>")
                     (str "<div class='error'>Failed to create gist of "
                          "your solution</div>"))
