@@ -368,5 +368,5 @@
             :title "Regular Expressions"
             :times-solved 0
             :description "Regex patterns are supported with a special reader macro."
-            :tags ["elementary" "math" "syntax"]
-            :tests ["(= __ (apply str (re-seq #\"[A-Z]+\" \"bA1B3Ce\")))"]})))
+            :tags ["elementary" "regex" "syntax"]
+            :tests ["(= __ (apply str (re-seq #\"[A-Z]+\" \"bA1B3Ce \")))"]})))
