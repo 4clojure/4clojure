@@ -303,5 +303,7 @@
                      "(= (__ [1 1 2 3 3 2 2 3]) '(1 2 3 2 3))"]
              :secret-tests ["(= (__ [[1 2] [1 2] [3 4] [1 2]]) '([1 2] [3 4] [1 2]))"]})))
 
-(defn -main [& args]
-  (load-problem-data))
+(do
+  (println "Loading the data")
+  (load-problem-data)
+  (println "Data is loaded"))
