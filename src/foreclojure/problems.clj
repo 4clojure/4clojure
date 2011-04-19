@@ -8,17 +8,20 @@
 
 (defn get-solved [user]
   (set
-   (:solved (fetch-one :users
-                       :where {:user user}
-                       :only [:solved]))))
+   (:solved (from-mongo
+             (fetch-one :users
+                        :where {:user user}
+                        :only [:solved])))))
 
 (defn get-problem [x]
-  (fetch-one :problems :where {:_id x}))
+  (from-mongo
+   (fetch-one :problems :where {:_id x})))
 
 (defn get-problem-list []
-  (fetch :problems
-         :only [:_id :title :tags :times-solved]
-         :sort {:id 1}))
+  (from-mongo
+   (fetch :problems
+          :only [:_id :title :tags :times-solved]
+          :sort {:id 1})))
 
 (defn mark-completed [id]
   (if-let [user (session/session-get :user)]
@@ -34,30 +37,36 @@
 
 (def sb (sandbox*))
 
-(defn run-code [id code]
-  (let [p (get-problem id)
+(defn run-code [id raw-code]
+  (let [code (.trim raw-code)
+	p (get-problem id)
         tests (concat (:tests p) (:secret-tests p))
         func-name (:function-name p)
         sb-tester (get-tester (:restricted p))]
-    (try
-      (loop [[test & more] tests]
-        (if-not test
-          (mark-completed id)
-          (let [testcase (s/replace test "__" (str code))]
-            (if (sb sb-tester (read-string testcase))
-              (recur more)
-              (do
-                (session/flash-put! :code code)
-                (flash-error "You failed the unit tests."
-                             (str "/problem/" id)))))))
-      (catch Exception e
-        (do
-          (session/flash-put! :code code)
-          (flash-error (.getMessage e) (str "/problem/" id)))))))
+    (if (empty? code)
+      (do
+	(session/flash-put! :code code)
+	(flash-error "Empty input is not allowed"
+		     (str "/problem/" id)))
+      (try
+	(loop [[test & more] tests]
+	  (if-not test
+	    (mark-completed id)
+	    (let [testcase (s/replace test "__" (str code))]
+	      (if (sb sb-tester (read-string testcase))
+		(recur more)
+		(do
+		  (session/flash-put! :code code)
+		  (flash-error "You failed the unit tests."
+			       (str "/problem/" id)))))))
+	(catch Exception e
+	  (do
+	    (session/flash-put! :code code)
+	    (flash-error (.getMessage e) (str "/problem/" id))))))))
 
 
 (def-page code-box [id]
-  (let [problem (dbg (get-problem (Integer. id)))]
+  (let [problem (get-problem (Integer. id))]
     [:div
      [:span {:id "prob-title"} (problem :title)]
      [:hr]
@@ -82,7 +91,7 @@
 
 (def-page problem-page []
   [:div {:class "congrats"} (session/flash-get :message)]
-  [:table {:class "my-table" :width "100%"}
+  [:table {:class "my-table" :width "60%"}
    [:th "Title"]
    [:th "Tags"]
    [:th "Count"]
@@ -90,7 +99,7 @@
    (let [solved (get-solved (session/session-get :user))
          problems (get-problem-list)]
      (map-indexed
-      (fn [x {:keys [title times-solved tags], id :id}]
+      (fn [x {:keys [title times-solved tags], id :_id}]
         [:tr (row-class x)
          [:td {:class "title-link"}
           [:a {:href (str "/problem/" id)}

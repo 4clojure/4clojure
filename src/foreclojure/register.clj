@@ -6,22 +6,20 @@
   (:require [sandbar.stateful-session :as session]
             (ring.util [response :as response])))
 
+(defn form-row [[type name info]]
+  [:tr
+   [:td (label name info)]
+   [:td (type name)]])
+
 (def-page register-page []
   [:div {:class "error"} (session/flash-get :error)]
   (form-to [:post "/register"]
            [:table
-            [:tr
-             [:td (label :user "Username (4-12 chars.)")]
-             [:td (text-field :user)]]
-            [:tr
-             [:td (label :pwd "Password (7-12 chars.)")]
-             [:td (password-field :pwd)]]
-            [:tr
-             [:td (label :repeat-pwd "Repeat Password")]
-             [:td (password-field :repeat-pwd)]]
-            [:tr
-             [:td (label :email "Email")]
-             [:td (text-field :email)]]
+            (map form-row
+                 [[text-field :user "Username (4-12 chars.)"]
+                  [password-field :pwd "Password (7-12 chars.)"]
+                  [password-field :repeat-pwd "Repeat Password"]
+                  [text-field :email "Email"]])
             [:tr
              [:td (submit-button {:type "image" :src "/register.png"} "Register")]]]))
 

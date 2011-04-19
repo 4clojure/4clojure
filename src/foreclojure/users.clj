@@ -3,8 +3,9 @@
         [somnium.congomongo])) 
 
 (defn get-users []
-  (fetch :users
-         :only [:user :solved]))
+  (from-mongo
+   (fetch :users
+          :only [:user :solved])))
 
 (def-page users-page []
   [:table {:class "my-table" :width "50%"}
