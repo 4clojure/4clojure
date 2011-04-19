@@ -42,13 +42,16 @@
            (str "https://gist.github.com/"))
       (catch Throwable _ nil))))
 
-(defn tweet-link [id gist-url & [link-text]]
+(defn tweet-link [status & [anchor-text]]
+  (str "<a href=\"http://twitter.com/home?status="
+       (URLEncoder/encode status) "\">"
+       (or anchor-text "Twitter")
+       "</a>"))
+
+(defn tweet-solution [id gist-url & [link-text]]
   (let [status-msg (str "Check out how I solved http://4clojure.com/problem/"
                         id " - " gist-url " #clojure #4clojure")]
-    (str "<a href=\"http://twitter.com/home?status="
-         (URLEncoder/encode status-msg) "\">"
-         (or link-text "Twitter")
-         "</a>")))
+    (tweet-link status-msg link-text)))
 
 (defn mark-completed [id code & [user]]
   (let [user (or user (session/session-get :user))
@@ -57,7 +60,7 @@
                     (str "<div class='share'>"
                          "Share this "
                          "<a href='" gist-url "'>solution</a>"
-                         " on " (tweet-link id gist-url) "!"
+                         " on " (tweet-solution id gist-url) "!"
                          "</div>")
                     (str "<div class='error'>Failed to create gist of "
                          "your solution</div>"))
