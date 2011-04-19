@@ -3,7 +3,7 @@
 
 (defn load-problems []
   (do
-    
+    (mongo! :db :mydb)
     (insert! :problems
 	     {:_id 1
 	      :title "Nothing but the Truth"
@@ -341,4 +341,24 @@
 	      :tags ["easy" "seqs" "core-functions"]
 	      :tests ["(= (__ 1 4) '(1 2 3))"
 		      "(= (__ -2 2) '(-2 -1 0 1))"]
-	      :secret-tests ["(= (__ 5 8) '(5 6 7))"]})))
+	      :secret-tests ["(= (__ 5 8) '(5 6 7))"]})
+
+    (insert! :problems
+           {:_id 35
+            :title "Local bindings"
+            :times-solved 0
+            :description "Clojure lets you give local names to values using the special let-form."
+            :tags ["elementary" "syntax"]
+            :tests ["(= __ (let [x 5] (+ 2 x)))"
+		    "(= __ (let [x 3, y 10] (- y x)))"
+                    "(= __ (let [x 21] (let [y 3] (/ x y))))"]})
+
+  (insert! :problems
+           {:_id 36
+            :title "Let it Be"
+            :times-solved 0
+            :description "Can you bind x, y, and z so that these are all true?"
+            :tags ["elementary" "math" "syntax"]
+            :tests ["(= 10 (let __ (+ x y)))"
+		    "(= 4 (let __ (+ y z)))"
+                    "(= 1 (let __ z))"]})))
