@@ -1,8 +1,10 @@
 (ns foreclojure.problems
   (:use [foreclojure.utils]
+        [foreclojure.social :only [tweet-link gist!]]
         [clojail core testers]
-	[somnium.congomongo]
-        [hiccup form-helpers])
+        [somnium.congomongo]
+        [hiccup form-helpers]
+        [amalloy.utils.debug :only [?]])
   (:require [sandbar.stateful-session :as session]
             [clojure.string :as s]))
 
@@ -23,14 +25,32 @@
           :only [:_id :title :tags :times-solved]
           :sort {:id 1})))
 
-(defn mark-completed [id]
-  (if-let [user (session/session-get :user)]
-    (do
-      (when (not-any? #{id} (get-solved user))
-        (update! :users {:user user} {:$push {:solved id}})
-        (update! :problems {:_id id} {:$inc {:times-solved 1}}))
-      (flash-msg "Congratulations, you've solved the problem!" "/problems")) 
-    (flash-msg "You've solved the problem! If you log in we can track your progress." "/problems")))
+(defn tweet-solution [id gist-url & [link-text]]
+  (let [status-msg (str "Check out how I solved http://4clojure.com/problem/"
+                        id " - " gist-url " #clojure #4clojure")]
+    (tweet-link status-msg link-text)))
+
+(defn mark-completed [id code & [user]]
+  (let [user (or user (session/session-get :user))
+        gist-url (gist! user id code)
+        gist-link (if gist-url
+                    (str "<div class='share'>"
+                         "Share this "
+                         "<a href='" gist-url "'>solution</a>"
+                         " on " (tweet-solution id gist-url) "!"
+                         "</div>")
+                    (str "<div class='error'>Failed to create gist of "
+                         "your solution</div>"))
+
+        message
+        (if user
+          (do
+            (when (not-any? #{id} (get-solved user))
+              (update! :users {:user user} {:$push {:solved id}})
+              (update! :problems {:_id id} {:$inc {:times-solved 1}}))
+            "Congratulations, you've solved the problem!") 
+          "You've solved the problem! If you log in we can track your progress.")]
+    (flash-msg (str message " " gist-link) "/problems")))
 
 (defn get-tester [restricted]
   (into secure-tester (map symbol restricted)))
@@ -51,7 +71,7 @@
       (try
 	(loop [[test & more] tests]
 	  (if-not test
-	    (mark-completed id)
+	    (mark-completed id code)
 	    (let [testcase (s/replace test "__" (str code))]
 	      (if (sb sb-tester (read-string testcase))
 		(recur more)
