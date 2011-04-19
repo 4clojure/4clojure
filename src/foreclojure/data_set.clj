@@ -3,7 +3,7 @@
 
 (defn load-problems []
   (do
-    
+    (mongo! :db :mydb)
     (insert! :problems
 	     {:_id 1
 	      :title "Nothing but the Truth"
