@@ -4,7 +4,8 @@
 	[somnium.congomongo]
         [hiccup form-helpers])
   (:require [sandbar.stateful-session :as session]
-            [clojure.string :as s]))
+            [clojure.string :as s]
+            [clj-github.gists :as gist]))
 
 (defn get-solved [user]
   (set
@@ -23,14 +24,43 @@
           :only [:_id :title :tags :times-solved]
           :sort {:id 1})))
 
-(defn mark-completed [id]
-  (if-let [user (session/session-get :user)]
-    (do
-      (when (not-any? #{id} (get-solved user))
-        (update! :users {:user user} {:$push {:solved id}})
-        (update! :problems {:_id id} {:$inc {:times-solved 1}}))
-      (flash-msg "Congratulations, you've solved the problem!" "/problems")) 
-    (flash-msg "You've solved the problem! If you log in we can track your progress." "/problems")))
+(defn gist!
+  "Create a new gist containing a user's solution to a problem and
+  return its url."
+  [user-name problem-num solution]
+  (let [user-name (or user-name "anonymous")
+        filename (str user-name "-4clojure-solution" problem-num ".clj")
+        text (str ";; " user-name
+                  "'s solution to http://4clojure.com/problem/" problem-num
+                  "\n\n"
+                  solution)]
+    (try
+      (->> (gist/new-gist {} filename text)
+           :repo
+           (str "https://gist.github.com/"))
+      (catch Throwable _ nil))))
+
+(defn mark-completed [id code & [user]]
+  (let [user (or user (session/session-get :user))
+        gist-url (gist! user id code)
+        gist-link (if gist-url
+                    (str "<div class='share'>"
+                         "Share this "
+                         "<a href='" gist-url "'>solution</a>"
+                         " on <a href='http://twitter.com'>Twitter</a>!"
+                         "</div>")
+                    (str "<div class='error'>Failed to create gist of "
+                         "your solution</div>"))
+
+        message
+        (if user
+          (do
+            (when (not-any? #{id} (get-solved user))
+              (update! :users {:user user} {:$push {:solved id}})
+              (update! :problems {:_id id} {:$inc {:times-solved 1}}))
+            "Congratulations, you've solved the problem!") 
+          "You've solved the problem! If you log in we can track your progress.")]
+    (flash-msg (str message " " gist-link) "/problems")))
 
 (defn get-tester [restricted]
   (into secure-tester (map symbol restricted)))
@@ -51,7 +81,7 @@
       (try
 	(loop [[test & more] tests]
 	  (if-not test
-	    (mark-completed id)
+	    (mark-completed id code)
 	    (let [testcase (s/replace test "__" (str code))]
 	      (if (sb sb-tester (read-string testcase))
 		(recur more)
