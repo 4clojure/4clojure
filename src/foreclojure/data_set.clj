@@ -348,7 +348,7 @@
             :title "Local bindings"
             :times-solved 0
             :description "Clojure lets you give local names to values using the special let-form."
-            :tags ["easy" "syntax"]
+            :tags ["elementary" "syntax"]
             :tests ["(= __ (let [x 5] (+ 2 x)))"
 		    "(= __ (let [x 3, y 10] (- y x)))"
                     "(= __ (let [x 21] (let [y 3] (/ x y))))"]})
@@ -358,7 +358,7 @@
             :title "Let it Be"
             :times-solved 0
             :description "Can you bind x, y, and z so that these are all true?"
-            :tags ["easy" "math" "syntax"]
+            :tags ["elementary" "math" "syntax"]
             :tests ["(= 10 (let __ (+ x y)))"
 		    "(= 4 (let __ (+ y z)))"
                     "(= 1 (let __ z))"]})))
