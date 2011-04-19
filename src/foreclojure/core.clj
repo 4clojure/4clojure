@@ -12,11 +12,11 @@
             [compojure.handler :as handler]
             [sandbar.stateful-session :as session]
             (ring.util [response :as response])))
+
 (mongo!
  :db "mydb")
-
 (add-index! :users [:user] :unique true)
-(add-index! :users [:solved])
+(add-index! :users [:solved -1])
 
 (defroutes main-routes
   (GET "/" [] (welcome-page))
