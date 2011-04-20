@@ -68,8 +68,7 @@ text-align: center;
 float: left;
 }
 
-
-/* old stuff 
+ 
 
 span.error, div.error {
   color: red;
@@ -80,30 +79,6 @@ div.congrats {
   margin-bottom: 8px;
   font-size: 16px;
 }
-
-
-div#menu {
-  padding-left: 7px;
-  padding-top: 7px;
-  padding-bottom: 7px;
-  padding-right: 15px;
-  float: left;
-  font-family: sans-serif;
-}
-
-div#menu li {
-  padding-top: 5px;
-  padding-bottom: 5px;
-  padding-left: 8px;
-  padding-right: 8px;
-  list-style-type: none;
-  background-color: #eee;
-}
-
-div#menu li:hover {
-  background-color: #BCEE68;
-}
-
 
 span#prob-title {
   font-size: 20px;
@@ -143,32 +118,6 @@ div#restrictions {
   font-size: 16px;
 }
 
-a:hover   {
-  text-decoration: underline;
-}
-
-a {
-  text-decoration: none;
-  color: blue;
-}
-
-
-a#logout {
-  margin-right: 5px;
-  float: right;
-}
-
-#user-info {
-  background-color: #eee;
-  margin-top: 15px;
-  margin-left: 2em;
-  padding: 5px;
-  float: left;
-  width: 40%;
-  font-size: 14px;
-  font-family: sans-serif;
-  text-align: center;
-}
 
 
 textarea#code-box {
@@ -207,7 +156,6 @@ table.my-table th {
   border-collapse: collapse;
 }
 
-*/
 
 
 
