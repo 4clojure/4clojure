@@ -380,4 +380,30 @@
             :tags ["easy" "core-functions"]
             :tests ["(= (__ 1 8 3 4) 8)"
 		    "(= (__ 30 20) 30)"]
-	    :secret-tests ["(= (__ 45 67 11) 67)"]})))
+	    :secret-tests ["(= (__ 45 67 11) 67)"]})
+
+
+    (insert! :problems
+           {:_id 39
+            :title "Interleave Two Seqs"
+            :times-solved 0
+	    :restricted ["interleave"]
+            :description "Write a function which takes two sequences and returns the first item from each, then the second item from each, then the third, etc."
+            :tags ["easy" "seqs" "core-functions"]
+	    :tests ["(= (__ [1 2 3] [:a :b :c]) '(1 :a 2 :b 3 :c))"
+		    "(= (__ [1 2] [3 4 5 6]) '(1 3 2 4))"]
+	    :secret-tests ["(= (__ [1 2 3 4] [5]) [1 5])"
+			   "(= (__ [30 20] [25 15]) [30 25 20 15])"]})
+	    
+		    
+
+    (insert! :problems
+           {:_id 40
+            :title "Interpose a Seq"
+            :times-solved 0
+	    :restricted ["interpose"]
+            :description "Write a function which separates the items of a sequence by an arbitrary value."
+            :tags ["easy" "seqs" "core-functions"]
+            :tests ["(= (__ 0 [1 2 3]) [1 0 2 0 3])"
+		    "(= (apply str (__ \", \" [\"one\" \"two\" \"three\"])) \"one, two, three\")"]
+	    :secret-tests ["(= (__ :z [:a :b :c :d]) [:a :z :b :z :c :z :d])"]})))
