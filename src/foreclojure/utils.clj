@@ -82,4 +82,4 @@
            [:a#login {:href "/login"} "Login"]
            [:a#register {:href "/register"} "Register"]])]]
       [:div#content body]
-      [:div#footer "&copy; 2011 David Byrne" ]]]]))
+      [:div#footer "The content on 4clojure.com is available under the EPL v 1.0 license." ]]]]))
