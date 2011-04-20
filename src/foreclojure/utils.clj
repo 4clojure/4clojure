@@ -54,9 +54,20 @@
      [:title "4Clojure"]
      (include-css "/style.css")]
     [:body
-     [:p [:img {:id "logo" :src "/logo.png"}]]
+     [:div {:id "top"} [:img {:id "logo" :src "/logo.png"}]]
      [:div {:id "content"}
       [:div {:id "menu"}
        [:a {:href "/"} "Main Page"]
-       [:a {:href "/problems"} "Problem List"]]
-      [:p "hello"]]]]))
+       [:a {:href "/problems"} "Problem List"]
+       [:a {:href "/users"} "Top Users"]
+       [:a {:href "/directions"} "Getting Started"]
+        [:span {:id "user-info"}
+       (if-let [user (session/session-get :user)]
+         [:div
+          (str "Logged in as " user)
+          [:a {:id "logout" :href "/logout"} "Logout"]]
+         [:div
+          [:a {:href "/login"} "Login"] " or "
+          [:a {:href "/register"} "Register"]])]]
+      [:div {:id "content"} body]
+      [:div {:id "footer"} "&copy; 2011 David Byrne" ]]]]))

@@ -11,17 +11,18 @@
          "StackOverflow.com: A Gentle Tutorial to Emacs/Swank/Paredit for Clojure"]]])
 
 (def-page welcome-page []
-  [:div
+  [:div {:id "welcome"}
    [:div
     [:h3 "What is 4Clojure?"]
-    "4Clojure is a resource to help fledgling clojurians learn the language through interactive problems.  The first few problems are easy enough that even someone with no prior experience should find the learning curve forgiving.  See 'Getting Started' for more information."]
+    [:p "4Clojure is a resource to help fledgling clojurians learn the language through interactive problems.  The first few problems are easy enough that even someone with no prior experience should find the learning curve forgiving.  See 'Getting Started' for more information."]]
 
    [:div
     [:h3 "Is this site written in Clojure?"]
-    "Absolutely!  This site was created using a variety of open source Clojure (and Java) libraries.  In fact, the code for this site is itself open source.  Once you've mastered the language, feel free to contribute something back to the community."]
+    [:p "Absolutely!  This site was created using a variety of open source Clojure (and Java) libraries.  In fact, the code for this site is itself open source.  Once you've mastered the language, feel free to contribute something back to the community."]]
    [:div
     [:h3 "So wait, I can't buy cheap real estate here?"]
-    "At this time, 4clojure.com does not provide information regarding the sale of foreclosed homes, and has no plans of doing so in the future."]])
+    [:p "At this time, 4clojure.com does not provide information regarding the sale of foreclosed homes, and has no plans of doing so in the future."]]
+   [:img {:src "/PoweredMongoDBbeige50.png"}]])
 
 (def-page getting-started-page []
   [:div

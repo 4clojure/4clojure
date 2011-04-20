@@ -8,7 +8,7 @@ body {
 }
 
 #content { 
-  width: 100%;
+  width: 95%;
   padding: 15px 0px 15px 0px;
   text-align: left;
   background-color: #fff;   
@@ -16,35 +16,198 @@ body {
   -moz-border-radius: 15px;
   border-radius: 15px;
 }
-p, h1, pre {
-margin: 0px; 
-padding: 10px; 
+
+#top { 
+  width: 95%;
+  padding: 15px 0px 15px 0px;
 }
-h1 {
-font-size: 11px;
-text-transform:uppercase;
-text-align: right;
-color: #564b47;
-background-color: #90897a;
+
+h3 {font-size: 18px;
 }
+
 
 #menu{
 background-color:#445599;
 padding: 15px;
+color: #fff
 }
 
 
 a:link {color: #fff;}
 a:visited {color: #fff;}
 a:active {color: #fff;}
-a:hover {color: #223322;}
-a {text-decoration: none; font-size: 20px; font-weight:bold; margin: 15px}
+a:hover {color: #7CFC00;}
+a {text-decoration: none; font-size: 14px; font-weight:bold; margin: 15px}
 
-
+#user-info{
+float:right;
+}
 
 #logo {
 float:left;
 padding:15px 0px 15px 0px;
 }
+
+#content{
+margin:15px
+}
+
+#welcome{
+width: 90%;
+float: left;
+}
+
+#footer{
+background-color:#445599;
+padding: 15px;
+color: #fff;
+text-align: center;
+}
+
+#footer img {
+float: left;
+}
+
+
+/* old stuff 
+
+span.error, div.error {
+  color: red;
+}
+
+div.congrats {
+  color: red;
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+
+div#menu {
+  padding-left: 7px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  padding-right: 15px;
+  float: left;
+  font-family: sans-serif;
+}
+
+div#menu li {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 8px;
+  padding-right: 8px;
+  list-style-type: none;
+  background-color: #eee;
+}
+
+div#menu li:hover {
+  background-color: #BCEE68;
+}
+
+
+span#prob-title {
+  font-size: 20px;
+  font-family: sans-serif;
+  font-weight: bold;
+}
+
+div#prob-desc {
+  overflow: hidden;
+}
+
+div#testcases {
+  float: left;
+  margin: 10px;
+}
+
+li.testcase {
+  font-size: 15px;
+  padding: 3px;
+  list-style-type: none;
+  background-color: #eee;
+  font-family: Courier;
+}
+
+div#restrictions {
+  list-style-type: none;
+  border-style: dashed;
+  border-color: DarkRed;
+  border-width: normal;
+  margin-right: 45px;
+  margin-bottom: 15px;
+  margin-top: 15px;
+  margin-left: 15px;
+  padding: 10px;
+  color: red;
+  float: right;
+  font-size: 16px;
+}
+
+a:hover   {
+  text-decoration: underline;
+}
+
+a {
+  text-decoration: none;
+  color: blue;
+}
+
+
+a#logout {
+  margin-right: 5px;
+  float: right;
+}
+
+#user-info {
+  background-color: #eee;
+  margin-top: 15px;
+  margin-left: 2em;
+  padding: 5px;
+  float: left;
+  width: 40%;
+  font-size: 14px;
+  font-family: sans-serif;
+  text-align: center;
+}
+
+
+textarea#code-box {
+  width: 350px;
+  height: 250px;
+}
+
+table.my-table {
+  padding: 2px;
+  border-collapse: collapse;
+}
+
+table.my-table td {
+  padding: 2px;
+}
+
+table.my-table td.centered {
+  text-align: center;
+}
+
+td.title-link {
+  font-size: 16px;
+}
+
+table.my-table tr.oddrow { 
+  background-color: #eee;
+}
+
+table.my-table tr.evenrow {
+  background-color: #F8F8FF;
+}
+
+table.my-table th {
+  background-color: #BCEE68;
+  padding: 2px;
+  border-collapse: collapse;
+}
+
+*/
+
 
 
