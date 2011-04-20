@@ -37,10 +37,20 @@ color: #fff
 #menu a:visited {color: #fff;}
 #menu a:active {color: #fff;}
 #menu a:hover {color: #7CFC00;}
-#menu a {text-decoration: none; font-size: 14px; font-weight:bold; margin: 15px}
+#menu a {text-decoration: none; font-size: 14px; font-weight:bold;}
+#menu a.menu {margin: 15px;}
 
 #user-info{
 float:right;
+}
+
+#login {
+    border-right: 2px solid white;
+    padding-right: 1em;
+}
+
+#register {
+    padding-left: 1em;
 }
 
 #logo {

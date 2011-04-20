@@ -69,17 +69,17 @@
      [:div#top [:img#logo {:src "/logo.png"}]]
      [:div#content 
       [:div#menu
-       [:a {:href "/"} "Main Page"]
-       [:a {:href "/problems"} "Problem List"]
-       [:a {:href "/users"} "Top Users"]
-       [:a {:href "/directions"} "Getting Started"]
+       [:a.menu {:href "/"} "Main Page"]
+       [:a.menu {:href "/problems"} "Problem List"]
+       [:a.menu {:href "/users"} "Top Users"]
+       [:a.menu {:href "/directions"} "Getting Started"]
        [:span#user-info
         (if-let [user (session/session-get :user)]
           [:div
            (str "Logged in as " user)
            [:a#logout :href "/logout" "Logout"]]
           [:div
-           [:a {:href "/login"} "Login"] " or "
-           [:a {:href "/register"} "Register"]])]]
+           [:a#login {:href "/login"} "Login"]
+           [:a#register {:href "/register"} "Register"]])]]
       [:div#content body]
       [:div#footer "&copy; 2011 David Byrne" ]]]]))
