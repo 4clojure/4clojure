@@ -1,10 +1,11 @@
 (ns foreclojure.register
   (:import [org.jasypt.util.password StrongPasswordEncryptor])
-  (:use [foreclojure.utils]
-        [somnium.congomongo]
-        (hiccup [form-helpers]))
+  (:use hiccup.form-helpers
+        compojure.core
+        foreclojure.utils
+        somnium.congomongo)
   (:require [sandbar.stateful-session :as session]
-            (ring.util [response :as response])))
+            [ring.util.response :as response]))
 
 (defn form-row [[type name info]]
   [:tr

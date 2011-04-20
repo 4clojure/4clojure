@@ -1,17 +1,12 @@
 (ns foreclojure.core
-  (:use [compojure.core]
-        [foreclojure.static]
-        [foreclojure.problems]
-        [foreclojure.login]
-        [foreclojure.register]
-        [foreclojure.users]
-        [ring.adapter jetty]
-        [somnium.congomongo]
+  (:use compojure.core
+        [foreclojure static problems login register users]
+        ring.adapter.jetty
+        somnium.congomongo
         [ring.middleware.reload :only [wrap-reload]])
-  (:require [compojure.route :as route]
-            [compojure.handler :as handler]
+  (:require [compojure [route :as route] [handler :as handler]]
             [sandbar.stateful-session :as session]
-            (ring.util [response :as response])))
+            [ring.util.response :as response]))
 
 (mongo!
  :db "mydb")

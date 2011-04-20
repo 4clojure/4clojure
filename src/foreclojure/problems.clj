@@ -1,10 +1,11 @@
 (ns foreclojure.problems
-  (:use [foreclojure.utils]
+  (:use foreclojure.utils
         [foreclojure.social :only [tweet-link gist!]]
         [clojail core testers]
-        [somnium.congomongo]
-        [hiccup form-helpers]
-        [amalloy.utils.debug :only [?]])
+        somnium.congomongo
+        hiccup.form-helpers
+        [amalloy.utils.debug :only [?]]
+        compojure.core)
   (:require [sandbar.stateful-session :as session]
             [clojure.string :as s]))
 

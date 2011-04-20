@@ -1,6 +1,7 @@
 (ns foreclojure.users
-  (:use [foreclojure.utils]
-        [somnium.congomongo])) 
+  (:use foreclojure.utils
+        somnium.congomongo
+        compojure.core)) 
 
 (defn get-users []
   (from-mongo

@@ -1,5 +1,6 @@
 (ns foreclojure.static
-  (:use [foreclojure.utils]))
+  (:use compojure.core
+        foreclojure.utils))
 
 (def-page links-page []
   [:div
