@@ -46,7 +46,7 @@
         (if user
           (do
             (when (not-any? #{id} (get-solved user))
-              (update! :users {:user user} {:$push {:solved id}})
+              (update! :users {:user user} {:$addToSet {:solved id}})
               (update! :problems {:_id id} {:$inc {:times-solved 1}}))
             "Congratulations, you've solved the problem!") 
           "You've solved the problem! If you log in we can track your progress.")]

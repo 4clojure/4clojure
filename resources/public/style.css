@@ -33,11 +33,11 @@ color: #fff
 }
 
 
-a:link {color: #fff;}
-a:visited {color: #fff;}
-a:active {color: #fff;}
-a:hover {color: #7CFC00;}
-a {text-decoration: none; font-size: 14px; font-weight:bold; margin: 15px}
+#menu a:link {color: #fff;}
+#menu a:visited {color: #fff;}
+#menu a:active {color: #fff;}
+#menu a:hover {color: #7CFC00;}
+#menu a {text-decoration: none; font-size: 14px; font-weight:bold; margin: 15px}
 
 #user-info{
 float:right;

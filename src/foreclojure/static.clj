@@ -18,7 +18,9 @@
 
    [:div
     [:h3 "Is this site written in Clojure?"]
-    [:p "Absolutely!  This site was created using a variety of open source Clojure (and Java) libraries.  In fact, the code for this site is itself open source.  Once you've mastered the language, feel free to contribute something back to the community."]]
+    "Absolutely!  This site was created using a variety of open source Clojure (and Java) libraries.  In fact, the "
+    [:a {:href "https://github.com/dbyrne/4clojure"} "code for this site"]
+    " is itself open source.  Once you've mastered the language, feel free to contribute something back to the community."]
    [:div
     [:h3 "So wait, I can't buy cheap real estate here?"]
     [:p "At this time, 4clojure.com does not provide information regarding the sale of foreclosed homes, and has no plans of doing so in the future."]]

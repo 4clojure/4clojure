@@ -28,8 +28,11 @@
              "User already exists",
              (< 3 (.length user) 13)
              "Username must be 4-12 characters long",
-             (< 6 (.length pwd) 13)
-             "Password must be 7-12 characters long",
+	     (= user
+		(first (re-seq #"[A-Za-z0-9_]+" user)))
+	     "Username must be alphanumeric"
+	     (< 6 (.length pwd) 13)
+	     "Password must be 7-12 characters long",
              (= pwd repeat-pwd)
              "Passwords don't match",
              (not (empty? email))

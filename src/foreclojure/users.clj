@@ -5,7 +5,8 @@
 (defn get-users []
   (from-mongo
    (fetch :users
-          :only [:user :solved])))
+          :only [:user :solved]
+	  :sort {:solved -1})))
 
 (def-page users-page []
   [:table {:class "my-table" :width "50%"}
