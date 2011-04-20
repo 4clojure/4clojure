@@ -108,6 +108,7 @@
                           :spellcheck "false"}
                          :code (session/flash-get :code))
               (hidden-field :id id)
+              [:br]
               (submit-button {:type "image" :src "/run.png"} "Run"))]))
 
 (def-page problem-page []
