@@ -13,7 +13,7 @@
    [:td (type name)]])
 
 (def-page register-page []
-  [:div {:class "error"} (session/flash-get :error)]
+  [:div.error (session/flash-get :error)]
   (form-to [:post "/register"]
            [:table
             (map form-row

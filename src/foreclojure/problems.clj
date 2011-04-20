@@ -111,8 +111,8 @@
               (submit-button {:type "image" :src "/run.png"} "Run"))]))
 
 (def-page problem-page []
-  [:div {:class "congrats"} (session/flash-get :message)]
-  [:table {:class "my-table" :width "60%"}
+  [:div.congrats (session/flash-get :message)]
+  [:table.mytable {:width "60%"}
    [:th "Title"]
    [:th "Tags"]
    [:th "Count"]
@@ -122,14 +122,14 @@
      (map-indexed
       (fn [x {:keys [title times-solved tags], id :_id}]
         [:tr (row-class x)
-         [:td {:class "title-link"}
+         [:td.titlelink
           [:a {:href (str "/problem/" id)}
            title]]
-         [:td {:class "centered"}
+         [:td.centered
           (s/join " " (map #(str "<span class='tag'>" % "</span>")
                            tags))]
-         [:td {:class "centered"} (int times-solved)]
-         [:td {:class "centered"}
+         [:td.centered (int times-solved)]
+         [:td.centered
           [:img {:src (if (contains? solved id)
                         "/checkmark.png"
                         "/empty-sq.png")}]]])

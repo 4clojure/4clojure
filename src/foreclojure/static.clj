@@ -12,7 +12,7 @@
          "StackOverflow.com: A Gentle Tutorial to Emacs/Swank/Paredit for Clojure"]]])
 
 (def-page welcome-page []
-  [:div {:id "welcome"}
+  [:div#welcome
    [:div
     [:h3 "What is 4Clojure?"]
     [:p "4Clojure is a resource to help fledgling clojurians learn the language through interactive problems.  The first few problems are easy enough that even someone with no prior experience should find the learning curve forgiving.  See 'Getting Started' for more information."]]
@@ -35,8 +35,8 @@
    [:u "not"]
    " part of the syntax of the language.  Any code which makes the final form evaluate to 'true' will be considered a correct answer.  Lets consider the first problem:"
    [:br][:br]
-   [:div {:id "testcases"}
-    [:li {:class "testcase"} "(= __ true)"]]
+   [:div#testcases
+    [:li.testcase "(= __ true)"]]
    [:br][:br][:br]
    "Any of the following would be considered correct answers:"
    [:br][:br]
@@ -46,9 +46,9 @@
    [:br]
    "Some problems will expect you to fill-in-the-blanks with a function.  Here is a problem which asks you to provide a function to double a number:"
    [:br][:br]
-   [:div {:id "testcases"}
-    [:li {:class "testcase"} "(= (__ 2) 4)"]
-    [:li {:class "testcase"} "(= (__ 3) 6)"]]
+   [:div#testcases
+    [:li.testcase "(= (__ 2) 4)"]
+    [:li.testcase "(= (__ 3) 6)"]]
    [:br][:br][:br][:br]
    "Any of the following forms are valid solutions:"
    [:br][:br]

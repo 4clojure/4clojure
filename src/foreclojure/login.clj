@@ -8,7 +8,7 @@
             [ring.util.response :as response]))
                         
 (def-page my-login-page []
-  [:div {:class "error"} (session/flash-get :error)]
+  [:div.error (session/flash-get :error)]
   (form-to [:post "/login"]
            [:table
             [:tr
