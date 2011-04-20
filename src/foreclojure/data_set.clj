@@ -434,7 +434,19 @@
             :title "Reverse Interleave"
             :times-solved 0
             :description "Write a function which reverses the interleave process into x number of subsequences."
-            :tags ["medium" "seq"]
+            :tags ["medium" "seqs"]
             :tests ["(= (__ [1 2 3 4 5 6] 2) '((1 3 5) (2 4 6)))"
 		    "(= (__ (range 9) 3) '((0 3 6) (1 4 7) (2 5 8)))"]
-	    :secret-tests ["(= (__ (range 10) 5) '((0 5) (1 6) (2 7) (3 8) (4 9)))"]})))
+	    :secret-tests ["(= (__ (range 10) 5) '((0 5) (1 6) (2 7) (3 8) (4 9)))"]})
+
+    (insert! :problems
+           {:_id 44
+            :title "Rotate Sequence"
+            :times-solved 0
+            :description "Write a function which can rotate a sequence in either direction."
+            :tags ["medium" "seqs"]
+            :tests ["(= (__ 2 [1 2 3 4 5]) '(3 4 5 1 2))"
+		    "(= (__ -2 [1 2 3 4 5]) '(4 5 1 2 3))"
+		    "(= (__ 6 [1 2 3 4 5]) '(2 3 4 5 1))"]
+	    :secret-tests ["(= (__ 1 '(:a :b :c)) '(:b :c :a))"
+			   "(= (__ -4 '(:a :b :c)) '(:c :a :b))"]})))
