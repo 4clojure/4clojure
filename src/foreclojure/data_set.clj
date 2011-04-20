@@ -369,4 +369,14 @@
             :times-solved 0
             :description "Regex patterns are supported with a special reader macro."
             :tags ["elementary" "regex" "syntax"]
-            :tests ["(= __ (apply str (re-seq #\"[A-Z]+\" \"bA1B3Ce \")))"]})))
+            :tests ["(= __ (apply str (re-seq #\"[A-Z]+\" \"bA1B3Ce \")))"]})
+
+    (insert! :problems
+           {:_id 38
+            :title "Maximum value"
+            :times-solved 0
+	    :restricted ["max"]
+            :description "Write a function which takes a variable number of parameters and returns the maximum value."
+            :tags ["easy" "core-functions"]
+            :tests ["(= (__ 1 8 3 4) 8)"
+		    "(= (__ 30 20) 30)"]})))
