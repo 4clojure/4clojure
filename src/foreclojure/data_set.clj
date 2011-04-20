@@ -406,4 +406,14 @@
             :tags ["easy" "seqs" "core-functions"]
             :tests ["(= (__ 0 [1 2 3]) [1 0 2 0 3])"
 		    "(= (apply str (__ \", \" [\"one\" \"two\" \"three\"])) \"one, two, three\")"]
-	    :secret-tests ["(= (__ :z [:a :b :c :d]) [:a :z :b :z :c :z :d])"]})))
+	    :secret-tests ["(= (__ :z [:a :b :c :d]) [:a :z :b :z :c :z :d])"]})
+
+    (insert! :problems
+           {:_id 41
+            :title "Drop Every Nth Item"
+            :times-solved 0
+            :description "Write a function which drops every Nth item from a sequence."
+            :tags ["easy" "seqs"]
+            :tests ["(= (__ [1 2 3 4 5 6 7 8] 3) [1 2 4 5 7 8])"
+		    "(= (__ [:a :b :c :d :e :f] 2) [:a :c :e])"]
+	    :secret-tests ["(= (__ [1 2 3 4 5 6] 4) [1 2 3 5 6])"]})))
