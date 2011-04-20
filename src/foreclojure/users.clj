@@ -11,7 +11,7 @@
     (reverse (sort-by sortfn users))))
 
 (def-page users-page []
-  [:table {:class "my-table" :width "50%"}
+  [:table {:class "my-table" :width "90%"}
    [:th {:width "66%"} "Username"]
    [:th "Problems Solved"]
    (map-indexed #(vec [:tr (row-class %1)

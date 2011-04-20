@@ -76,7 +76,7 @@
        [:span#user-info
         (if-let [user (session/session-get :user)]
           [:div
-           (str "Logged in as " user)
+           [:span {:id "username"} (str "Logged in as " user )]
            [:a#logout {:href "/logout"} "Logout"]]
           [:div
            [:a#login {:href "/login"} "Login"]

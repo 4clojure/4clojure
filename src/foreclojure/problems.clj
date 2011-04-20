@@ -112,7 +112,7 @@
 
 (def-page problem-page []
   [:div.congrats (session/flash-get :message)]
-  [:table.mytable {:width "60%"}
+  [:table.mytable {:width "90%"}
    [:th "Title"]
    [:th "Tags"]
    [:th "Count"]

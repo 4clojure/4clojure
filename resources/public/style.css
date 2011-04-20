@@ -22,14 +22,15 @@ body {
   padding: 15px 0px 15px 0px;
 }
 
-h3 {font-size: 18px;
+h3 {
+  font-size: 18px;
 }
 
 
 #menu{
-background-color:#445599;
-padding: 15px;
-color: #fff
+  background-color:#445599; 
+  padding: 15px;
+  color: #fff
 }
 
 
@@ -41,41 +42,52 @@ color: #fff
 #menu a.menu {margin: 15px;}
 
 #user-info{
-float:right;
+  float:right;
 }
 
+#username{
+  padding-right: 10px;
+  border-right: 2px solid white;
+}
+
+
 #login {
-    border-right: 2px solid white;
-    padding-right: 1em;
+  border-right: 2px solid white;
+  padding-right: 1em;
+}
+
+#logout {
+  padding-left: 1em;
+  padding-right: 1em;
 }
 
 #register {
-    padding-left: 1em;
+  padding-left: 1em;
 }
 
 #logo {
-float:left;
-padding:15px 0px 15px 0px;
+  float:left;
+  padding:15px 0px 15px 0px;
 }
 
 #content{
-margin:15px
+  margin:15px
 }
 
 #welcome{
-width: 90%;
-float: left;
+  width: 90%;
+  float: left;
 }
 
 #footer{
-background-color:#445599;
-padding: 15px;
-color: #fff;
-text-align: center;
+  background-color:#445599;
+  padding: 15px;
+  color: #fff;
+  text-align: center;
 }
 
 #footer img {
-float: left;
+ float: left;
 }
 
  
@@ -131,7 +143,7 @@ div#restrictions {
 
 
 textarea#code-box {
-  width: 350px;
+  width: 500px;
   height: 250px;
 }
 
@@ -165,7 +177,3 @@ table.my-table th {
   padding: 2px;
   border-collapse: collapse;
 }
-
-
-
-
