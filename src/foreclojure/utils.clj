@@ -65,10 +65,15 @@
         })();
 "
       )]
-    [:body 
-     [:div {:id "header"}
-      [:img {:id "logo" :src "/logo.png"}]
-      [:div {:id "user-info"}
+    [:body
+     [:div {:id "top"} [:img {:id "logo" :src "/logo.png"}]]
+     [:div {:id "content"}
+      [:div {:id "menu"}
+       [:a {:href "/"} "Main Page"]
+       [:a {:href "/problems"} "Problem List"]
+       [:a {:href "/users"} "Top Users"]
+       [:a {:href "/directions"} "Getting Started"]
+        [:span {:id "user-info"}
        (if-let [user (session/session-get :user)]
          [:div
           (str "Logged in as " user)
@@ -76,15 +81,5 @@
          [:div
           [:a {:href "/login"} "Login"] " or "
           [:a {:href "/register"} "Register"]])]]
-     [:div {:id "menu"}
-      [:ul
-       [:li [:a {:href "/"} "Main Page"]]
-       [:li [:a {:href "/problems"} "Problem List"]]
-       [:li [:a {:href "/users"} "Top Users"]]
-       [:li [:a {:href "/directions"} "Getting Started"]]
-       [:li [:a {:href "/links"} "Useful Links"]]]
-      [:div
-       [:img {:src "/PoweredMongoDBbeige50.png"}]]]
-     [:div {:id "content"} body]
-     [:footer      
-      [:span {:id "footer"} "&copy; 2011 David Byrne" ]]]]))
+      [:div {:id "content"} body]
+      [:div {:id "footer"} "&copy; 2011 David Byrne" ]]]]))

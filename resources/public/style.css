@@ -1,3 +1,75 @@
+body {
+  background-color: #bbddee;
+  font-size: 12px;
+  font-family: Verdana, Arial, Helvetica, SunSans-Regular, Sans-Serif;
+  color:#564b47;  
+  margin: 20px 140px  20px 140px;
+  text-align: center;
+}
+
+#content { 
+  width: 95%;
+  padding: 15px 0px 15px 0px;
+  text-align: left;
+  background-color: #fff;   
+  overflow: auto;
+  -moz-border-radius: 15px;
+  border-radius: 15px;
+}
+
+#top { 
+  width: 95%;
+  padding: 15px 0px 15px 0px;
+}
+
+h3 {font-size: 18px;
+}
+
+
+#menu{
+background-color:#445599;
+padding: 15px;
+color: #fff
+}
+
+
+#menu a:link {color: #fff;}
+#menu a:visited {color: #fff;}
+#menu a:active {color: #fff;}
+#menu a:hover {color: #7CFC00;}
+#menu a {text-decoration: none; font-size: 14px; font-weight:bold; margin: 15px}
+
+#user-info{
+float:right;
+}
+
+#logo {
+float:left;
+padding:15px 0px 15px 0px;
+}
+
+#content{
+margin:15px
+}
+
+#welcome{
+width: 90%;
+float: left;
+}
+
+#footer{
+background-color:#445599;
+padding: 15px;
+color: #fff;
+text-align: center;
+}
+
+#footer img {
+float: left;
+}
+
+ 
+
 span.error, div.error {
   color: red;
 }
@@ -6,50 +78,6 @@ div.congrats {
   color: red;
   margin-bottom: 8px;
   font-size: 16px;
-}
-
-html body {
-  margin-top: 0px;
-  margin-bottom: 0px;
-  margin-left: 2px;
-  margin-right:auto;
-  padding-top: 8px;
-  padding-left: 8px;
-  width: 75%;
-}
-
-#header {
-    width: 100%;
-    float: left;
-}
-
-div#menu {
-  padding-left: 7px;
-  padding-top: 7px;
-  padding-bottom: 7px;
-  padding-right: 15px;
-  float: left;
-  font-family: sans-serif;
-}
-
-div#menu li {
-  padding-top: 5px;
-  padding-bottom: 5px;
-  padding-left: 8px;
-  padding-right: 8px;
-  list-style-type: none;
-  background-color: #eee;
-}
-
-div#menu li:hover {
-  background-color: #BCEE68;
-}
-
-div#content {
-  width: 100%;
-  padding-bottom: 10px;
-  font-family: serif;
-  font-size: 14px;
 }
 
 span#prob-title {
@@ -90,42 +118,7 @@ div#restrictions {
   font-size: 16px;
 }
 
-a:hover   {
-  text-decoration: underline;
-}
 
-a {
-  text-decoration: none;
-  color: blue;
-}
-
-img#logo {
-  float: left;
-}
-
-a#logout {
-  margin-right: 5px;
-  float: right;
-}
-
-#user-info {
-  background-color: #eee;
-  margin-top: 15px;
-  margin-left: 2em;
-  padding: 5px;
-  float: left;
-  width: 40%;
-  font-size: 14px;
-  font-family: sans-serif;
-  text-align: center;
-}
-
-span#footer {
-   float: right;
-   width: 813px;
-   background-color: #eee;
-   text-align: center;
-}
 
 textarea#code-box {
   width: 350px;
@@ -162,3 +155,7 @@ table.my-table th {
   padding: 2px;
   border-collapse: collapse;
 }
+
+
+
+
