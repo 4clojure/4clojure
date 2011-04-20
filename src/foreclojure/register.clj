@@ -46,3 +46,8 @@
       (session/session-put! :user user)
       (response/redirect "/"))
     (flash-error why "/register")))
+
+(defroutes register-routes
+  (GET  "/register" [] (register-page))
+  (POST "/register" {{:strs [user pwd repeat-pwd email]} :form-params}
+        (do-register user pwd repeat-pwd email)))

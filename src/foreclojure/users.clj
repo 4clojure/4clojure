@@ -18,3 +18,5 @@
                        [:td {:class "centered"} (count (:solved %2))]])
                 (get-users))])
 
+(defroutes users-routes
+  (GET "/users" [] (users-page)))

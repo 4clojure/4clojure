@@ -28,5 +28,11 @@
           (response/redirect "/problems"))
       (flash-error "Error logging in." "/login"))
     (flash-error "Error logging in." "/login")))
-    
-  
+
+(defroutes login-routes
+  (GET  "/login" [] (my-login-page))
+  (POST "/login" {{:strs [user pwd]} :form-params}
+        (do-login user pwd))
+  (GET "/logout" []
+       (do (session/session-delete-key! :user)
+           (response/redirect "/"))))

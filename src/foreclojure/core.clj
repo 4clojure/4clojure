@@ -15,26 +15,11 @@
 
 (defroutes main-routes
   (GET "/" [] (welcome-page))
-  
-  (GET  "/login" [] (my-login-page))
-  (POST "/login" {{:strs [user pwd]} :form-params}
-        (do-login user pwd))
-  (GET "/logout" []
-       (do (session/session-delete-key! :user)
-           (response/redirect "/")))
-  (GET  "/register" [] (register-page))
-  (POST "/register" {{:strs [user pwd repeat-pwd email]} :form-params}
-        (do-register user pwd repeat-pwd email))
-
-  (GET "/problems" [] (problem-page))
-  (GET "/problem/:id" [id] (code-box id))
-  (POST "/run-code" {{:strs [id code]} :form-params}
-        (run-code (Integer. id) code))
-
-  (GET "/users" [] (users-page))
-  (GET "/links" [] (links-page))
-  (GET "/directions" [] (getting-started-page))
-
+  login-routes
+  register-routes
+  problems-routes
+  users-routes
+  static-routes
   (route/resources "/")
   (route/not-found "Page not found"))
 

@@ -134,3 +134,9 @@
                         "/checkmark.png"
                         "/empty-sq.png")}]]])
       problems))])
+
+(defroutes problems-routes
+  (GET "/problems" [] (problem-page))
+  (GET "/problem/:id" [id] (code-box id))
+  (POST "/run-code" {{:strs [id code]} :form-params}
+        (run-code (Integer. id) code)))

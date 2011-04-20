@@ -71,3 +71,7 @@
    " page for help with installation."
    [:br][:br]
    "You should now be ready to start solving problems.  Happy coding!"])
+
+(defroutes static-routes
+  (GET "/links" [] (links-page))
+  (GET "/directions" [] (getting-started-page)))
