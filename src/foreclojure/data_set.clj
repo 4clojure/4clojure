@@ -416,4 +416,15 @@
             :tags ["easy" "seqs"]
             :tests ["(= (__ [1 2 3 4 5 6 7 8] 3) [1 2 4 5 7 8])"
 		    "(= (__ [:a :b :c :d :e :f] 2) [:a :c :e])"]
-	    :secret-tests ["(= (__ [1 2 3 4 5 6] 4) [1 2 3 5 6])"]})))
+	    :secret-tests ["(= (__ [1 2 3 4 5 6] 4) [1 2 3 5 6])"]})
+
+    (insert! :problems
+           {:_id 42
+            :title "Factorial Fun"
+            :times-solved 0
+            :description "Write a function which calculates factorials."
+            :tags ["easy" "math"]
+            :tests ["(= (__ 1) 1)"
+		    "(= (__ 3) 6)"
+		    "(= (__ 5) 120)"]
+	    :secret-tests ["(= (__ 8) 40320)"]})))
