@@ -427,4 +427,14 @@
             :tests ["(= (__ 1) 1)"
 		    "(= (__ 3) 6)"
 		    "(= (__ 5) 120)"]
-	    :secret-tests ["(= (__ 8) 40320)"]})))
+	    :secret-tests ["(= (__ 8) 40320)"]})
+
+    (insert! :problems
+           {:_id 43
+            :title "Reverse Interleave"
+            :times-solved 0
+            :description "Write a function which reverses the interleave process into x number of subsequences."
+            :tags ["medium" "seq"]
+            :tests ["(= (__ [1 2 3 4 5 6] 2) '((1 3 5) (2 4 6)))"
+		    "(= (__ (range 9) 3) '((0 3 6) (1 4 7) (2 5 8)))"]
+	    :secret-tests ["(= (__ (range 10) 5) '((0 5) (1 6) (2 7) (3 8) (4 9)))"]})))
