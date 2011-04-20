@@ -77,7 +77,7 @@
         (if-let [user (session/session-get :user)]
           [:div
            (str "Logged in as " user)
-           [:a#logout :href "/logout" "Logout"]]
+           [:a#logout {:href "/logout"} "Logout"]]
           [:div
            [:a#login {:href "/login"} "Login"]
            [:a#register {:href "/register"} "Register"]])]]
