@@ -16,8 +16,8 @@
   (form-to [:post "/register"]
            [:table
             (map form-row
-                 [[text-field :user "Username (4-12 chars.)"]
-                  [password-field :pwd "Password (7-12 chars.)"]
+                 [[text-field :user "Username (4-13 chars.)"]
+                  [password-field :pwd "Password (7-13 chars.)"]
                   [password-field :repeat-pwd "Repeat Password"]
                   [text-field :email "Email"]])
             [:tr
@@ -26,13 +26,13 @@
 (defn do-register [user pwd repeat-pwd email]
   (assuming [(nil? (fetch-one :users :where {:user user}))
              "User already exists",
-             (< 3 (.length user) 13)
-             "Username must be 4-12 characters long",
+             (< 3 (.length user) 14)
+             "Username must be 4-13 characters long",
 	     (= user
 		(first (re-seq #"[A-Za-z0-9_]+" user)))
 	     "Username must be alphanumeric"
-	     (< 6 (.length pwd) 13)
-	     "Password must be 7-12 characters long",
+	     (< 6 (.length pwd) 14)
+	     "Password must be 7-13 characters long",
              (= pwd repeat-pwd)
              "Passwords don't match",
              (not (empty? email))
