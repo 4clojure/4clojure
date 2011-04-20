@@ -4,10 +4,11 @@
         compojure.core)) 
 
 (defn get-users []
-  (from-mongo
-   (fetch :users
-          :only [:user :solved]
-	  :sort {:solved -1})))
+  (let [users (from-mongo
+               (fetch :users
+                      :only [:user :solved]))
+        sortfn  #(compare (count (:solved %1)) (count (:solved %2)))]
+    (reverse (sort sortfn users))))
 
 (def-page users-page []
   [:table {:class "my-table" :width "50%"}
