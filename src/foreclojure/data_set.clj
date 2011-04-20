@@ -375,7 +375,7 @@
            {:_id 38
             :title "Maximum value"
             :times-solved 0
-	    :restricted ["max"]
+	    :restricted ["max" "max-key"]
             :description "Write a function which takes a variable number of parameters and returns the maximum value."
             :tags ["easy" "core-functions"]
             :tests ["(= (__ 1 8 3 4) 8)"
