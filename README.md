@@ -36,5 +36,18 @@ vaguely like this:
 
         lein ring server
 
+## Contributors
 
+ * David Byrne <david.r.byrne@gmail.com>
+ * Alan Malloy
+ * Anthony Simpson
+ * Carin Meier
 
+Problem sources:
+
+ * Aaron Bedra's [Clojure Koans](https://github.com/functional-koans/clojure-koans)
+ * [Ninety-Nine Lisp Problems](http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html)
+
+## License
+
+The source code for 4clojure is available under the Eclipse Public License v 1.0.  For more information, see LICENSE.html.
