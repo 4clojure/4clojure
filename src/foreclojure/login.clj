@@ -10,16 +10,16 @@
 (def-page my-login-page []
   [:div.error (session/flash-get :error)]
   (form-to [:post "/login"]
-           [:table
-            [:tr
-             [:td (label :user "Username")]
-             [:td (text-field :user)]]
-            [:tr
-             [:td (label :pwd "Password")]
-             [:td (password-field :pwd)]]
-            [:tr
-             [:td (submit-button {:type "image" :src "/login.png"}
-                                 "Log In")]]]))
+    [:table
+     [:tr
+      [:td (label :user "Username")]
+      [:td (text-field :user)]]
+     [:tr
+      [:td (label :pwd "Password")]
+      [:td (password-field :pwd)]]
+     [:tr
+      [:td (submit-button {:type "image" :src "/login.png"}
+                          "Log In")]]]))
 
 (defn do-login [user pwd]
   (let [{db-pwd :pwd} (from-mongo (fetch-one :users :where {:user user}))]
