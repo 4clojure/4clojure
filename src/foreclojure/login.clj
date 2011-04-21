@@ -43,7 +43,7 @@
         [:tr
          [:td (submit-button "Reset now")]])]]))
 
-(def-page do-reset-password! [old-pwd new-pwd repeat-pwd]
+(defn do-reset-password! [old-pwd new-pwd repeat-pwd]
   (with-user [{:keys [user pwd]}]
     (let [encryptor (StrongPasswordEncryptor.)]
       (assuming [(= new-pwd repeat-pwd)
@@ -54,7 +54,8 @@
           (update! :users {:user user}
                    {:$set {:pwd new-pwd-hash}}
                    :upsert false)
-          [:div#reset-succeeded "Password for " user " reset successfully"])
+          (html-doc
+           [:div#reset-succeeded "Password for " user " reset successfully"]))
         (flash-error why "/login/reset")))))
 
 (defroutes login-routes
