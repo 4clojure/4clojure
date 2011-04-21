@@ -113,11 +113,13 @@
 
 (def-page problem-page []
   [:div.congrats (session/flash-get :message)]
-  [:table.mytable {:width "90%"}
-   [:th "Title"]
-   [:th "Tags"]
-   [:th "Count"]
-   [:th "Solved?"]
+  [:table#problem-table.mytable {:width "90%"}
+   [:thead
+    [:tr
+     [:th "Title"]
+     [:th "Tags"]
+     [:th "Count"]
+     [:th "Solved?"]]]
    (let [solved (get-solved (session/session-get :user))
          problems (get-problem-list)]
      (map-indexed

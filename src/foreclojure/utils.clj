@@ -1,6 +1,6 @@
 (ns foreclojure.utils
   (:use (hiccup [core :only [html]]
-                [page-helpers :only [doctype include-css javascript-tag]])
+                [page-helpers :only [doctype include-css javascript-tag include-js]])
         [amalloy.utils.transform :only [transform-if]])
   (:require [sandbar.stateful-session :as session]
             (ring.util [response :as response])
@@ -52,19 +52,10 @@
    [:html 
     [:head 
      [:title "4Clojure"]
-     (include-css "/style.css")
-     (javascript-tag
-      " var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', 'UA-22844856-1']);
-        _gaq.push(['_trackPageview']);
-
-        (function() {
-          var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-          ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-        })();
-"
-      )]
+     (include-js "/script/jquery-1.5.2.min.js" "/script/jquery.dataTables.min.js")
+     (include-js "/script/foreclojure.js")
+     (include-css "/style.css" "demo_table.css")
+    ]
     [:body
      [:div#top [:img#logo {:src "/logo.png"}]]
      [:div#content 
@@ -76,10 +67,22 @@
        [:span#user-info
         (if-let [user (session/session-get :user)]
           [:div
-           [:span {:id "username"} (str "Logged in as " user )]
+           [:span#username (str "Logged in as " user )]
            [:a#logout {:href "/logout"} "Logout"]]
           [:div
            [:a#login {:href "/login"} "Login"]
            [:a#register {:href "/register"} "Register"]])]]
       [:div#content body]
-      [:div#footer "The content on 4clojure.com is available under the EPL v 1.0 license." ]]]]))
+      [:div#footer "The content on 4clojure.com is available under the EPL v 1.0 license." ]
+       (javascript-tag
+      " var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-22844856-1']);
+        _gaq.push(['_trackPageview']);
+
+        (function() {
+          var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+          ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+"
+      )]]]))

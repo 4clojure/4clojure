@@ -90,7 +90,10 @@ h3 {
  float: left;
 }
 
- 
+#problem-table{
+  float: left;
+  width: 90%
+} 
 
 span.error, div.error {
   color: red;
