@@ -459,4 +459,15 @@
               :times-solved 0
               :description "The iterate function can be used to produce an infinite lazy sequence."
               :tags ["easy" "seqs"]
-              :tests ["(= __ (take 5 (iterate #(+ 3 %) 1)))"]})))
+              :tests ["(= __ (take 5 (iterate #(+ 3 %) 1)))"]})
+
+    (insert! :problems
+             {:_id 46
+              :title "Flipping out"
+              :times-solved 0
+              :description "Write a higher-order function which flips the order of the arguments of an input function."
+              :tags ["medium" "higher-order-functions"]
+              :tests ["(= 3 ((__ nth) 2 [1 2 3 4 5]))"
+                      "(= true ((__ >) 7 8))"
+                      "(= 4 ((__ quot) 2 8))"
+                      "(= [1 2 3] ((__ take) [1 2 3 4 5] 3))"]})))
