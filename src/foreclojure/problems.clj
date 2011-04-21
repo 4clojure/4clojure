@@ -113,7 +113,7 @@
 
 (def-page problem-page []
   [:div.congrats (session/flash-get :message)]
-  [:table#problem-table.mytable {:width "90%"}
+  [:table#problem-table.my-table
    [:thead
     [:tr
      [:th "Title"]
