@@ -1,7 +1,10 @@
 (ns foreclojure.utils
   (:use (hiccup [core :only [html]]
-                [page-helpers :only [doctype include-css javascript-tag]])
-        [amalloy.utils.transform :only [transform-if]])
+                [page-helpers :only [doctype include-css
+                                     javascript-tag link-to]]
+                [form-helpers :only [label]])
+        [amalloy.utils.transform :only [transform-if]]
+        somnium.congomongo)
   (:require [sandbar.stateful-session :as session]
             (ring.util [response :as response])
             [clojure.walk :as walk]))
@@ -40,6 +43,18 @@
 (defn from-mongo [data]
   (walk/postwalk (transform-if float? int)
                  data))
+
+(defmacro with-user [[user-binding] & body]
+  `(if-let [username# (session/session-get :user)]
+     (let [~user-binding (from-mongo
+                          (fetch-one :users :where {:user username#}))]
+       ~@body)
+     [:span.error "You must " (link-to "/login" "Log in") " to do this."]))
+
+(defn form-row [[type name info]]
+  [:tr
+   [:td (label name info)]
+   [:td (type name)]])
 
 (defn row-class [x]
   {:class (if (even? x)

@@ -104,11 +104,11 @@
       [:b "Enter your code:" [:br]
        [:span {:class "error"} (session/flash-get :error)]]]
      (form-to [:post "/run-code"] 
-              (text-area {:id "code-box"
-                          :spellcheck "false"}
-                         :code (session/flash-get :code))
-              (hidden-field :id id)
-              (submit-button {:type "image" :src "/run.png"} "Run"))]))
+       (text-area {:id "code-box"
+                   :spellcheck "false"}
+                  :code (session/flash-get :code))
+       (hidden-field :id id)
+       (submit-button {:type "image" :src "/run.png"} "Run"))]))
 
 (def-page problem-page []
   [:div.congrats (session/flash-get :message)]
