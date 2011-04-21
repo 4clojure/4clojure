@@ -53,8 +53,10 @@
           "You've solved the problem! If you log in we can track your progress.")]
     (flash-msg (str message " " gist-link) "/problems")))
 
+(def restricted-list ['use 'require 'in-ns 'future 'agent 'send 'send-off 'pmap 'pcalls]) 
+
 (defn get-tester [restricted]
-  (into secure-tester (concat ['use 'require 'in-ns] (map symbol restricted))))
+  (into secure-tester (concat restricted-list (map symbol restricted))))
 
 (def sb (sandbox*))
 
