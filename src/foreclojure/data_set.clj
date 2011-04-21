@@ -348,7 +348,7 @@
             :title "Local bindings"
             :times-solved 0
             :description "Clojure lets you give local names to values using the special let-form."
-            :tags ["easy" "syntax"]
+            :tags ["elementary" "syntax"]
             :tests ["(= __ (let [x 5] (+ 2 x)))"
 		    "(= __ (let [x 3, y 10] (- y x)))"
                     "(= __ (let [x 21] (let [y 3] (/ x y))))"]})
@@ -358,7 +358,95 @@
             :title "Let it Be"
             :times-solved 0
             :description "Can you bind x, y, and z so that these are all true?"
-            :tags ["easy" "math" "syntax"]
+            :tags ["elementary" "math" "syntax"]
             :tests ["(= 10 (let __ (+ x y)))"
 		    "(= 4 (let __ (+ y z)))"
-                    "(= 1 (let __ z))"]})))
+                    "(= 1 (let __ z))"]})
+
+    (insert! :problems
+           {:_id 37
+            :title "Regular Expressions"
+            :times-solved 0
+            :description "Regex patterns are supported with a special reader macro."
+            :tags ["elementary" "regex" "syntax"]
+            :tests ["(= __ (apply str (re-seq #\"[A-Z]+\" \"bA1B3Ce \")))"]})
+
+    (insert! :problems
+           {:_id 38
+            :title "Maximum value"
+            :times-solved 0
+	    :restricted ["max" "max-key"]
+            :description "Write a function which takes a variable number of parameters and returns the maximum value."
+            :tags ["easy" "core-functions"]
+            :tests ["(= (__ 1 8 3 4) 8)"
+		    "(= (__ 30 20) 30)"]
+	    :secret-tests ["(= (__ 45 67 11) 67)"]})
+
+
+    (insert! :problems
+           {:_id 39
+            :title "Interleave Two Seqs"
+            :times-solved 0
+	    :restricted ["interleave"]
+            :description "Write a function which takes two sequences and returns the first item from each, then the second item from each, then the third, etc."
+            :tags ["easy" "seqs" "core-functions"]
+	    :tests ["(= (__ [1 2 3] [:a :b :c]) '(1 :a 2 :b 3 :c))"
+		    "(= (__ [1 2] [3 4 5 6]) '(1 3 2 4))"]
+	    :secret-tests ["(= (__ [1 2 3 4] [5]) [1 5])"
+			   "(= (__ [30 20] [25 15]) [30 25 20 15])"]})
+	    
+		    
+
+    (insert! :problems
+           {:_id 40
+            :title "Interpose a Seq"
+            :times-solved 0
+	    :restricted ["interpose"]
+            :description "Write a function which separates the items of a sequence by an arbitrary value."
+            :tags ["easy" "seqs" "core-functions"]
+            :tests ["(= (__ 0 [1 2 3]) [1 0 2 0 3])"
+		    "(= (apply str (__ \", \" [\"one\" \"two\" \"three\"])) \"one, two, three\")"]
+	    :secret-tests ["(= (__ :z [:a :b :c :d]) [:a :z :b :z :c :z :d])"]})
+
+    (insert! :problems
+           {:_id 41
+            :title "Drop Every Nth Item"
+            :times-solved 0
+            :description "Write a function which drops every Nth item from a sequence."
+            :tags ["easy" "seqs"]
+            :tests ["(= (__ [1 2 3 4 5 6 7 8] 3) [1 2 4 5 7 8])"
+		    "(= (__ [:a :b :c :d :e :f] 2) [:a :c :e])"]
+	    :secret-tests ["(= (__ [1 2 3 4 5 6] 4) [1 2 3 5 6])"]})
+
+    (insert! :problems
+           {:_id 42
+            :title "Factorial Fun"
+            :times-solved 0
+            :description "Write a function which calculates factorials."
+            :tags ["easy" "math"]
+            :tests ["(= (__ 1) 1)"
+		    "(= (__ 3) 6)"
+		    "(= (__ 5) 120)"]
+	    :secret-tests ["(= (__ 8) 40320)"]})
+
+    (insert! :problems
+           {:_id 43
+            :title "Reverse Interleave"
+            :times-solved 0
+            :description "Write a function which reverses the interleave process into x number of subsequences."
+            :tags ["medium" "seqs"]
+            :tests ["(= (__ [1 2 3 4 5 6] 2) '((1 3 5) (2 4 6)))"
+		    "(= (__ (range 9) 3) '((0 3 6) (1 4 7) (2 5 8)))"]
+	    :secret-tests ["(= (__ (range 10) 5) '((0 5) (1 6) (2 7) (3 8) (4 9)))"]})
+
+    (insert! :problems
+           {:_id 44
+            :title "Rotate Sequence"
+            :times-solved 0
+            :description "Write a function which can rotate a sequence in either direction."
+            :tags ["medium" "seqs"]
+            :tests ["(= (__ 2 [1 2 3 4 5]) '(3 4 5 1 2))"
+		    "(= (__ -2 [1 2 3 4 5]) '(4 5 1 2 3))"
+		    "(= (__ 6 [1 2 3 4 5]) '(2 3 4 5 1))"]
+	    :secret-tests ["(= (__ 1 '(:a :b :c)) '(:b :c :a))"
+			   "(= (__ -4 '(:a :b :c)) '(:c :a :b))"]})))

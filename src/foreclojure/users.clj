@@ -1,14 +1,17 @@
 (ns foreclojure.users
-  (:use [foreclojure.utils]
-        [somnium.congomongo])) 
+  (:use foreclojure.utils
+        somnium.congomongo
+        compojure.core)) 
 
 (defn get-users []
-  (from-mongo
-   (fetch :users
-          :only [:user :solved])))
+  (let [users (from-mongo
+               (fetch :users
+                      :only [:user :solved]))
+        sortfn  (comp count :solved)]
+    (reverse (sort-by sortfn users))))
 
 (def-page users-page []
-  [:table {:class "my-table" :width "50%"}
+  [:table {:class "my-table" :width "90%"}
    [:th {:width "66%"} "Username"]
    [:th "Problems Solved"]
    (map-indexed #(vec [:tr (row-class %1)
@@ -16,3 +19,5 @@
                        [:td {:class "centered"} (count (:solved %2))]])
                 (get-users))])
 
+(defroutes users-routes
+  (GET "/users" [] (users-page)))

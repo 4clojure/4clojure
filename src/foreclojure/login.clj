@@ -1,13 +1,14 @@
 (ns foreclojure.login
   (:import [org.jasypt.util.password StrongPasswordEncryptor])
-  (:use [foreclojure.utils]
-        [somnium.congomongo]
-        (hiccup [form-helpers]))
+  (:use hiccup.form-helpers
+        foreclojure.utils
+        compojure.core
+        somnium.congomongo)
   (:require [sandbar.stateful-session :as session]
-            (ring.util [response :as response])))
+            [ring.util.response :as response]))
                         
 (def-page my-login-page []
-  [:div {:class "error"} (session/flash-get :error)]
+  [:div.error (session/flash-get :error)]
   (form-to [:post "/login"]
            [:table
             [:tr
@@ -27,5 +28,11 @@
           (response/redirect "/problems"))
       (flash-error "Error logging in." "/login"))
     (flash-error "Error logging in." "/login")))
-    
-  
+
+(defroutes login-routes
+  (GET  "/login" [] (my-login-page))
+  (POST "/login" {{:strs [user pwd]} :form-params}
+        (do-login user pwd))
+  (GET "/logout" []
+       (do (session/session-delete-key! :user)
+           (response/redirect "/"))))

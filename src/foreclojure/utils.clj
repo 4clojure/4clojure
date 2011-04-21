@@ -1,6 +1,6 @@
 (ns foreclojure.utils
   (:use (hiccup [core :only [html]]
-                [page-helpers :only [doctype include-css]])
+                [page-helpers :only [doctype include-css javascript-tag]])
         [amalloy.utils.transform :only [transform-if]])
   (:require [sandbar.stateful-session :as session]
             (ring.util [response :as response])
@@ -52,27 +52,34 @@
    [:html 
     [:head 
      [:title "4Clojure"]
-     (include-css "/style.css")]
-    [:body 
-     [:div {:id "header"}
-      [:img {:id "logo" :src "/logo.png"}]
-      [:div {:id "user-info"}
-       (if-let [user (session/session-get :user)]
-         [:div
-          (str "Logged in as " user)
-          [:a {:id "logout" :href "/logout"} "Logout"]]
-         [:div
-          [:a {:href "/login"} "Login"] " or "
-          [:a {:href "/register"} "Register"]])]]
-     [:div {:id "menu"}
-      [:ul
-       [:li [:a {:href "/"} "Main Page"]]
-       [:li [:a {:href "/problems"} "Problem List"]]
-       [:li [:a {:href "/users"} "Top Users"]]
-       [:li [:a {:href "/directions"} "Getting Started"]]
-       [:li [:a {:href "/links"} "Useful Links"]]]
-      [:div
-       [:img {:src "/PoweredMongoDBbeige50.png"}]]]
-     [:div {:id "content"} body]
-     [:footer      
-      [:span {:id "footer"} "&copy; 2011 David Byrne" ]]]]))
+     (include-css "/style.css")
+     (javascript-tag
+      " var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-22844856-1']);
+        _gaq.push(['_trackPageview']);
+
+        (function() {
+          var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+          ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+"
+      )]
+    [:body
+     [:div#top [:img#logo {:src "/logo.png"}]]
+     [:div#content 
+      [:div#menu
+       [:a.menu {:href "/"} "Main Page"]
+       [:a.menu {:href "/problems"} "Problem List"]
+       [:a.menu {:href "/users"} "Top Users"]
+       [:a.menu {:href "/directions"} "Getting Started"]
+       [:span#user-info
+        (if-let [user (session/session-get :user)]
+          [:div
+           [:span {:id "username"} (str "Logged in as " user )]
+           [:a#logout {:href "/logout"} "Logout"]]
+          [:div
+           [:a#login {:href "/login"} "Login"]
+           [:a#register {:href "/register"} "Register"]])]]
+      [:div#content body]
+      [:div#footer "The content on 4clojure.com is available under the EPL v 1.0 license." ]]]]))

@@ -1,10 +1,11 @@
 (ns foreclojure.problems
-  (:use [foreclojure.utils]
+  (:use foreclojure.utils
         [foreclojure.social :only [tweet-link gist!]]
         [clojail core testers]
-        [somnium.congomongo]
-        [hiccup form-helpers]
-        [amalloy.utils.debug :only [?]])
+        somnium.congomongo
+        hiccup.form-helpers
+        [amalloy.utils.debug :only [?]]
+        compojure.core)
   (:require [sandbar.stateful-session :as session]
             [clojure.string :as s]))
 
@@ -46,7 +47,7 @@
         (if user
           (do
             (when (not-any? #{id} (get-solved user))
-              (update! :users {:user user} {:$push {:solved id}})
+              (update! :users {:user user} {:$addToSet {:solved id}})
               (update! :problems {:_id id} {:$inc {:times-solved 1}}))
             "Congratulations, you've solved the problem!") 
           "You've solved the problem! If you log in we can track your progress.")]
@@ -110,8 +111,8 @@
               (submit-button {:type "image" :src "/run.png"} "Run"))]))
 
 (def-page problem-page []
-  [:div {:class "congrats"} (session/flash-get :message)]
-  [:table {:class "my-table" :width "60%"}
+  [:div.congrats (session/flash-get :message)]
+  [:table.mytable {:width "90%"}
    [:th "Title"]
    [:th "Tags"]
    [:th "Count"]
@@ -121,15 +122,21 @@
      (map-indexed
       (fn [x {:keys [title times-solved tags], id :_id}]
         [:tr (row-class x)
-         [:td {:class "title-link"}
+         [:td.titlelink
           [:a {:href (str "/problem/" id)}
            title]]
-         [:td {:class "centered"}
+         [:td.centered
           (s/join " " (map #(str "<span class='tag'>" % "</span>")
                            tags))]
-         [:td {:class "centered"} (int times-solved)]
-         [:td {:class "centered"}
+         [:td.centered (int times-solved)]
+         [:td.centered
           [:img {:src (if (contains? solved id)
                         "/checkmark.png"
                         "/empty-sq.png")}]]])
       problems))])
+
+(defroutes problems-routes
+  (GET "/problems" [] (problem-page))
+  (GET "/problem/:id" [id] (code-box id))
+  (POST "/run-code" {{:strs [id code]} :form-params}
+        (run-code (Integer. id) code)))
