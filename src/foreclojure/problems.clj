@@ -54,7 +54,7 @@
     (flash-msg (str message " " gist-link) "/problems")))
 
 (defn get-tester [restricted]
-  (into secure-tester (concat ['use 'require 'ns] (map symbol restricted))))
+  (into secure-tester (concat ['use 'require 'in-ns] (map symbol restricted))))
 
 (def sb (sandbox*))
 
