@@ -15,14 +15,14 @@
 (def-page register-page []
   [:div.error (session/flash-get :error)]
   (form-to [:post "/register"]
-           [:table
-            (map form-row
-                 [[text-field :user "Username (4-13 chars.)"]
-                  [password-field :pwd "Password (7-13 chars.)"]
-                  [password-field :repeat-pwd "Repeat Password"]
-                  [text-field :email "Email"]])
-            [:tr
-             [:td (submit-button {:type "image" :src "/register.png"} "Register")]]]))
+    [:table
+     (map form-row
+          [[text-field :user "Username (4-13 chars.)"]
+           [password-field :pwd "Password (7-13 chars.)"]
+           [password-field :repeat-pwd "Repeat Password"]
+           [text-field :email "Email"]])
+     [:tr
+      [:td (submit-button {:type "image" :src "/register.png"} "Register")]]]))
 
 (defn do-register [user pwd repeat-pwd email]
   (assuming [(nil? (fetch-one :users :where {:user user}))
