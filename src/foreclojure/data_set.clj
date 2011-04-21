@@ -451,4 +451,12 @@
 		    "(= (__ -2 [1 2 3 4 5]) '(4 5 1 2 3))"
 		    "(= (__ 6 [1 2 3 4 5]) '(2 3 4 5 1))"]
 	    :secret-tests ["(= (__ 1 '(:a :b :c)) '(:b :c :a))"
-			   "(= (__ -4 '(:a :b :c)) '(:c :a :b))"]})))
+			   "(= (__ -4 '(:a :b :c)) '(:c :a :b))"]})
+
+    (insert! :problems
+             {:_id 45
+              :title "Intro to Iterate"
+              :times-solved 0
+              :description "The iterate function can be used to produce an infinite lazy sequence."
+              :tags ["easy" "seqs"]
+              :tests ["(= __ (take 5 (iterate #(+ 3 %) 1)))"]})))
