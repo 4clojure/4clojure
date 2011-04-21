@@ -318,9 +318,10 @@
 	      :description "Write a function which duplicates each element of a sequence."
 	      :tags ["easy" "seqs"]
 	      :tests ["(= (__ [1 2 3]) '(1 1 2 2 3 3))"
-		      "(= (__ [:a :a :b :b]) '(:a :a :a :a :b :b :b :b))"]
-	      :secret-tests ["(= (__ [[1 2] [3 4]]) '([1 2] [1 2] [3 4] [3 4]))"]})
-    
+		      "(= (__ [:a :a :b :b]) '(:a :a :a :a :b :b :b :b))"
+                      "(= (__ [[1 2] [3 4]]) '([1 2] [1 2] [3 4] [3 4]))"]
+	      :secret-tests ["(= (__ [44 33]) [44 44 33 33])"]})
+
     (insert! :problems
 	     {:_id 33
 	      :title "Replicate a Sequence"
@@ -328,9 +329,10 @@
 	      :description "Write a function which replicates each element of a sequence a variable number of times."
 	      :tags ["easy" "seqs"]
 	      :tests ["(= (__ [1 2 3] 2) '(1 1 2 2 3 3))"
-		      "(= (__ [:a :b] 4) '(:a :a :a :a :b :b :b :b))
-                     (= (__ [4 5 6] 1) '(4 5 6))"]
-	      :secret-tests ["(= (__ [[1 2] [3 4]] 2) '([1 2] [1 2] [3 4] [3 4]))"]})
+		      "(= (__ [:a :b] 4) '(:a :a :a :a :b :b :b :b))"
+                      "(= (__ [4 5 6] 1) '(4 5 6))"
+                      "(= (__ [[1 2] [3 4]] 2) '([1 2] [1 2] [3 4] [3 4]))"]
+	      :secret-tests ["(= (__ [44 33] 2) [44 44 33 33])"]})
     
     (insert! :problems
 	     {:_id 34
