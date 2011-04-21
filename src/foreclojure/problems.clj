@@ -109,7 +109,7 @@
                          :code (session/flash-get :code))
               (hidden-field :id id)
               [:br]
-              (submit-button {:type "image" :src "/run.png"} "Run"))]))
+              (submit-button {:type "image" :src "/images/run.png"} "Run"))]))
 
 (def-page problem-page []
   [:div.congrats (session/flash-get :message)]
@@ -134,8 +134,8 @@
          [:td.centered (int times-solved)]
          [:td.centered
           [:img {:src (if (contains? solved id)
-                        "/checkmark.png"
-                        "/empty-sq.png")}]]])
+                        "/images/checkmark.png"
+                        "/images/empty-sq.png")}]]])
       problems))])
 
 (defroutes problems-routes

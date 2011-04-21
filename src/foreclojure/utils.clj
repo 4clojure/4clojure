@@ -54,10 +54,10 @@
      [:title "4Clojure"]
      (include-js "/script/jquery-1.5.2.min.js" "/script/jquery.dataTables.min.js")
      (include-js "/script/foreclojure.js")
-     (include-css "/style.css" "demo_table.css")
+     (include-css "/css/style.css" "/css/demo_table.css")
     ]
     [:body
-     [:div#top [:img#logo {:src "/logo.png"}]]
+     [:div#top [:img#logo {:src "/images/logo.png"}]]
      [:div#content 
       [:div#menu
        [:a.menu {:href "/"} "Main Page"]

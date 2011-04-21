@@ -18,7 +18,7 @@
              [:td (label :pwd "Password")]
              [:td (password-field :pwd)]]
             [:tr
-             [:td (submit-button {:type "image" :src "/login.png"}
+             [:td (submit-button {:type "image" :src "/images/login.png"}
                                  "Log In")]]]))
 
 (defn do-login [user pwd]

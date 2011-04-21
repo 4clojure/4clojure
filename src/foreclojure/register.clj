@@ -22,7 +22,7 @@
                   [password-field :repeat-pwd "Repeat Password"]
                   [text-field :email "Email"]])
             [:tr
-             [:td (submit-button {:type "image" :src "/register.png"} "Register")]]]))
+             [:td (submit-button {:type "image" :src "/images/register.png"} "Register")]]]))
 
 (defn do-register [user pwd repeat-pwd email]
   (assuming [(nil? (fetch-one :users :where {:user user}))
