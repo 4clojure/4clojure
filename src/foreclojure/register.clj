@@ -7,11 +7,6 @@
   (:require [sandbar.stateful-session :as session]
             [ring.util.response :as response]))
 
-(defn form-row [[type name info]]
-  [:tr
-   [:td (label name info)]
-   [:td (type name)]])
-
 (def-page register-page []
   [:div.error (session/flash-get :error)]
   (form-to [:post "/register"]
