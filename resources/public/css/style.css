@@ -90,7 +90,16 @@ h3 {
  float: left;
 }
 
- 
+#problem-table{
+  float: left;
+  width: 90%
+} 
+
+#user-table{
+  float: left;
+  width: 90%
+  padding: 15px;
+} 
 
 span.error, div.error {
   color: red;
@@ -152,10 +161,6 @@ table.my-table {
   border-collapse: collapse;
 }
 
-table.my-table td {
-  padding: 2px;
-}
-
 table.my-table td.centered {
   text-align: center;
 }
@@ -164,16 +169,8 @@ td.title-link {
   font-size: 16px;
 }
 
-table.my-table tr.oddrow { 
-  background-color: #eee;
-}
-
-table.my-table tr.evenrow {
-  background-color: #F8F8FF;
-}
-
 table.my-table th {
-  background-color: #BCEE68;
-  padding: 2px;
-  border-collapse: collapse;
-}
+  padding: 10px 0px 0px 0px;
+
+ }
+
