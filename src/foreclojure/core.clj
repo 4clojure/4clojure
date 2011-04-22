@@ -1,6 +1,6 @@
 (ns foreclojure.core
   (:use compojure.core
-        [foreclojure static problems login register users]
+        [foreclojure static problems login register users config]
         ring.adapter.jetty
         somnium.congomongo
         [ring.middleware.reload :only [wrap-reload]])
@@ -9,7 +9,15 @@
             [ring.util.response :as response]))
 
 (mongo!
+ :host (if-let [host (:db-host config)]
+         host
+         "localhost")
  :db "mydb")
+
+(if-let [db-user (:db-user config)]
+  (if-let [db-pwd (:db-pwd config)]
+    (authenticate db-user db-pwd)))
+
 (add-index! :users [:user] :unique true)
 (add-index! :users [[:solved -1]])
 
@@ -26,12 +34,12 @@
 (def app
   (handler/site
    (session/wrap-stateful-session
-    #'main-routes)))
+    (if (:wrap-reload config)
+      (wrap-reload #'main-routes '(foreclojure.core))
+      #'main-routes))))
 
 (defn run []
-  (run-jetty (var app) {:join? false :ssl? true :port 8080 :ssl-port 8443
-                        :keystore "keystore"
-                        :key-password "dev_pass"}))
+  (run-jetty (var app) {:join? false :port 8080}))
 
 (defn -main [& args]
   (run))

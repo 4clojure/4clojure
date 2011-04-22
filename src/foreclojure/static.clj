@@ -2,15 +2,6 @@
   (:use compojure.core
         foreclojure.utils))
 
-(def-page links-page []
-  [:div
-   [:li [:a {:href "http://clojure.org/getting_started"} "Clojure.org: Getting Started"]]
-   [:li [:a {:href "http://clojure.org/cheatsheet"} "Clojure.org: Cheatsheet"]]
-   [:li [:a {:href "http://try-clojure.org"} "try-clojure.org"]]
-   [:li [:a {:href "https://github.com/functional-koans/clojure-koans"} "Clojure Koans"]]
-   [:li [:a {:href "http://stackoverflow.com/questions/2285437/a-gentle-tutorial-to-emacs-swank-paredit-for-clojure"}
-         "StackOverflow.com: A Gentle Tutorial to Emacs/Swank/Paredit for Clojure"]]])
-
 (def-page welcome-page []
   [:div#welcome
    [:div
@@ -25,7 +16,7 @@
    [:div
     [:h3 "So wait, I can't buy cheap real estate here?"]
     [:p "At this time, 4clojure.com does not provide information regarding the sale of foreclosed homes, and has no plans of doing so in the future."]]
-   [:img {:src "/PoweredMongoDBbeige50.png"}]])
+   [:img {:src "/images/PoweredMongoDBbeige50.png"}]])
 
 (def-page getting-started-page []
   [:div
@@ -73,5 +64,4 @@
    "You should now be ready to start solving problems.  Happy coding!"])
 
 (defroutes static-routes
-  (GET "/links" [] (links-page))
   (GET "/directions" [] (getting-started-page)))

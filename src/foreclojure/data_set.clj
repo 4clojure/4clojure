@@ -318,9 +318,10 @@
 	      :description "Write a function which duplicates each element of a sequence."
 	      :tags ["easy" "seqs"]
 	      :tests ["(= (__ [1 2 3]) '(1 1 2 2 3 3))"
-		      "(= (__ [:a :a :b :b]) '(:a :a :a :a :b :b :b :b))"]
-	      :secret-tests ["(= (__ [[1 2] [3 4]]) '([1 2] [1 2] [3 4] [3 4]))"]})
-    
+		      "(= (__ [:a :a :b :b]) '(:a :a :a :a :b :b :b :b))"
+                      "(= (__ [[1 2] [3 4]]) '([1 2] [1 2] [3 4] [3 4]))"]
+	      :secret-tests ["(= (__ [44 33]) [44 44 33 33])"]})
+
     (insert! :problems
 	     {:_id 33
 	      :title "Replicate a Sequence"
@@ -328,9 +329,10 @@
 	      :description "Write a function which replicates each element of a sequence a variable number of times."
 	      :tags ["easy" "seqs"]
 	      :tests ["(= (__ [1 2 3] 2) '(1 1 2 2 3 3))"
-		      "(= (__ [:a :b] 4) '(:a :a :a :a :b :b :b :b))
-                     (= (__ [4 5 6] 1) '(4 5 6))"]
-	      :secret-tests ["(= (__ [[1 2] [3 4]] 2) '([1 2] [1 2] [3 4] [3 4]))"]})
+		      "(= (__ [:a :b] 4) '(:a :a :a :a :b :b :b :b))"
+                      "(= (__ [4 5 6] 1) '(4 5 6))"
+                      "(= (__ [[1 2] [3 4]] 2) '([1 2] [1 2] [3 4] [3 4]))"]
+	      :secret-tests ["(= (__ [44 33] 2) [44 44 33 33])"]})
     
     (insert! :problems
 	     {:_id 34
@@ -449,4 +451,64 @@
 		    "(= (__ -2 [1 2 3 4 5]) '(4 5 1 2 3))"
 		    "(= (__ 6 [1 2 3 4 5]) '(2 3 4 5 1))"]
 	    :secret-tests ["(= (__ 1 '(:a :b :c)) '(:b :c :a))"
-			   "(= (__ -4 '(:a :b :c)) '(:c :a :b))"]})))
+			   "(= (__ -4 '(:a :b :c)) '(:c :a :b))"]})
+
+    (insert! :problems
+             {:_id 45
+              :title "Intro to Iterate"
+              :times-solved 0
+              :description "The iterate function can be used to produce an infinite lazy sequence."
+              :tags ["easy" "seqs"]
+              :tests ["(= __ (take 5 (iterate #(+ 3 %) 1)))"]})
+
+    (insert! :problems
+             {:_id 46
+              :title "Flipping out"
+              :times-solved 0
+              :description "Write a higher-order function which flips the order of the arguments of an input function."
+              :tags ["medium" "higher-order-functions"]
+              :tests ["(= 3 ((__ nth) 2 [1 2 3 4 5]))"
+                      "(= true ((__ >) 7 8))"
+                      "(= 4 ((__ quot) 2 8))"
+                      "(= [1 2 3] ((__ take) [1 2 3 4 5] 3))"]})
+
+       (insert! :problems
+           {:_id 47
+            :title "Contain Yourself"
+            :times-solved 0
+            :description "The contains? function checks if a KEY is present in a given collection.  This often leads beginner clojurians to use it incorrectly with numerically indexed collections like vectors and lists."
+            :tags ["easy"]
+            :tests ["(contains? #{4 5 6} __)"
+		    "(contains? [1 1 1 1 1] __)"
+		    "(contains? {4 :a 2 :b} __)"
+                    "(not (contains? '(1 2 4) __))"]})
+
+       (insert! :problems
+           {:_id 48
+            :title "Intro to some"
+            :times-solved 0
+            :description "The some function takes a predicate function and a collection.  It returns the first logical true value of (predicate x) where x is an item in the collection."
+            :tags ["easy"]
+            :tests ["(= __ (some #{2 7 6} [5 6 7 8]))"
+		    "(= __ (some #(when (even? %) %) [5 6 7 8]))"]})
+
+       (insert! :problems
+           {:_id 49
+            :title "Split a sequence"
+            :times-solved 0
+            :restricted ["split-at"]
+            :description "Write a function which will split a sequence into two parts."
+            :tags ["easy" "seqs" "core-functions"]
+            :tests ["(= (__ 3 [1 2 3 4 5 6]) [[1 2 3] [4 5 6]])"
+		    "(= (__ 1 [:a :b :c :d]) [[:a] [:b :c :d]])"
+                    "(= (__ 2 [[1 2] [3 4] [5 6]]) [[[1 2] [3 4]] [[5 6]]])"]})
+
+       (insert! :problems
+           {:_id 50
+            :title "Split by Type"
+            :times-solved 0
+            :description "Write a function which takes a sequence consisting of items with different types and splits them up into a set of homogeneous sub-sequences. The internal order of each sub-sequence should be maintained, but the sub-sequences themselves can be returned in any order (this is why 'set' is used in the test cases)."
+            :tags ["medium" "seqs"]
+            :tests ["(= (set (__ [1 :a 2 :b 3 :c])) #{[1 2 3] [:a :b :c]})"
+		    "(= (set (__ [:a \"foo\"  \"bar\" :b])) #{[:a :b] [\"foo\" \"bar\"]})"
+                    "(= (set (__ [[1 2] :a [3 4] 5 6 :b])) #{[[1 2] [3 4]] [:a :b] [5 6]})"]})))

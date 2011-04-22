@@ -1,7 +1,10 @@
 (ns foreclojure.utils
   (:use (hiccup [core :only [html]]
-                [page-helpers :only [doctype include-css javascript-tag]])
-        [amalloy.utils.transform :only [transform-if]])
+                [page-helpers :only [doctype include-css
+                                     javascript-tag link-to include-js]]
+                [form-helpers :only [label]])
+        [amalloy.utils.transform :only [transform-if]]
+        somnium.congomongo)
   (:require [sandbar.stateful-session :as session]
             (ring.util [response :as response])
             [clojure.walk :as walk]))
@@ -41,6 +44,18 @@
   (walk/postwalk (transform-if float? int)
                  data))
 
+(defmacro with-user [[user-binding] & body]
+  `(if-let [username# (session/session-get :user)]
+     (let [~user-binding (from-mongo
+                          (fetch-one :users :where {:user username#}))]
+       ~@body)
+     [:span.error "You must " (link-to "/login" "Log in") " to do this."]))
+
+(defn form-row [[type name info]]
+  [:tr
+   [:td (label name info)]
+   [:td (type name)]])
+
 (defn row-class [x]
   {:class (if (even? x)
             "evenrow"
@@ -52,8 +67,35 @@
    [:html 
     [:head 
      [:title "4Clojure"]
-     (include-css "/style.css")
-     (javascript-tag
+     (include-js "/script/jquery-1.5.2.min.js" "/script/jquery.dataTables.min.js")
+     (include-js "/script/foreclojure.js")
+     (include-css "/css/style.css" "/css/demo_table.css")
+    ]
+    [:body
+     [:div#top
+      [:img#logo {:src "/images/logo.png"}]]
+     
+     [:div#content
+      (if  (session/session-get :user)
+        [:div#account
+         [:a {:href "/login/update"} "Account Settings"]])
+      [:br]
+      [:div#menu
+       [:a.menu {:href "/"} "Main Page"]
+       [:a.menu {:href "/problems"} "Problem List"]
+       [:a.menu {:href "/users"} "Top Users"]
+       [:a.menu {:href "/directions"} "Getting Started"]
+       [:span#user-info
+        (if-let [user (session/session-get :user)]
+          [:div
+           [:span#username (str "Logged in as " user )]
+           [:a#logout {:href "/logout"} "Logout"]]
+          [:div
+           [:a#login {:href "/login"} "Login"]
+           [:a#register {:href "/register"} "Register"]])]]
+      [:div#content body]
+      [:div#footer "The content on 4clojure.com is available under the EPL v 1.0 license." ]
+       (javascript-tag
       " var _gaq = _gaq || [];
         _gaq.push(['_setAccount', 'UA-22844856-1']);
         _gaq.push(['_trackPageview']);
@@ -64,22 +106,4 @@
           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
         })();
 "
-      )]
-    [:body
-     [:div#top [:img#logo {:src "/logo.png"}]]
-     [:div#content 
-      [:div#menu
-       [:a.menu {:href "/"} "Main Page"]
-       [:a.menu {:href "/problems"} "Problem List"]
-       [:a.menu {:href "/users"} "Top Users"]
-       [:a.menu {:href "/directions"} "Getting Started"]
-       [:span#user-info
-        (if-let [user (session/session-get :user)]
-          [:div
-           [:span {:id "username"} (str "Logged in as " user )]
-           [:a#logout {:href "/logout"} "Logout"]]
-          [:div
-           [:a#login {:href "/login"} "Login"]
-           [:a#register {:href "/register"} "Register"]])]]
-      [:div#content body]
-      [:div#footer "The content on 4clojure.com is available under the EPL v 1.0 license." ]]]]))
+      )]]]))
