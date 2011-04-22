@@ -2,15 +2,6 @@
   (:use compojure.core
         foreclojure.utils))
 
-(def-page links-page []
-  [:div
-   [:li [:a {:href "http://clojure.org/getting_started"} "Clojure.org: Getting Started"]]
-   [:li [:a {:href "http://clojure.org/cheatsheet"} "Clojure.org: Cheatsheet"]]
-   [:li [:a {:href "http://try-clojure.org"} "try-clojure.org"]]
-   [:li [:a {:href "https://github.com/functional-koans/clojure-koans"} "Clojure Koans"]]
-   [:li [:a {:href "http://stackoverflow.com/questions/2285437/a-gentle-tutorial-to-emacs-swank-paredit-for-clojure"}
-         "StackOverflow.com: A Gentle Tutorial to Emacs/Swank/Paredit for Clojure"]]])
-
 (def-page welcome-page []
   [:div#welcome
    [:div
