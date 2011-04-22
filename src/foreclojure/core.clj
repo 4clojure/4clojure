@@ -26,7 +26,7 @@
 (def app
   (handler/site
    (session/wrap-stateful-session
-    (wrap-reload #'main-routes '(foreclojure.core)))))
+    #'main-routes)))
 
 (defn run []
   (run-jetty (var app) {:join? false :ssl? true :port 8080 :ssl-port 8443
