@@ -106,18 +106,15 @@
       (update! :users
                {:_id id}
                {:$set {:pwd pw-hash}})
-      (let [send-email (fn [& args]
-                         (spit (str "/tmp/email" pw)
-                               args))]
-        (send-email
-         {:from "team@4clojure.com"
-          :to [email]
-          :subject "Password reset"
-          :body
-          (str "The password for your 4clojure.com account "
-               name " has been reset to " pw ". Make sure to change it"
-               " soon at https://4clojure.com/login/update - pick"
-               " something you'll remember!")}))
+      (send-email
+       {:from "team@4clojure.com"
+        :to [email]
+        :subject "Password reset"
+        :body
+        (str "The password for your 4clojure.com account "
+             name " has been reset to " pw ". Make sure to change it"
+             " soon at https://4clojure.com/login/update - pick"
+             " something you'll remember!")})
       (flash-msg "Your password has been reset! You should receive an email soon"
                  "/login"))
     (flash-error "We don't know anyone with that email address!"
