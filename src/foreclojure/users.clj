@@ -11,7 +11,7 @@
     (reverse (sort-by sortfn users))))
 
 (def-page users-page []
-  [:table#user-table.my-table {:width "90%"}
+  [:table#user-table.my-table
    [:thead
     [:tr
      [:th  "Username"]
