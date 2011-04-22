@@ -1,25 +1,21 @@
 (ns foreclojure.core
   (:use compojure.core
-        [foreclojure static problems login register users]
+        [foreclojure static problems login register users config]
         ring.adapter.jetty
         somnium.congomongo
-        [ring.middleware.reload :only [wrap-reload]]
-        [clojure.java.io :only [file]]
-        [clj-config.core :only [safely get-key]])
+        [ring.middleware.reload :only [wrap-reload]])
   (:require [compojure [route :as route] [handler :as handler]]
             [sandbar.stateful-session :as session]
             [ring.util.response :as response]))
 
-(def config-file (file (System/getProperty "user.dir") "config.clj"))
-
 (mongo!
- :host (if-let [host (safely get-key config-file :db-host)]
+ :host (if-let [host (:db-host config)]
          host
          "localhost")
  :db "mydb")
 
-(if-let [db-user (safely get-key config-file :db-user)]
-  (if-let [db-pwd  (safely get-key config-file :db-pwd)]
+(if-let [db-user (:db-user config)]
+  (if-let [db-pwd (:db-pwd config)]
     (authenticate db-user db-pwd)))
 
 (add-index! :users [:user] :unique true)
@@ -38,7 +34,7 @@
 (def app
   (handler/site
    (session/wrap-stateful-session
-    (if (safely get-key config-file :wrap-reload)
+    (if (:wrap-reload config)
       (wrap-reload #'main-routes '(foreclojure.core))
       #'main-routes))))
 
