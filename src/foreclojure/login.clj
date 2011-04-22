@@ -29,13 +29,13 @@
           (response/redirect "/problems"))
       (flash-error "Error logging in." "/login"))))
 
-(def-page reset-password-page []
+(def-page update-password-page []
   (with-user [{:keys [user]}]
-    [:div#reset-pwd
-     [:h2 "Reset password for " user]
+    [:div#update-pwd
+     [:h2 "Change password for " user]
      [:span.error (session/flash-get :error)]
      [:table
-      (form-to [:post "/login/reset"]
+      (form-to [:post "/login/update"]
         (map form-row
              [[password-field :old-pwd "Current password"]
               [password-field :pwd "New password"]
@@ -43,7 +43,7 @@
         [:tr
          [:td (submit-button "Reset now")]])]]))
 
-(defn do-reset-password! [old-pwd new-pwd repeat-pwd]
+(defn do-udpate-password! [old-pwd new-pwd repeat-pwd]
   (with-user [{:keys [user pwd]}]
     (let [encryptor (StrongPasswordEncryptor.)]
       (assuming [(= new-pwd repeat-pwd)
@@ -56,15 +56,15 @@
                    :upsert false)
           (html-doc
            [:div#reset-succeeded "Password for " user " reset successfully"]))
-        (flash-error why "/login/reset")))))
+        (flash-error why "/login/update")))))
 
 (defroutes login-routes
   (GET  "/login" [] (my-login-page))
   (POST "/login" {{:strs [user pwd]} :form-params}
     (do-login user pwd))
-  (GET  "/login/reset" [] (reset-password-page))
-  (POST "/login/reset" {{:strs [old-pwd pwd repeat-pwd]} :form-params}
-    (do-reset-password! old-pwd pwd repeat-pwd))
+  (GET  "/login/update" [] (change-password-page))
+  (POST "/login/update" {{:strs [old-pwd pwd repeat-pwd]} :form-params}
+    (do-change-password! old-pwd pwd repeat-pwd))
   (GET "/logout" []
     (do (session/session-delete-key! :user)
         (response/redirect "/"))))
