@@ -10,8 +10,18 @@
             [sandbar.stateful-session :as session]
             [ring.util.response :as response]))
 
+(def config-file (file (System/getProperty "user.dir") "config.clj"))
+
 (mongo!
+ :host (if-let [host (safely get-key config-file :db-host)]
+         host
+         "localhost")
  :db "mydb")
+
+(if-let [db-user (safely get-key config-file :db-user)]
+  (if-let [db-pwd  (safely get-key config-file :db-pwd)]
+    (authenticate db-user db-pwd)))
+
 (add-index! :users [:user] :unique true)
 (add-index! :users [[:solved -1]])
 
@@ -24,8 +34,6 @@
   static-routes
   (route/resources "/")
   (route/not-found "Page not found"))
-
-(def config-file (file (System/getProperty "user.dir") "config.clj"))
 
 (def app
   (handler/site
