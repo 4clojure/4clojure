@@ -43,9 +43,7 @@
       #'main-routes))))
 
 (defn run []
-  (run-jetty (var app) {:join? false :ssl? true :port 8080 :ssl-port 8443
-                        :keystore "keystore"
-                        :key-password "dev_pass"}))
+  (run-jetty (var app) {:join? false :port 8080}))
 
 (defn -main [& args]
   (run))
