@@ -40,7 +40,7 @@ vaguely like this:
 
  * David Byrne <david.r.byrne@gmail.com>
  * Alan Malloy
- * Anthony Simpson
+ * Anthony Grimes
  * Carin Meier
 
 Problem sources:
