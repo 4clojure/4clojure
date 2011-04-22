@@ -4,7 +4,8 @@
         ring.adapter.jetty
         somnium.congomongo
         [ring.middleware.reload :only [wrap-reload]]
-        [clojure.java.io :only [file]])
+        [clojure.java.io :only [file]]
+        [clj-config.core :only [safely get-key]])
   (:require [compojure [route :as route] [handler :as handler]]
             [sandbar.stateful-session :as session]
             [ring.util.response :as response]))
@@ -24,15 +25,12 @@
   (route/resources "/")
   (route/not-found "Page not found"))
 
-(def config
-  (binding [*read-eval* false]
-    (read-string
-     (slurp (file (System/getProperty "user.dir") "config.clj")))))
+(def config-file (file (System/getProperty "user.dir") "config.clj"))
 
 (def app
   (handler/site
    (session/wrap-stateful-session
-    (if (:wrap-reload config)
+    (if (safely get-key config-file :wrap-reload)
       (wrap-reload #'main-routes '(foreclojure.core))
       #'main-routes))))
 
