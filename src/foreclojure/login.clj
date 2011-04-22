@@ -22,7 +22,7 @@
                           "Log In")]]]))
 
 (defn do-login [user pwd]
-  (let [{db-pwd :pwd} (from-mongo (fetch-one :users :where {:user user}))]
+  (let [{db-pwd :pwd} (from-mongo (fetch-one :users :where {:user (.toLowerCase user)}))]
     (if (and db-pwd (.checkPassword (StrongPasswordEncryptor.) pwd db-pwd))
       (do (session/session-put! :user user)
           (response/redirect "/problems"))
