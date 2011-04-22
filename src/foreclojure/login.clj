@@ -2,12 +2,13 @@
   (:import org.jasypt.util.password.StrongPasswordEncryptor)
   (:use hiccup.form-helpers
         hiccup.page-helpers
-        foreclojure.utils
+        [foreclojure utils config]
         compojure.core
         [amalloy.utils :only [rand-in-range]]
         somnium.congomongo)
   (:require [sandbar.stateful-session :as session]
-            [ring.util.response :as response]))
+            [ring.util.response :as response])
+  (:import org.apache.commons.mail.SimpleEmail))
                         
 (def-page my-login-page []
   [:div.error (session/flash-get :error)]
@@ -82,6 +83,19 @@
 
 (def pw-chars "abcdefghijklmnopqrstuvxyzABCDEFGHIJKLMNOPQRSTUVWXY1234567890")
 
+;; Assuming that it will always need SSL. Will make it more flexible later.
+(defn send-email [{:keys [from to subject body]}]
+  (let [{:keys [host port user pass]} config
+        base (doto (SimpleEmail.)
+               (.setHostName host)
+               (.setSSL true)
+               (.setFrom from)
+               (.setSubject subject)
+               (.setMsg body)
+               (.setAuthentication user pass))]
+    (doseq [person to] (.addTo base person))
+    (.send base)))
+
 (defn do-reset-password! [email]
   (if-let [{id :_id, name :user} (fetch-one :users
                                             :where {:email email}
@@ -96,13 +110,14 @@
                          (spit (str "/tmp/email" pw)
                                args))]
         (send-email
-         {:From "team@4clojure.com"
-          :To email
-          :Subject "Password reset"}
-         (str "The password for your 4clojure.com account "
-              name " has been reset to " pw ". Make sure to change it"
-              " soon at https://4clojure.com/login/update - pick"
-              " something you'll remember!")))
+         {:from "team@4clojure.com"
+          :to [email]
+          :subject "Password reset"
+          :body
+          (str "The password for your 4clojure.com account "
+               name " has been reset to " pw ". Make sure to change it"
+               " soon at https://4clojure.com/login/update - pick"
+               " something you'll remember!")}))
       (flash-msg "Your password has been reset! You should receive an email soon"
                  "/login"))
     (flash-error "We don't know anyone with that email address!"
