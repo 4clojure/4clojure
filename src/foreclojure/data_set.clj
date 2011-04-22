@@ -490,4 +490,15 @@
             :description "The some function takes a predicate function and a collection.  It returns the first logical true value of (predicate x) where x is an item in the collection."
             :tags ["easy"]
             :tests ["(= __ (some #{2 7 6} [5 6 7 8]))"
-		    "(= __ (some #(when (even? %) %) [5 6 7 8]))"]})))
+		    "(= __ (some #(when (even? %) %) [5 6 7 8]))"]})
+
+       (insert! :problems
+           {:_id 49
+            :title "Split a sequence"
+            :times-solved 0
+            :restricted ["split-at"]
+            :description "Write a function which will split a sequence into two parts."
+            :tags ["easy" "seqs" "core-functions"]
+            :tests ["(= (__ 3 [1 2 3 4 5 6]) [[1 2 3] [4 5 6]])"
+		    "(= (__ 1 [:a :b :c :d]) [[:a] [:b :c :d]])"
+                    "(= (__ 2 [[1 2] [3 4] [5 6]]) [[[1 2] [3 4]] [[5 6]]])"]})))
