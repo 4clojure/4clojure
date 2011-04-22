@@ -53,8 +53,10 @@
           "You've solved the problem! If you log in we can track your progress.")]
     (flash-msg (str message " " gist-link) "/problems")))
 
+(def restricted-list ['use 'require 'in-ns 'future 'agent 'send 'send-off 'pmap 'pcalls]) 
+
 (defn get-tester [restricted]
-  (into secure-tester (map symbol restricted)))
+  (into secure-tester (concat restricted-list (map symbol restricted))))
 
 (def sb (sandbox*))
 
@@ -104,19 +106,22 @@
       [:b "Enter your code:" [:br]
        [:span {:class "error"} (session/flash-get :error)]]]
      (form-to [:post "/run-code"] 
-       (text-area {:id "code-box"
-                   :spellcheck "false"}
-                  :code (session/flash-get :code))
-       (hidden-field :id id)
-       (submit-button {:type "image" :src "/run.png"} "Run"))]))
+              (text-area {:id "code-box"
+                          :spellcheck "false"}
+                         :code (session/flash-get :code))
+              (hidden-field :id id)
+              [:br]
+              (submit-button {:type "image" :src "/images/run.png"} "Run"))]))
 
 (def-page problem-page []
   [:div.congrats (session/flash-get :message)]
-  [:table.mytable {:width "90%"}
-   [:th "Title"]
-   [:th "Tags"]
-   [:th "Count"]
-   [:th "Solved?"]
+  [:table#problem-table.my-table
+   [:thead
+    [:tr
+     [:th "Title"]
+     [:th "Tags"]
+     [:th "Count"]
+     [:th "Solved?"]]]
    (let [solved (get-solved (session/session-get :user))
          problems (get-problem-list)]
      (map-indexed
@@ -131,8 +136,8 @@
          [:td.centered (int times-solved)]
          [:td.centered
           [:img {:src (if (contains? solved id)
-                        "/checkmark.png"
-                        "/empty-sq.png")}]]])
+                        "/images/checkmark.png"
+                        "/images/empty-sq.png")}]]])
       problems))])
 
 (defroutes problems-routes
