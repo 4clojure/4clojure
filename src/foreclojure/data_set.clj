@@ -470,4 +470,15 @@
               :tests ["(= 3 ((__ nth) 2 [1 2 3 4 5]))"
                       "(= true ((__ >) 7 8))"
                       "(= 4 ((__ quot) 2 8))"
-                      "(= [1 2 3] ((__ take) [1 2 3 4 5] 3))"]})))
+                      "(= [1 2 3] ((__ take) [1 2 3 4 5] 3))"]})
+
+       (insert! :problems
+           {:_id 47
+            :title "Contain Yourself"
+            :times-solved 0
+            :description "The contains? function checks if a KEY is present in a given collection.  This often leads beginner clojurians to use it incorrectly with numerically indexed collections like vectors and lists."
+            :tags ["easy"]
+            :tests ["(contains? #{4 5 6} __)"
+		    "(contains? [1 1 1 1 1] __)"
+		    "(contains? {4 :a 2 :b} __)"
+                    "(not (contains? '(1 2 4) __))"]})))
