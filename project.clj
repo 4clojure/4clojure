@@ -1,4 +1,4 @@
-(defproject foreclojure "0.0.2"
+(defproject foreclojure "0.0.3"
   :description "4clojure - a website for lisp beginners"
   :dependencies [[org.clojure/clojure "1.2.1"]
                  [org.clojure/clojure-contrib "1.2.0"]
@@ -10,7 +10,8 @@
 		 [org.jasypt/jasypt "1.7"]
                  [amalloy/utils "[0.3.7,)"]
                  [clj-github "1.0.0-SNAPSHOT"]
-                 [ring "0.3.7"]]
+                 [ring "0.3.7"]
+                 [clj-config "0.1.0"]]
   :dev-dependencies [[lein-ring "0.4.0"]
                      [swank-clojure "1.2.1"]]
   :main foreclojure.core

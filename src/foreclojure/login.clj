@@ -25,9 +25,10 @@
                           "Log In")]]]))
 
 (defn do-login [user pwd location]
-  (let [{db-pwd :pwd} (from-mongo (fetch-one :users :where {:user user}))]
+  (let [{db-pwd :pwd} (from-mongo (fetch-one :users :where {:user (.toLowerCase user)}))]
     (if (and db-pwd (.checkPassword (StrongPasswordEncryptor.) pwd db-pwd))
-      (do (session/session-put! :user user)
+      (do (update! :users {:user user} {:$set {:last-login (java.util.Date.)}})
+          (session/session-put! :user user)
           (response/redirect (or location "/problems")))
       (flash-error "Error logging in."
                    (apply str "/login"
