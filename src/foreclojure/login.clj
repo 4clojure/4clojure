@@ -22,9 +22,12 @@
                                  "Log In")]]]))
 
 (defn do-login [user pwd]
-  (let [{db-pwd :pwd} (from-mongo (fetch-one :users :where {:user (.toLowerCase user)}))]
+  (let [user (.toLowerCase user)
+        {db-pwd :pwd} (from-mongo (fetch-one :users :where {:user user}))]
     (if (and db-pwd (.checkPassword (StrongPasswordEncryptor.) pwd db-pwd))
-      (do (update! :users {:user user} {:$set {:last-login (java.util.Date.)}})
+      (do (update! :users {:user user}
+                   {:$set {:last-login (java.util.Date.)}}
+                   :upsert false) ; never create new users accidentally
           (session/session-put! :user user)
           (response/redirect "/problems"))
       (flash-error "Error logging in." "/login"))))
