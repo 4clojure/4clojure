@@ -1,3 +1,4 @@
+
 body {
   background-color: #bbddee;
   font-size: 12px;
@@ -92,12 +93,12 @@ h3 {
 
 #problem-table{
   float: left;
-  width: 90%
+  width: 100%
 } 
 
 #user-table{
   float: left;
-  width: 90%
+  width: 100%;
   padding: 15px;
 } 
 
@@ -161,8 +162,9 @@ table.my-table {
   border-collapse: collapse;
 }
 
-table.my-table td.centered {
-  text-align: center;
+table.my-table td {
+  text-align: left;
+  font-size: 12px;
 }
 
 td.title-link {
@@ -171,6 +173,8 @@ td.title-link {
 
 table.my-table th {
   padding: 10px 0px 0px 0px;
+  font-size: 14px;
+  font-weight: bold;
 
  }
 
