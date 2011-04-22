@@ -8,6 +8,21 @@ body {
   text-align: center;
 }
 
+#account{
+  float:right;
+  width: 100%;
+  text-align: right;
+  padding: 0px 15px 0px 0px;
+  background-color: #fff;
+  font-weight: bold;
+}
+
+#account a:link {color: #445599;}
+#account a:visited {color: #445599;}
+#account a:active {color: #445599;}
+#account a:hover {color: #7CFC00;}
+#account a {text-decoration: none; font-size: 12px; font-weight:bold;}
+
 #content { 
   width: 95%;
   padding: 15px 0px 15px 0px;
@@ -30,8 +45,8 @@ h3 {
 
 #menu{
   background-color:#445599; 
-  padding: 15px;
-  color: #fff
+  padding: 20px 15px 15px 15px;
+  color: #fff;
 }
 
 

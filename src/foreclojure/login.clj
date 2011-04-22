@@ -20,8 +20,13 @@
              [:td (label :pwd "Password")]
              [:td (password-field :pwd)]]
             [:tr
+             [:td]
              [:td (submit-button {:type "image" :src "/images/login.png"}
-                                 "Log In")]]]))
+                                 "Log In")]]
+            [:tr
+             [:td ]
+             [:td
+              [:a {:href "/login/reset"} "Forgot your password?"]]]]))
 
 (defn do-login [user pwd]
   (let [{db-pwd :pwd} (from-mongo (fetch-one :users :where {:user (.toLowerCase user)}))]
