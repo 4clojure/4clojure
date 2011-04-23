@@ -17,7 +17,7 @@
                   [password-field :repeat-pwd "Repeat Password"]
                   [text-field :email "Email"]])
             [:tr
-             [:td (submit-button {:type "image" :src "/images/register.png"} "Register")]]]))
+             [:td [:button {:type "submit"} "Register"]]]]))
 
 (defn do-register [user pwd repeat-pwd email]
   (let [lower-user (.toLowerCase user)]
