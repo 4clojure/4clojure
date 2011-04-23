@@ -111,7 +111,7 @@
                          :code (session/flash-get :code))
               (hidden-field :id id)
               [:br]
-              (submit-button {:type "image" :src "/images/run.png"} "Run"))]))
+              [:button {:type "submit"} "Run"])]))
 
 (def-page problem-page []
   [:div.congrats (session/flash-get :message)]
