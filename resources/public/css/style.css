@@ -1,4 +1,3 @@
-
 body {
   background-color: #bbddee;
   font-size: 12px;
@@ -49,6 +48,7 @@ h3 {
   color: #fff;
 }
 
+a.novisited {color: #00e;}
 
 #menu a:link {color: #fff;}
 #menu a:visited {color: #fff;}
@@ -165,7 +165,10 @@ div#restrictions {
   font-size: 16px;
 }
 
-
+#contact {
+    color: #FFFFFF;
+    margin-left: 1.3em;
+}    
 
 textarea#code-box {
   width: 500px;
@@ -190,6 +193,54 @@ table.my-table th {
   padding: 10px 0px 0px 0px;
   font-size: 14px;
   font-weight: bold;
+}
 
- }
 
+button {
+  border: 1px solid #A1CC59;
+  color: #32401C;
+  font-size: 14px;
+  font-weight: bold;
+  height: 23px;
+  margin: 4px;
+  padding: 1px 6px 2px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  background: #BCEE68;
+  background: -moz-linear-gradient(top, #BCEE68, #A1CC59);
+  background: -webkit-gradient(linear, left top, left bottom, from(#BCEE68), to(#A1CC59));
+  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#BCEE68', endColorstr='#A1CC59')";
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#BCEE68', endColorstr='#A1CC59');
+}
+
+button.large {
+  font-size: 16px;
+  padding: 3px 10px;
+  height: 26px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+
+button:hover {
+  cursor: pointer;
+  outline: none;
+  text-decoration: none;
+  background: #D1F09E;
+  background: -moz-linear-gradient(top, #D1F09E, #A1CC59);
+  background: -webkit-gradient(linear, left top, left bottom, from(#D1F09E), to(#A1CC59));
+  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#D1F09E', endColorstr='#A1CC59')";
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#D1F09E', endColorstr='#A1CC59');
+}
+
+button:active {
+  position: relative;
+  top: 1px;
+  outline: none;
+  background: #A1CC59;
+  background: -moz-linear-gradient(top, #A1CC59, #A7D45C);
+  background: -webkit-gradient(linear, left top, left bottom, from(#A1CC59), to(#A7D45C));
+  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#A1CC59', endColorstr='#A7D45C')";
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#A1CC59', endColorstr='#A7D45C');
+}

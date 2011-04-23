@@ -3,7 +3,7 @@
         [foreclojure.social :only [tweet-link gist!]]
         [clojail core testers]
         somnium.congomongo
-        hiccup.form-helpers
+        (hiccup form-helpers page-helpers core)
         [amalloy.utils.debug :only [?]]
         compojure.core)
   (:require [sandbar.stateful-session :as session]
@@ -26,22 +26,11 @@
           :only [:_id :title :tags :times-solved]
           :sort {:id 1})))
 
-(defn tweet-solution [id gist-url & [link-text]]
-  (let [status-msg (str "Check out how I solved http://4clojure.com/problem/"
-                        id " - " gist-url " #clojure #4clojure")]
-    (tweet-link status-msg link-text)))
-
 (defn mark-completed [id code & [user]]
   (let [user (or user (session/session-get :user))
-        gist-url (gist! user id code)
-        gist-link (if gist-url
-                    (str "<div class='share'>"
-                         "Share this "
-                         "<a href='" gist-url "'>solution</a>"
-                         " on " (tweet-solution id gist-url) "!"
-                         "</div>")
-                    (str "<div class='error'>Failed to create gist of "
-                         "your solution</div>"))
+        gist-link (html [:div.share
+                         [:a.novisited {:href "/share/code"} "Share"]
+                         " this solution with your friends!"])
 
         message
         (if user
@@ -51,6 +40,7 @@
               (update! :problems {:_id id} {:$inc {:times-solved 1}}))
             "Congratulations, you've solved the problem!") 
           "You've solved the problem! If you log in we can track your progress.")]
+    (session/session-put! :code [id code])
     (flash-msg (str message " " gist-link) "/problems")))
 
 (def restricted-list ['use 'require 'in-ns 'future 'agent 'send 'send-off 'pmap 'pcalls]) 
@@ -111,7 +101,7 @@
                          :code (session/flash-get :code))
               (hidden-field :id id)
               [:br]
-              (submit-button {:type "image" :src "/images/run.png"} "Run"))]))
+              [:button.large {:type "submit"} "Run"])]))
 
 (def-page problem-page []
   [:div.congrats (session/flash-get :message)]
