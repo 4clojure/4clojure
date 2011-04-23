@@ -72,8 +72,14 @@
      (include-css "/css/style.css" "/css/demo_table.css")
     ]
     [:body
-     [:div#top [:img#logo {:src "/images/logo.png"}]]
-     [:div#content 
+     [:div#top
+      [:img#logo {:src "/images/logo.png"}]]
+     
+     [:div#content
+      (if  (session/session-get :user)
+        [:div#account
+         [:a {:href "/login/update"} "Account Settings"]])
+      [:br]
       [:div#menu
        [:a.menu {:href "/"} "Main Page"]
        [:a.menu {:href "/problems"} "Problem List"]

@@ -501,4 +501,14 @@
             :tags ["easy" "seqs" "core-functions"]
             :tests ["(= (__ 3 [1 2 3 4 5 6]) [[1 2 3] [4 5 6]])"
 		    "(= (__ 1 [:a :b :c :d]) [[:a] [:b :c :d]])"
-                    "(= (__ 2 [[1 2] [3 4] [5 6]]) [[[1 2] [3 4]] [[5 6]]])"]})))
+                    "(= (__ 2 [[1 2] [3 4] [5 6]]) [[[1 2] [3 4]] [[5 6]]])"]})
+
+       (insert! :problems
+           {:_id 50
+            :title "Split by Type"
+            :times-solved 0
+            :description "Write a function which takes a sequence consisting of items with different types and splits them up into a set of homogeneous sub-sequences. The internal order of each sub-sequence should be maintained, but the sub-sequences themselves can be returned in any order (this is why 'set' is used in the test cases)."
+            :tags ["medium" "seqs"]
+            :tests ["(= (set (__ [1 :a 2 :b 3 :c])) #{[1 2 3] [:a :b :c]})"
+		    "(= (set (__ [:a \"foo\"  \"bar\" :b])) #{[:a :b] [\"foo\" \"bar\"]})"
+                    "(= (set (__ [[1 2] :a [3 4] 5 6 :b])) #{[[1 2] [3 4]] [:a :b] [5 6]})"]})))
