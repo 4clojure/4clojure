@@ -43,7 +43,7 @@
     (session/session-put! :code [id code])
     (flash-msg (str message " " gist-link) "/problems")))
 
-(def restricted-list ['use 'require 'in-ns 'future 'agent 'send 'send-off 'pmap 'pcalls]) 
+(def restricted-list '[use require in-ns future agent send send-off pmap pcalls]) 
 
 (defn get-tester [restricted]
   (into secure-tester (concat restricted-list (map symbol restricted))))
