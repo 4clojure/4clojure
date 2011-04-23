@@ -546,7 +546,7 @@
             :times-solved 0
             :restricted ["partition" "partition-all"]
             :description "Write a function which returns a sequence of lists of x items each.  Lists of less than x items should not be returned."
-            :tags ["easy" "seqs" "core-functions"]
+            :tags ["medium" "seqs" "core-functions"]
             :tests ["(= (__ 3 (range 9)) '((0 1 2) (3 4 5) (6 7 8)))"
 		    "(= (__ 2 (range 8)) '((0 1) (2 3) (4 5) (6 7)))"
 		    "(= (__ 3 (range 8)) '((0 1 2) (3 4 5)))"]})))
