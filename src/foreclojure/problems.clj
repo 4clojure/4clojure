@@ -94,12 +94,12 @@
       [:b "Enter your code:" [:br]
        [:span {:class "error"} (session/flash-get :error)]]]
      (form-to [:post "/run-code"] 
-              (text-area {:id "code-box"
-                          :spellcheck "false"}
-                         :code (session/flash-get :code))
-              (hidden-field :id id)
-              [:br]
-              [:button.large {:type "submit"} "Run"])]))
+       (text-area {:id "code-box"
+                   :spellcheck "false"}
+                  :code (session/flash-get :code))
+       (hidden-field :id id)
+       [:br]
+       [:button.large {:type "submit"} "Run"])]))
 
 (def-page problem-page []
   [:div.congrats (session/flash-get :message)]
@@ -132,4 +132,4 @@
   (GET "/problems" [] (problem-page))
   (GET "/problem/:id" [id] (code-box id))
   (POST "/run-code" {{:strs [id code]} :form-params}
-        (run-code (Integer. id) code)))
+    (run-code (Integer. id) code)))

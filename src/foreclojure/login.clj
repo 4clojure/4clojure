@@ -13,20 +13,20 @@
 (def-page my-login-page []
   [:div.error (session/flash-get :error)]
   (form-to [:post "/login"]
-           [:table
-            [:tr
-             [:td (label :user "Username")]
-             [:td (text-field :user)]]
-            [:tr
-             [:td (label :pwd "Password")]
-             [:td (password-field :pwd)]]
-            [:tr
-             [:td]
-             [:td [:button {:type "submit"} "Log In"]]]
-            [:tr
-             [:td ]
-             [:td
-              [:a {:href "/login/reset"} "Forgot your password?"]]]]))
+    [:table
+     [:tr
+      [:td (label :user "Username")]
+      [:td (text-field :user)]]
+     [:tr
+      [:td (label :pwd "Password")]
+      [:td (password-field :pwd)]]
+     [:tr
+      [:td]
+      [:td [:button {:type "submit"} "Log In"]]]
+     [:tr
+      [:td ]
+      [:td
+       [:a {:href "/login/reset"} "Forgot your password?"]]]]))
 
 (defn do-login [user pwd]
   (let [user (.toLowerCase user)
