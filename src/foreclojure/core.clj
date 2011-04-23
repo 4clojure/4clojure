@@ -1,6 +1,7 @@
 (ns foreclojure.core
   (:use compojure.core
-        [foreclojure static problems login register users config]
+        [foreclojure static problems login register
+         users config social]
         ring.adapter.jetty
         somnium.congomongo
         [ring.middleware.reload :only [wrap-reload]])
@@ -28,6 +29,7 @@
   problems-routes
   users-routes
   static-routes
+  social-routes
   (route/resources "/")
   (route/not-found "Page not found"))
 
