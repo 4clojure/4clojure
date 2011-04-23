@@ -215,6 +215,7 @@ button {
 
 button.large {
   font-size: 16px;
+  padding: 3px 10px;
   height: 26px;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
