@@ -72,8 +72,14 @@
      (include-css "/css/style.css" "/css/demo_table.css")
     ]
     [:body
-     [:div#top [:img#logo {:src "/images/logo.png"}]]
-     [:div#content 
+     [:div#top
+      [:img#logo {:src "/images/logo.png"}]]
+     
+     [:div#content
+      (if  (session/session-get :user)
+        [:div#account
+         [:a {:href "/login/update"} "Account Settings"]])
+      [:br]
       [:div#menu
        [:a.menu {:href "/"} "Main Page"]
        [:a.menu {:href "/problems"} "Problem List"]
@@ -88,7 +94,9 @@
            [:a#login {:href "/login"} "Login"]
            [:a#register {:href "/register"} "Register"]])]]
       [:div#content body]
-      [:div#footer "The content on 4clojure.com is available under the EPL v 1.0 license." ]
+      [:div#footer
+       "The content on 4clojure.com is available under the EPL v 1.0 license."
+       [:a#contact {:href "mailto:team@4clojure.com"} "Contact us!"]]
        (javascript-tag
       " var _gaq = _gaq || [];
         _gaq.push(['_setAccount', 'UA-22844856-1']);
