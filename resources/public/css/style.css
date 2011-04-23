@@ -165,7 +165,10 @@ div#restrictions {
   font-size: 16px;
 }
 
-
+#contact {
+    color: #FFFFFF;
+    margin-left: 1.3em;
+}    
 
 textarea#code-box {
   width: 500px;

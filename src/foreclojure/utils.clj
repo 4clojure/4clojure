@@ -94,7 +94,9 @@
            [:a#login {:href "/login"} "Login"]
            [:a#register {:href "/register"} "Register"]])]]
       [:div#content body]
-      [:div#footer "The content on 4clojure.com is available under the EPL v 1.0 license." ]
+      [:div#footer
+       "The content on 4clojure.com is available under the EPL v 1.0 license."
+       [:a#contact {:href "mailto:team@4clojure.com"} "Contact us!"]]
        (javascript-tag
       " var _gaq = _gaq || [];
         _gaq.push(['_setAccount', 'UA-22844856-1']);
