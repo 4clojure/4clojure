@@ -549,4 +549,15 @@
             :tags ["medium" "seqs" "core-functions"]
             :tests ["(= (__ 3 (range 9)) '((0 1 2) (3 4 5) (6 7 8)))"
 		    "(= (__ 2 (range 8)) '((0 1) (2 3) (4 5) (6 7)))"
-		    "(= (__ 3 (range 8)) '((0 1 2) (3 4 5)))"]})))
+		    "(= (__ 3 (range 8)) '((0 1 2) (3 4 5)))"]})
+
+      (insert! :problems
+           {:_id 55
+            :title "Count Occurences"
+            :times-solved 0
+            :restricted ["frequencies"]
+            :description "Write a function which returns a map containing the number of occurences of each distinct item in a sequence."
+            :tags ["medium" "seqs" "core-functions"]
+            :tests ["(= (__ [1 1 2 3 2 1 1]) {1 4, 2 2, 3 1})"
+                    "(= (__ [:b :a :b :a :b]) {:a 2, :b 3})"
+                    "(= (__ '([1 2] [1 3] [1 3])) {[1 2] 1, [1 3] 2})"]})))
