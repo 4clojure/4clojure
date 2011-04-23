@@ -518,8 +518,8 @@
             :title "Advanced Destructuring"
             :times-solved 0
             :description "Here is an example of some more sophisticated destructuring."
-            :tags ["medium" "destructuring"]
-            :tests ["(= __ (let [[a b & c :as d] [1 2 3 4 5]] [a b c d]))"]})
+            :tags ["easy" "destructuring"]
+            :tests ["(= [1 2 [3 4 5] [1 2 3 4 5]] (let [[a b & c :as d] __] [a b c d]))"]})
 
       (insert! :problems
            {:_id 52
@@ -528,3 +528,10 @@
             :description "Let bindings and function parameter lists support destructuring."
             :tags ["easy" "destructuring"]
             :tests ["(= [2 4] (let [[a b c d e f g] (range)] __))"]})))
+
+
+(doseq [{id :_id :keys [test secrets]}
+        (fetch :problems)]
+  (update! :problems
+           {:_id id}
+           {:$set {:test (concat test secrets) :secrets []}}))
