@@ -22,8 +22,7 @@
              [:td (password-field :pwd)]]
             [:tr
              [:td]
-             [:td (submit-button {:type "image" :src "/images/login.png"}
-                                 "Log In")]]
+             [:td [:button {:type "submit"} "Log In"]]]
             [:tr
              [:td ]
              [:td
@@ -52,7 +51,7 @@
               [password-field :pwd "New password"]
               [password-field :repeat-pwd "Repeat password"]])
         [:tr
-         [:td (submit-button "Reset now")]])]]))
+         [:td [:button {:type "submit"} "Reset now"]]])]]))
 
 (defn do-update-password! [old-pwd new-pwd repeat-pwd]
   (with-user [{:keys [user pwd]}]
@@ -79,7 +78,7 @@
      (form-to [:post "/login/reset"]
        (label :email "Email")
        (text-field :email)
-       (submit-button "Reset!"))]]])
+       [:button {:type "submit"} "Reset!"])]]])
 
 (def pw-chars "abcdefghijklmnopqrstuvxyzABCDEFGHIJKLMNOPQRSTUVWXY1234567890")
 
