@@ -53,7 +53,7 @@
 (defn run-code [id raw-code]
   (let [code (.trim raw-code)
 	p (get-problem id)
-        tests (concat (:tests p) (:secret-tests p))
+        tests (:tests p)
         func-name (:function-name p)
         sb-tester (get-tester (:restricted p))]
     (if (empty? code)
