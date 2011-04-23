@@ -135,9 +135,9 @@
             :description "Write a function which doubles a number."
             :tags ["elementary"]
             :tests ["(= (__ 2) 4)"
-                    "(= (__ 3) 6)"]
-            :secret-tests ["(= (__ 11) 22)"
-                           "(= (__ 7) 14)"]})
+                    "(= (__ 3) 6)"
+                    "(= (__ 11) 22)"
+                    "(= (__ 7) 14)"]})
     
     (insert! :problems
 	     {:_id 16
@@ -147,8 +147,8 @@
 	      
 	      :tags ["elementary"]
 	      :tests ["(= (__ \"Dave\") \"Hello, Dave!\")"
-		      "(= (__ \"Jenn\") \"Hello, Jenn!\")"]
-	      :secret-tests ["(= (__ \"Rhea\") \"Hello, Rhea!\")"]})
+		      "(= (__ \"Jenn\") \"Hello, Jenn!\")"
+                      "(= (__ \"Rhea\") \"Hello, Rhea!\")"]})
     
     (insert! :problems
 	     {:_id 17
@@ -174,8 +174,8 @@
 	      :description "Write a function which returns the last element in a sequence."
 	      :tags ["easy" "seqs" "core-functions"]
 	      :tests ["(= (__ [1 2 3 4 5]) 5)"
-		      "(= (__ '(5 4 3)) 3)"]
-	      :secret-tests ["(= (__ [\"b\" \"c\" \"d\"]) \"d\")"]})
+		      "(= (__ '(5 4 3)) 3)"
+                      "(= (__ [\"b\" \"c\" \"d\"]) \"d\")"]})
     
     (insert! :problems
              {:_id 20
@@ -184,8 +184,8 @@
               :description "Write a function which returns the second to last element from a sequence."
               :tags["easy" "seqs"]
               :tests ["(= (__ (list 1 2 3 4 5)) 4)"
-                      "(= (__ [\"a\" \"b\" \"c\"]) \"b\")"]
-              :secret-tests ["(= (__ [[1 2] [3 4]]) [1 2])"]})
+                      "(= (__ [\"a\" \"b\" \"c\"]) \"b\")"
+                      "(= (__ [[1 2] [3 4]]) [1 2])"]})
     
     (insert! :problems
 	     {:_id 21
@@ -196,8 +196,8 @@
 	      :tags["easy" "seqs" "core-functions"]
 	      :tests ["(= (__ '(4 5 6 7) 2) 6)"
 		      "(= (__ [:a :b :c] 0) :a)"
-		      "(= (__ [1 2 3 4] 1) 2)"]
-	      :secret-tests ["(= (__ '([1 2] [3 4] [5 6]) 2) [5 6])"]})
+		      "(= (__ [1 2 3 4] 1) 2)"
+                      "(= (__ '([1 2] [3 4] [5 6]) 2) [5 6])"]})
     
     (insert! :problems
 	     {:_id 22
@@ -208,9 +208,9 @@
 	      :tags["easy" "seqs" "core-functions"]
 	      :tests ["(= (__ '(1 2 3 3 1)) 5)"
 		      "(= (__ \"Hello World\") 11)"
-		      "(= (__ [[1 2] [3 4] [5 6]]) 3)"]
-	      :secret-tests ["(= (__ '(13)) 1)"
-			     "(= (__ '(:a :b :c)) 3)"]})
+		      "(= (__ [[1 2] [3 4] [5 6]]) 3)"
+                      "(= (__ '(13)) 1)"
+                      "(= (__ '(:a :b :c)) 3)"]})
     
     (insert! :problems
 	     {:_id 23
@@ -220,8 +220,8 @@
 	      :description "Write a function which reverses a sequence."
 	      :tags["easy" "seqs" "core-functions"]
 	      :tests ["(= (__ [1 2 3 4 5]) [5 4 3 2 1])"
-		      "(= (__ (sorted-set 5 7 2 7)) '(7 5 2))"]
-	      :secret-tests ["(= (__ [[1 2][3 4][5 6]]) [[5 6][3 4][1 2]])"]})
+		      "(= (__ (sorted-set 5 7 2 7)) '(7 5 2))"
+                      "(= (__ [[1 2][3 4][5 6]]) [[5 6][3 4][1 2]])"]})
     
     (insert! :problems
 	     {:_id 24
@@ -231,9 +231,9 @@
 	      :tags ["easy" "seqs"]
 	      :tests ["(= (__ [1 2 3]) 6)"
 		      "(= (__ (list 0 -2 5 5)) 8)"
-		      "(= (__ #{4 2 1}) 7)"]
-	      :secret-tests ["(= (__ '(0 0 -1)) -1)"
-			     "(= (__ '(1 10 3)) 14)"]})
+		      "(= (__ #{4 2 1}) 7)"
+                      "(= (__ '(0 0 -1)) -1)"
+                      "(= (__ '(1 10 3)) 14)"]})
     
     (insert! :problems
 	     {:_id 25
@@ -242,9 +242,9 @@
 	      :description "Write a function which returns only the odd numbers from a sequence."
 	      :tags["easy" "seqs"]
 	      :tests ["(= (__ #{1 2 3 4 5}) '(1 3 5))"
-		      "(= (__ [4 2 1 6]) '(1))"]
-	      :secret-tests ["(= (__ [2 2 4 6]) '())"
-			     "(= (__ [1 1 1 3]) '(1 1 1 3))"]})
+		      "(= (__ [4 2 1 6]) '(1))"
+                      "(= (__ [2 2 4 6]) '())"
+                      "(= (__ [1 1 1 3]) '(1 1 1 3))"]})
     
     (insert! :problems
 	     {:_id 26
@@ -253,8 +253,8 @@
 	      :description "Write a function which returns the first X fibonacci numbers."
 	      :tags["easy" "Fibonacci" "seqs"]
 	      :tests ["(= (__ 3) '(1 1 2))"
-		      "(= (__ 6) '(1 1 2 3 5 8))"]
-	      :secret-tests ["(= (__ 8) '(1 1 2 3 5 8 13 21))"]})
+		      "(= (__ 6) '(1 1 2 3 5 8))"
+                      "(= (__ 8) '(1 1 2 3 5 8 13 21))"]})
     
     (insert! :problems
 	     {:_id 27
@@ -265,9 +265,9 @@
 	      :tags["easy" "seqs"]
 	      :tests ["(false? (__ '(1 2 3 4 5)))"
 		      "(true? (__ \"racecar\"))"
-		      "(true? (__ [:foo :bar :foo]))"]
-	      :secret-tests ["(true? (__ '(1 1 3 3 1 1)))"
-			     "(false? (__ '(:a :b :c)))"]})
+		      "(true? (__ [:foo :bar :foo]))"
+                      "(true? (__ '(1 1 3 3 1 1)))"
+                      "(false? (__ '(:a :b :c)))"]})
     
     (insert! :problems
 	     {:_id 28
@@ -278,8 +278,8 @@
 	      
 	      :tags["easy" "seqs" "core-functions"]
 	      :tests ["(= (__ '((1 2) 3 [4 [5 6]])) '(1 2 3 4 5 6))"
-		      "(= (__ [\"a\" [\"b\"] \"c\"]) '(\"a\" \"b\" \"c\"))"]
-	      :secret-tests ["(= (__ '((((:a))))) '(:a))"]})
+		      "(= (__ [\"a\" [\"b\"] \"c\"]) '(\"a\" \"b\" \"c\"))"
+                      "(= (__ '((((:a))))) '(:a))"]})
     
     (insert! :problems
 	     {:_id 29
@@ -288,8 +288,8 @@
 	      :description "Write a function which takes a string and returns a new string containing only the capital letters."
 	      :tags["easy" "strings"]
 	      :tests ["(= (__ \"HeLlO, WoRlD!\") \"HLOWRD\")"
-		      "(empty? (__ \"nothing\"))"]
-	      :secret-tests ["(= (__ \"$#A(*&987Zf\") \"AZ\")"]})
+		      "(empty? (__ \"nothing\"))"
+                      "(= (__ \"$#A(*&987Zf\") \"AZ\")"]})
     
     (insert! :problems
 	     {:_id 30
@@ -298,8 +298,8 @@
 	      :description "Write a function which removes consecutive duplicates from a sequence."
 	      :tags ["easy" "seqs"]
 	      :tests ["(= (apply str (__ \"Leeeeeerrroyyy\")) \"Leroy\")"
-		      "(= (__ [1 1 2 3 3 2 2 3]) '(1 2 3 2 3))"]
-	      :secret-tests ["(= (__ [[1 2] [1 2] [3 4] [1 2]]) '([1 2] [3 4] [1 2]))"]})
+		      "(= (__ [1 1 2 3 3 2 2 3]) '(1 2 3 2 3))"
+                      "(= (__ [[1 2] [1 2] [3 4] [1 2]]) '([1 2] [3 4] [1 2]))"]})
     
     (insert! :problems
 	     {:_id 31
@@ -308,8 +308,8 @@
 	      :description "Write a function which packs consecutive duplicates into sub-lists."
 	      :tags ["easy" "seqs"]
 	      :tests ["(= (__ [1 1 2 1 1 1 3 3]) '((1 1) (2) (1 1 1) (3 3)))"
-		      "(= (__ [:a :a :b :b :c]) '((:a :a) (:b :b) (:c)))"]
-	      :secret-tests ["(= (__ [[1 2] [1 2] [3 4]]) '(([1 2] [1 2]) ([3 4])))"]})
+		      "(= (__ [:a :a :b :b :c]) '((:a :a) (:b :b) (:c)))"
+                      "(= (__ [[1 2] [1 2] [3 4]]) '(([1 2] [1 2]) ([3 4])))"]})
     
     (insert! :problems
 	     {:_id 32
@@ -319,8 +319,8 @@
 	      :tags ["easy" "seqs"]
 	      :tests ["(= (__ [1 2 3]) '(1 1 2 2 3 3))"
 		      "(= (__ [:a :a :b :b]) '(:a :a :a :a :b :b :b :b))"
-                      "(= (__ [[1 2] [3 4]]) '([1 2] [1 2] [3 4] [3 4]))"]
-	      :secret-tests ["(= (__ [44 33]) [44 44 33 33])"]})
+                      "(= (__ [[1 2] [3 4]]) '([1 2] [1 2] [3 4] [3 4]))"
+                      "(= (__ [44 33]) [44 44 33 33])"]})
 
     (insert! :problems
 	     {:_id 33
@@ -331,8 +331,8 @@
 	      :tests ["(= (__ [1 2 3] 2) '(1 1 2 2 3 3))"
 		      "(= (__ [:a :b] 4) '(:a :a :a :a :b :b :b :b))"
                       "(= (__ [4 5 6] 1) '(4 5 6))"
-                      "(= (__ [[1 2] [3 4]] 2) '([1 2] [1 2] [3 4] [3 4]))"]
-	      :secret-tests ["(= (__ [44 33] 2) [44 44 33 33])"]})
+                      "(= (__ [[1 2] [3 4]] 2) '([1 2] [1 2] [3 4] [3 4]))"
+                      "(= (__ [44 33] 2) [44 44 33 33])"]})
     
     (insert! :problems
 	     {:_id 34
@@ -342,8 +342,8 @@
 	      :description "Write a function which creates a list of all integers in a given range."
 	      :tags ["easy" "seqs" "core-functions"]
 	      :tests ["(= (__ 1 4) '(1 2 3))"
-		      "(= (__ -2 2) '(-2 -1 0 1))"]
-	      :secret-tests ["(= (__ 5 8) '(5 6 7))"]})
+		      "(= (__ -2 2) '(-2 -1 0 1))"
+                      "(= (__ 5 8) '(5 6 7))"]})
 
     (insert! :problems
            {:_id 35
@@ -381,8 +381,8 @@
             :description "Write a function which takes a variable number of parameters and returns the maximum value."
             :tags ["easy" "core-functions"]
             :tests ["(= (__ 1 8 3 4) 8)"
-		    "(= (__ 30 20) 30)"]
-	    :secret-tests ["(= (__ 45 67 11) 67)"]})
+		    "(= (__ 30 20) 30)"
+                    "(= (__ 45 67 11) 67)"]})
 
 
     (insert! :problems
@@ -393,9 +393,9 @@
             :description "Write a function which takes two sequences and returns the first item from each, then the second item from each, then the third, etc."
             :tags ["easy" "seqs" "core-functions"]
 	    :tests ["(= (__ [1 2 3] [:a :b :c]) '(1 :a 2 :b 3 :c))"
-		    "(= (__ [1 2] [3 4 5 6]) '(1 3 2 4))"]
-	    :secret-tests ["(= (__ [1 2 3 4] [5]) [1 5])"
-			   "(= (__ [30 20] [25 15]) [30 25 20 15])"]})
+		    "(= (__ [1 2] [3 4 5 6]) '(1 3 2 4))"
+                    "(= (__ [1 2 3 4] [5]) [1 5])"
+                    "(= (__ [30 20] [25 15]) [30 25 20 15])"]})
 	    
 		    
 
@@ -407,8 +407,8 @@
             :description "Write a function which separates the items of a sequence by an arbitrary value."
             :tags ["easy" "seqs" "core-functions"]
             :tests ["(= (__ 0 [1 2 3]) [1 0 2 0 3])"
-		    "(= (apply str (__ \", \" [\"one\" \"two\" \"three\"])) \"one, two, three\")"]
-	    :secret-tests ["(= (__ :z [:a :b :c :d]) [:a :z :b :z :c :z :d])"]})
+		    "(= (apply str (__ \", \" [\"one\" \"two\" \"three\"])) \"one, two, three\")"
+                    "(= (__ :z [:a :b :c :d]) [:a :z :b :z :c :z :d])"]})
 
     (insert! :problems
            {:_id 41
@@ -417,8 +417,8 @@
             :description "Write a function which drops every Nth item from a sequence."
             :tags ["easy" "seqs"]
             :tests ["(= (__ [1 2 3 4 5 6 7 8] 3) [1 2 4 5 7 8])"
-		    "(= (__ [:a :b :c :d :e :f] 2) [:a :c :e])"]
-	    :secret-tests ["(= (__ [1 2 3 4 5 6] 4) [1 2 3 5 6])"]})
+		    "(= (__ [:a :b :c :d :e :f] 2) [:a :c :e])"
+                    "(= (__ [1 2 3 4 5 6] 4) [1 2 3 5 6])"]})
 
     (insert! :problems
            {:_id 42
@@ -428,8 +428,8 @@
             :tags ["easy" "math"]
             :tests ["(= (__ 1) 1)"
 		    "(= (__ 3) 6)"
-		    "(= (__ 5) 120)"]
-	    :secret-tests ["(= (__ 8) 40320)"]})
+		    "(= (__ 5) 120)"
+                    "(= (__ 8) 40320)"]})
 
     (insert! :problems
            {:_id 43
@@ -438,8 +438,8 @@
             :description "Write a function which reverses the interleave process into x number of subsequences."
             :tags ["medium" "seqs"]
             :tests ["(= (__ [1 2 3 4 5 6] 2) '((1 3 5) (2 4 6)))"
-		    "(= (__ (range 9) 3) '((0 3 6) (1 4 7) (2 5 8)))"]
-	    :secret-tests ["(= (__ (range 10) 5) '((0 5) (1 6) (2 7) (3 8) (4 9)))"]})
+		    "(= (__ (range 9) 3) '((0 3 6) (1 4 7) (2 5 8)))"
+                    "(= (__ (range 10) 5) '((0 5) (1 6) (2 7) (3 8) (4 9)))"]})
 
     (insert! :problems
            {:_id 44
@@ -449,9 +449,9 @@
             :tags ["medium" "seqs"]
             :tests ["(= (__ 2 [1 2 3 4 5]) '(3 4 5 1 2))"
 		    "(= (__ -2 [1 2 3 4 5]) '(4 5 1 2 3))"
-		    "(= (__ 6 [1 2 3 4 5]) '(2 3 4 5 1))"]
-	    :secret-tests ["(= (__ 1 '(:a :b :c)) '(:b :c :a))"
-			   "(= (__ -4 '(:a :b :c)) '(:c :a :b))"]})
+		    "(= (__ 6 [1 2 3 4 5]) '(2 3 4 5 1))"
+                    "(= (__ 1 '(:a :b :c)) '(:b :c :a))"
+                    "(= (__ -4 '(:a :b :c)) '(:c :a :b))"]})
 
     (insert! :problems
              {:_id 45
