@@ -511,4 +511,12 @@
             :tags ["medium" "seqs"]
             :tests ["(= (set (__ [1 :a 2 :b 3 :c])) #{[1 2 3] [:a :b :c]})"
 		    "(= (set (__ [:a \"foo\"  \"bar\" :b])) #{[:a :b] [\"foo\" \"bar\"]})"
-                    "(= (set (__ [[1 2] :a [3 4] 5 6 :b])) #{[[1 2] [3 4]] [:a :b] [5 6]})"]})))
+                    "(= (set (__ [[1 2] :a [3 4] 5 6 :b])) #{[[1 2] [3 4]] [:a :b] [5 6]})"]})
+
+       (insert! :problems
+           {:_id 51
+            :title "Intro to Destructuring"
+            :times-solved 0
+            :description "Let bindings and function parameter lists support destructuring."
+            :tags ["easy"]
+            :tests ["(= __ (let [[a b & c :as d] [1 2 3 4 5]] [a b c d]))"]})))
