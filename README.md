@@ -42,7 +42,7 @@ vaguely like this:
  * Alan Malloy (amalloy)
  * Anthony Grimes (raynes)
  * Carin Meier (cmeier)
- * Clint Harrison
+ * Clint Harrison (clinteger)
 
 Problem sources:
 
