@@ -38,10 +38,11 @@ vaguely like this:
 
 ## Contributors
 
- * David Byrne <david.r.byrne@gmail.com>
- * Alan Malloy
- * Anthony Grimes
- * Carin Meier
+ * David Byrne (dbyrne)
+ * Alan Malloy (amalloy)
+ * Anthony Grimes (raynes)
+ * Carin Meier (cmeier)
+ * Clint Harrison
 
 Problem sources:
 

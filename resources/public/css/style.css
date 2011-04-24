@@ -66,6 +66,10 @@ a.novisited {color: #00e;}
   border-right: 2px solid white;
 }
 
+#contributor {
+  color: #458B00;
+  font-weight: bold;
+}
 
 #login {
   border-right: 2px solid white;
