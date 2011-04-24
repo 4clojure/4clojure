@@ -11,7 +11,7 @@
     (reverse (sort-by sortfn users))))
 
 (def-page users-page []
-  [:div [:span#contributor "*"]" 4clojure contributor"]
+  [:div [:span.contributor "*"]" 4clojure contributor"]
   [:br]
   [:table#user-table.my-table
    [:thead
@@ -21,7 +21,7 @@
    (map-indexed #(vec [:tr (row-class %1)
                        [:td
                         (when (:contributor %2)
-                          [:span#contributor "* "])
+                          [:span.contributor "* "])
                         (:user %2)]
                        [:td {:class "centered"} (count (:solved %2))]])
                 (get-users))])
