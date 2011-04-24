@@ -83,10 +83,10 @@
      [:hr]
      [:div {:id "prob-desc"}
       (problem :description)[:br]
-      [:pre {:id "testcases" :class "brush: clojure;"}
-       (for [test (:tests problem)]
-         (str test "\n"))]
-      [:script {:type "text/javascript"} "SyntaxHighlighter.all()"]
+      [:div {:class "testcases"}
+       [:pre {:class "brush: clojure;gutter: false;toolbar: false;light: true"}
+        (for [test (:tests problem)]
+          (str test "\n"))]]
       (if-let [restricted (problem :restricted)]
         [:div {:id "restrictions"}
          [:u "Special Restrictions"] [:br]
