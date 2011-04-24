@@ -43,5 +43,6 @@
         (create-feed  "Recent Problems"
                       "http://4clojure.com"
                       "Recent problems at 4clojure"
+                      "http://4clojure.com/problems/rss"
                       (problem-feed 20))))
 
