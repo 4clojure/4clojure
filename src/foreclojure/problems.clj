@@ -43,7 +43,7 @@
     (session/session-put! :code [id code])
     (flash-msg (str message " " gist-link) "/problems")))
 
-(def restricted-list ['use 'require 'in-ns 'future 'agent 'send 'send-off 'pmap 'pcalls]) 
+(def restricted-list '[use require in-ns future agent send send-off pmap pcalls]) 
 
 (defn get-tester [restricted]
   (into secure-tester (concat restricted-list (map symbol restricted))))
@@ -52,10 +52,8 @@
 
 (defn run-code [id raw-code]
   (let [code (.trim raw-code)
-	p (get-problem id)
-        tests (concat (:tests p) (:secret-tests p))
-        func-name (:function-name p)
-        sb-tester (get-tester (:restricted p))]
+	{:keys [tests restricted]} (get-problem id)
+        sb-tester (get-tester restricted)]
     (if (empty? code)
       (do
 	(session/flash-put! :code code)
@@ -96,12 +94,12 @@
       [:b "Enter your code:" [:br]
        [:span {:class "error"} (session/flash-get :error)]]]
      (form-to [:post "/run-code"] 
-              (text-area {:id "code-box"
-                          :spellcheck "false"}
-                         :code (session/flash-get :code))
-              (hidden-field :id id)
-              [:br]
-              [:button.large {:type "submit"} "Run"])]))
+       (text-area {:id "code-box"
+                   :spellcheck "false"}
+                  :code (session/flash-get :code))
+       (hidden-field :id id)
+       [:br]
+       [:button.large {:type "submit"} "Run"])]))
 
 (def-page problem-page []
   [:div.congrats (session/flash-get :message)]
@@ -134,4 +132,4 @@
   (GET "/problems" [] (problem-page))
   (GET "/problem/:id" [id] (code-box id))
   (POST "/run-code" {{:strs [id code]} :form-params}
-        (run-code (Integer. id) code)))
+    (run-code (Integer. id) code)))
