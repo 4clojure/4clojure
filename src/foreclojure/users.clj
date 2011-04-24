@@ -11,7 +11,9 @@
     (reverse (sort-by sortfn users))))
 
 (def-page users-page []
-  [:div [:span.contributor "*"]" 4clojure contributor"]
+  [:div
+   [:span.contributor "*"] " "
+   (link-to "https://github.com/dbyrne/4clojure" "4clojure contributor")]
   [:br]
   [:table#user-table.my-table
    [:thead
