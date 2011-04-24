@@ -116,7 +116,7 @@
 
 (def-page problem-page []
   [:div.congrats (session/flash-get :message)]
-  (link-to "http://4clojure.com/problems/rss" [:div {:class "rss"}])
+  (link-to "/problems/rss" [:div {:class "rss"}])
   [:table#problem-table.my-table
    [:thead
     [:tr
