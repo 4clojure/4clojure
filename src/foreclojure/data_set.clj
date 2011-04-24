@@ -591,4 +591,16 @@
             :times-solved 0
             :description "A recursive function is a function which calls itself.  This is one of the fundamental techniques used in functional programming."
             :tags ["elementary" "recursion"]
-            :tests ["(= __ ((fn foo [x] (when (> x 0) (conj (foo (dec x)) x))) 5))"]})))
+            :tests ["(= __ ((fn foo [x] (when (> x 0) (conj (foo (dec x)) x))) 5))"]})
+
+      (insert! :problems
+           {:_id 58
+            :title "Function Composition"
+            :times-solved 0
+            :restricted ["comp"]
+            :description "Write a function which allows you to create function compositions.  The parameter list should take a variable number of functions, and create a function applies them from right-to-left."
+            :tags ["medium" "higher-order-functions" "core-functions"]
+            :tests ["(= [3 2 1] ((__ rest reverse) [1 2 3 4]))"
+                    "(= 5 ((__ (partial + 3) second) [1 2 3 4]))"
+                    "(= true ((__ zero? #(mod % 8) +) 3 5 7 9))"
+                    "(= \"HELLO\" ((__ #(.toUpperCase %) #(apply str %) take) 5 \"hello world\"))"]})))
