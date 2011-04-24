@@ -43,6 +43,8 @@ vaguely like this:
  * Anthony Grimes (raynes)
  * Carin Meier (cmeier)
  * Clint Harrison (clinteger)
+ * David Davis (daviddavis)
+ * Devin Walters (devn)
 
 Problem sources:
 
