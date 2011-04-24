@@ -108,7 +108,7 @@
     [:tr
      [:th "Title"]
      [:th "Tags"]
-     [:th "Count"]
+     [:th "Times Solved"]
      [:th "Solved?"]]]
    (let [solved (get-solved (session/session-get :user))
          problems (get-problem-list)]
