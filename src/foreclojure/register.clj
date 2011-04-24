@@ -34,14 +34,14 @@
                "Passwords don't match",
                (not (empty? email))
                "Please enter a valid email address"]
-              (do
-                (insert! :users
-                         {:user lower-user
-                          :pwd (.encryptPassword (StrongPasswordEncryptor.) pwd)
-                          :email email})
-                (session/session-put! :user user)
-                (response/redirect "/"))
-              (flash-error why "/register"))))
+      (do
+        (insert! :users
+                 {:user lower-user
+                  :pwd (.encryptPassword (StrongPasswordEncryptor.) pwd)
+                  :email email})
+        (session/session-put! :user user)
+        (response/redirect "/"))
+      (flash-error why "/register"))))
 
 (defroutes register-routes
   (GET  "/register" [] (register-page))
