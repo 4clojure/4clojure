@@ -22,8 +22,20 @@ body {
 #account a:hover {color: #7CFC00;}
 #account a {text-decoration: none; font-size: 12px; font-weight:bold;}
 
+#wrapper {
+   width: 100%;
+   margin: 15px;
+   padding: 15px 0px 15px 0px;
+   text-align: left;
+   background-color: #fff;
+   overflow: auto;
+   -moz-border-radius: 15px;
+   border-radius: 15px;
+}
+
 #content {
    width: 95%;
+   margin: 15px;
    padding: 15px 0px 15px 0px;
    text-align: left;
    background-color: #fff;
@@ -90,10 +102,6 @@ a.novisited {color: #00e;}
    padding:15px 0px 15px 0px;
 }
 
-#content{
-   margin:15px
-}
-
 #welcome{
    width: 90%;
    float: left;
@@ -113,6 +121,16 @@ a.novisited {color: #00e;}
 #problem-table{
    float: left;
    width: 100%;
+}
+
+.rss {
+   width: 24px;
+   float: left;
+   background-image: url('../images/feed.png');
+   background-repeat: no-repeat;
+   background-position: top right;
+   height: 24px;
+   padding-bottom: 5px;;
 }
 
 #user-table{
