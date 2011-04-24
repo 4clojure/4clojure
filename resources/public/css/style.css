@@ -143,7 +143,9 @@ div#prob-desc {
 
 div#testcases {
   float: left;
-  margin: 10px;
+  margin: 10px 10px 10px 0;
+  font-size: 1.3em;
+  width: 500px;
 }
 
 li.testcase {

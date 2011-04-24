@@ -69,7 +69,8 @@
      [:title "4Clojure"]
      (include-js "/script/jquery-1.5.2.min.js" "/script/jquery.dataTables.min.js")
      (include-js "/script/foreclojure.js")
-     (include-css "/css/style.css" "/css/demo_table.css")
+     (include-js "/script/xregexp.js" "/script/shCore.js" "/script/shBrushClojure.js")
+     (include-css "/css/style.css" "/css/demo_table.css" "/css/shCore.css" "/css/shThemeDefault.css")
     ]
     [:body
      [:div#top
