@@ -560,4 +560,15 @@
             :tags ["medium" "seqs" "core-functions"]
             :tests ["(= (__ [1 1 2 3 2 1 1]) {1 4, 2 2, 3 1})"
                     "(= (__ [:b :a :b :a :b]) {:a 2, :b 3})"
-                    "(= (__ '([1 2] [1 3] [1 3])) {[1 2] 1, [1 3] 2})"]})))
+                    "(= (__ '([1 2] [1 3] [1 3])) {[1 2] 1, [1 3] 2})"]})
+
+      (insert! :problems
+           {:_id 56
+            :title "Find Distinct Items"
+            :times-solved 0
+            :restricted ["distinct"]
+            :description "Write a function which removes the duplicates from a sequence. Order of the items must be maintained."
+            :tags ["medium" "seqs" "core-functions"]
+            :tests ["(= (__ [1 2 1 3 1 2 4]) [1 2 3 4])"
+                    "(= (__ [:a :a :b :b :c :c]) [:a :b :c])"
+                    "(= (__ '([2 4] [1 2] [1 3] [1 3])) '([2 4] [1 2] [1 3]))"]})))
