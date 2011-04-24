@@ -1,7 +1,8 @@
 (ns foreclojure.users
   (:use foreclojure.utils
         somnium.congomongo
-        compojure.core)) 
+        compojure.core
+        [hiccup.page-helpers :only (link-to)])) 
 
 (defn get-users []
   (let [users (from-mongo
