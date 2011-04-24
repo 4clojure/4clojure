@@ -24,7 +24,7 @@
   (from-mongo
    (fetch :problems
           :only [:_id :title :tags :times-solved]
-          :sort {:id 1})))
+          :sort {:_id 1})))
 
 (defn mark-completed [id code & [user]]
   (let [user (or user (session/session-get :user))
@@ -108,7 +108,7 @@
     [:tr
      [:th "Title"]
      [:th "Tags"]
-     [:th "Count"]
+     [:th "Times Solved"]
      [:th "Solved?"]]]
    (let [solved (get-solved (session/session-get :user))
          problems (get-problem-list)]

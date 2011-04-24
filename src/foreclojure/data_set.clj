@@ -8,7 +8,7 @@
              {:_id 1
               :title "Nothing but the Truth"
               :times-solved 0
-              :description "This is a clojure form.  Enter a value which will make the form evaluate to true.  Don't over think it!  If you are confused, see the <a href='/directions'>getting started</a> page."
+              :description "This is a clojure form.  Enter a value which will make the form evaluate to true.  Don't over think it!  If you are confused, see the <a href='/directions'>getting started</a> page.  Hint: true is equal to true."
               :tags ["elementary"]
               :tests ["(= __ true)"]})
 
@@ -560,4 +560,35 @@
             :tags ["medium" "seqs" "core-functions"]
             :tests ["(= (__ [1 1 2 3 2 1 1]) {1 4, 2 2, 3 1})"
                     "(= (__ [:b :a :b :a :b]) {:a 2, :b 3})"
-                    "(= (__ '([1 2] [1 3] [1 3])) {[1 2] 1, [1 3] 2})"]})))
+                    "(= (__ '([1 2] [1 3] [1 3])) {[1 2] 1, [1 3] 2})"]})
+
+      (insert! :problems
+           {:_id 56
+            :title "Find Distinct Items"
+            :times-solved 0
+            :restricted ["distinct"]
+            :description "Write a function which removes the duplicates from a sequence. Order of the items must be maintained."
+            :tags ["medium" "seqs" "core-functions"]
+            :tests ["(= (__ [1 2 1 3 1 2 4]) [1 2 3 4])"
+                    "(= (__ [:a :a :b :b :c :c]) [:a :b :c])"
+                    "(= (__ '([2 4] [1 2] [1 3] [1 3])) '([2 4] [1 2] [1 3]))"]})
+
+      (insert! :problems
+           {:_id 56
+            :title "Find Distinct Items"
+            :times-solved 0
+            :restricted ["distinct"]
+            :description "Write a function which removes the duplicates from a sequence. Order of the items must be maintained."
+            :tags ["medium" "seqs" "core-functions"]
+            :tests ["(= (__ [1 2 1 3 1 2 4]) [1 2 3 4])"
+                    "(= (__ [:a :a :b :b :c :c]) [:a :b :c])"
+                    "(= (__ '([2 4] [1 2] [1 3] [1 3])) '([2 4] [1 2] [1 3]))"
+                    "(= (__ (range 50)) (range 50))"]})
+
+      (insert! :problems
+           {:_id 57
+            :title "Simple Recursion"
+            :times-solved 0
+            :description "A recursive function is a function which calls itself.  This is one of the fundamental techniques used in functional programming."
+            :tags ["elementary" "recursion"]
+            :tests ["(= __ ((fn foo [x] (when (> x 0) (conj (foo (dec x)) x))) 5))"]})))
