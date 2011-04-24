@@ -9,7 +9,7 @@
                  [org.clojars.christophermaier/congomongo "0.1.4-SNAPSHOT"]
 		 [org.jasypt/jasypt "1.7"]
                  [amalloy/utils "[0.3.7,)"]
-                 [clj-github "1.0.0-SNAPSHOT"]
+                 [clj-github "1.0.1"]
                  [ring "0.3.7"]
                  [clj-config "0.1.0"]
                  [org.apache.commons/commons-email "1.2"]]
