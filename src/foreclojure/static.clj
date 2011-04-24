@@ -25,10 +25,9 @@
    " problems.  This is a fancy way of saying you'll be asked to fill in the blanks.  The \"blanks\" that you will be filling in are indicated by a double underscore: '__'.  This is "
    [:u "not"]
    " part of the syntax of the language.  Any code which makes the final form evaluate to 'true' will be considered a correct answer.  Lets consider the first problem:"
-   [:br][:br]
-   [:div#testcases
-    [:li.testcase "(= __ true)"]]
-   [:br][:br][:br]
+   [:br]
+   [:pre {:class "brush: clojure;gutter: false;toolbar: false"} "(= __ true)"]
+   [:br]
    "Any of the following would be considered correct answers:"
    [:br][:br]
    [:li "true"]
@@ -36,11 +35,10 @@
    [:li "(nil? nil)"]
    [:br]
    "Some problems will expect you to fill-in-the-blanks with a function.  Here is a problem which asks you to provide a function to double a number:"
-   [:br][:br]
-   [:div#testcases
-    [:li.testcase "(= (__ 2) 4)"]
-    [:li.testcase "(= (__ 3) 6)"]]
-   [:br][:br][:br][:br]
+   [:br]
+   [:pre {:class "brush: clojure;gutter: false;toolbar: false"}
+    "(= (__ 2) 4)\n(= (__ 3) 6)\n(= (__ 11) 22)\n(= (__ 7) 14)"]
+   [:br]
    "Any of the following forms are valid solutions:"
    [:br][:br]
    [:li "(fn double [x] (* 2 x))"]

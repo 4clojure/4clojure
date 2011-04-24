@@ -141,17 +141,9 @@ div#prob-desc {
   overflow: hidden;
 }
 
-div#testcases {
+div.testcases {
+  font-size: 1.3em;
   float: left;
-  margin: 10px;
-}
-
-li.testcase {
-  font-size: 15px;
-  padding: 3px;
-  list-style-type: none;
-  background-color: #eee;
-  font-family: Courier;
 }
 
 div#restrictions {

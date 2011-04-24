@@ -83,9 +83,10 @@
      [:hr]
      [:div {:id "prob-desc"}
       (problem :description)[:br]
-      [:div {:id "testcases"}
-       (for [test (:tests problem)]
-         [:li {:class "testcase"} test])]
+      [:div {:class "testcases"}
+       [:pre {:class "brush: clojure;gutter: false;toolbar: false;light: true"}
+        (for [test (:tests problem)]
+          (str test "\n"))]]
       (if-let [restricted (problem :restricted)]
         [:div {:id "restrictions"}
          [:u "Special Restrictions"] [:br]
