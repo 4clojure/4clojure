@@ -13,7 +13,7 @@
     [:table
      (map form-row
           [[text-field :user "Username (4-13 chars.)"]
-           [password-field :pwd "Password (7-13 chars.)"]
+           [password-field :pwd "Password (7+ chars.)"]
            [password-field :repeat-pwd "Repeat Password"]
            [text-field :email "Email"]])
      [:tr
@@ -28,8 +28,8 @@
                (= lower-user
                   (first (re-seq #"[A-Za-z0-9_]+" lower-user)))
                "Username must be alphanumeric"
-               (< 6 (.length pwd) 14)
-               "Password must be 7-13 characters long",
+               (< 6 (.length pwd))
+               "Password must be at least seven characters long",
                (= pwd repeat-pwd)
                "Passwords don't match",
                (not (empty? email))
