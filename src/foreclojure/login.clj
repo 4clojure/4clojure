@@ -11,8 +11,10 @@
   (:import java.net.URLEncoder
            org.apache.commons.mail.SimpleEmail))
                         
-(def-page my-login-page [location]
-  [:div.error (session/flash-get :error)]
+(def-page my-login-page []
+  [:div.error
+   (session/flash-get :error)
+   (session/flash-get :message)]
   (form-to [:post "/login"]
     [:table
      [:tr
@@ -25,23 +27,22 @@
       [:td]
       [:td [:button {:type "submit"} "Log In"]]]
      [:tr
-      [:td ]
+      [:td]
       [:td
        [:a {:href "/login/reset"} "Forgot your password?"]]]]))
 
 (defn do-login [user pwd]
   (let [user (.toLowerCase user)
-        {db-pwd :pwd} (from-mongo (fetch-one :users :where {:user user}))]
+        {db-pwd :pwd} (from-mongo (fetch-one :users :where {:user user}))
+        location (session/session-get :login-to)]
     (if (and db-pwd (.checkPassword (StrongPasswordEncryptor.) pwd db-pwd))
       (do (update! :users {:user user}
                    {:$set {:last-login (java.util.Date.)}}
                    :upsert false) ; never create new users accidentally
           (session/session-put! :user user)
+          (session/session-delete-key! :login-to)
           (response/redirect (or location "/problems")))
-      (flash-error "Error logging in."
-                   (apply str "/login"
-                          (when location
-                            ["?location=" (URLEncoder/encode location)]))))))
+      (flash-error "Error logging in." "/login"))))
 
 (def-page update-password-page []
   (with-user [{:keys [user]}]
@@ -68,8 +69,8 @@
           (update! :users {:user user}
                    {:$set {:pwd new-pwd-hash}}
                    :upsert false)
-          (html-doc
-           [:div#update-succeeded "Password for " user " updated successfully"]))
+          (flash-msg (str "Password for " user " updated successfully")
+                     "/problems"))
         (flash-error why "/login/update")))))
 
 (def-page reset-password-page []
@@ -118,6 +119,7 @@
              name " has been reset to " pw ". Make sure to change it"
              " soon at https://4clojure.com/login/update - pick"
              " something you'll remember!")})
+      (session/session-put! :login-to "/login/update")
       (flash-msg "Your password has been reset! You should receive an email soon"
                  "/login"))
     (flash-error "We don't know anyone with that email address!"
