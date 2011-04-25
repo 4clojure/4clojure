@@ -76,7 +76,7 @@
      [:script {:type "text/javascript"} "SyntaxHighlighter.all()"]
     [:body
      [:div#top
-      [:img#logo {:src "/images/logo.png"}]]
+      [:a {:href "/"} [:img#logo {:src "/images/logo.png"}]]]
      
      [:div#content
       (if  (session/session-get :user)
