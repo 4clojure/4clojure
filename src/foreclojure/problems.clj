@@ -2,10 +2,12 @@
   (:use foreclojure.utils
         [foreclojure.social :only [tweet-link gist!]]
         [foreclojure.feeds :only [create-feed]]
+        [foreclojure.users :only [golfer?]]
         [clojail core testers]
         somnium.congomongo
         (hiccup form-helpers page-helpers core)
-        [amalloy.utils.debug :only [?]]
+        (amalloy.utils [debug :only [?]])
+        [amalloy.utils :only [defcomp]]
         compojure.core)
   (:require [sandbar.stateful-session :as session]
             [clojure.string :as s]))
@@ -38,6 +40,40 @@
                         [:description (:description v)]]))
           () (get-recent-problems n)))
 
+(defcomp mongo-key-from-number
+  "Turn an integer into a key suitable for fetching from mongodb."
+  [id]
+  keyword str int)
+
+(defn code-length [code]
+  (count (remove #(Character/isWhitespace %)
+                 code)))
+
+(defn record-golf-score! [user-name problem-id score]
+  (let [user-score-key (keyword (str "scores." problem-id))
+        problem-score-key (keyword (str "scores." score))
+        [problem-scores-key user-subkey] (map mongo-key-from-number
+                                              [score problem-id])]
+    (when-let [{:keys [_id scores] :as user}
+               (from-mongo
+                (fetch-one :users
+                           :where {:user user-name}))]
+      (when (golfer? user)
+        (let [old-score (get scores user-subkey 1e6)
+              old-score-key (keyword (str "scores." old-score))]
+
+          (when (< score old-score)
+            (update! :problems
+                     {:_id problem-id,
+                      old-score-key {:$exists true}}
+                     {:$inc {old-score-key -1}})
+            (update! :problems
+                     {:_id problem-id}
+                     {:$inc {problem-score-key 1}})
+            (update! :users
+                     {:_id _id}
+                     {:$set {user-score-key score}})))))))
+
 (defn mark-completed [id code & [user]]
   (let [user (or user (session/session-get :user))
         gist-link (html [:div.share
@@ -50,6 +86,7 @@
             (when (not-any? #{id} (get-solved user))
               (update! :users {:user user} {:$addToSet {:solved id}})
               (update! :problems {:_id id} {:$inc {:times-solved 1}}))
+            (record-golf-score! user id (code-length code))
             "Congratulations, you've solved the problem!")
           "You've solved the problem! If you log in we can track your progress.")]
     (session/session-put! :code [id code])

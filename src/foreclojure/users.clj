@@ -11,6 +11,9 @@
         sortfn  (comp count :solved)]
     (reverse (sort-by sortfn users))))
 
+(defn golfer? [user]              ; contributors signed up for testing
+  (some user [:contributor :golfer]))
+
 (def-page users-page []
   [:div
    [:span.contributor "*"] " "
