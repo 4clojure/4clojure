@@ -45,6 +45,7 @@ vaguely like this:
  * Clint Harrison (clinteger)
  * David Davis (daviddavis)
  * Devin Walters (devn)
+ * Michael Kohl (citizen428)
 
 Problem sources:
 
