@@ -16,6 +16,7 @@ $(document).ready(function() {
         "iDisplayLength":25,
         "aaSorting": [[ 1, "desc" ]],
         "aoColumns": [
+	    null,
             null,
             null
         ]
