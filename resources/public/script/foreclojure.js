@@ -14,7 +14,7 @@ $(document).ready(function() {
 
     $('#user-table').dataTable( {
         "iDisplayLength":25,
-        "aaSorting": [[ 1, "desc" ]],
+        "aaSorting": [[ 0, "asc" ]],
         "aoColumns": [
 	    null,
             null,
