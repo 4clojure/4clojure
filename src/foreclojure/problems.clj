@@ -1,6 +1,7 @@
 (ns foreclojure.problems
   (:use foreclojure.utils
         [foreclojure.social :only [tweet-link gist!]]
+        [foreclojure.feeds :only [create-feed]]
         [clojail core testers]
         somnium.congomongo
         (hiccup form-helpers page-helpers core)
@@ -26,6 +27,17 @@
           :only [:_id :title :tags :times-solved]
           :sort {:_id 1})))
 
+(defn get-recent-problems [n]
+  (map get-problem (map :_id (take-last n (get-problem-list)))))
+
+(defn problem-feed [n]
+  (reduce (fn [feed v]
+            (conj feed [:item
+                        [:guid (str "http://4clojure.com/problem/" (:_id v))]
+                        [:title (:title v)]
+                        [:description (:description v)]]))
+          () (get-recent-problems n)))
+
 (defn mark-completed [id code & [user]]
   (let [user (or user (session/session-get :user))
         gist-link (html [:div.share
@@ -38,12 +50,12 @@
             (when (not-any? #{id} (get-solved user))
               (update! :users {:user user} {:$addToSet {:solved id}})
               (update! :problems {:_id id} {:$inc {:times-solved 1}}))
-            "Congratulations, you've solved the problem!") 
+            "Congratulations, you've solved the problem!")
           "You've solved the problem! If you log in we can track your progress.")]
     (session/session-put! :code [id code])
     (flash-msg (str message " " gist-link) "/problems")))
 
-(def restricted-list '[use require in-ns future agent send send-off pmap pcalls]) 
+(def restricted-list '[use require in-ns future agent send send-off pmap pcalls])
 
 (defn get-tester [restricted]
   (into secure-tester (concat restricted-list (map symbol restricted))))
@@ -52,28 +64,28 @@
 
 (defn run-code [id raw-code]
   (let [code (.trim raw-code)
-	{:keys [tests restricted]} (get-problem id)
+        {:keys [tests restricted]} (get-problem id)
         sb-tester (get-tester restricted)]
     (if (empty? code)
       (do
-	(session/flash-put! :code code)
-	(flash-error "Empty input is not allowed"
-		     (str "/problem/" id)))
+        (session/flash-put! :code code)
+        (flash-error "Empty input is not allowed"
+                     (str "/problem/" id)))
       (try
-	(loop [[test & more] tests]
-	  (if-not test
-	    (mark-completed id code)
-	    (let [testcase (s/replace test "__" (str code))]
-	      (if (sb sb-tester (read-string testcase))
-		(recur more)
-		(do
-		  (session/flash-put! :code code)
-		  (flash-error "You failed the unit tests."
-			       (str "/problem/" id)))))))
-	(catch Exception e
-	  (do
-	    (session/flash-put! :code code)
-	    (flash-error (.getMessage e) (str "/problem/" id))))))))
+        (loop [[test & more] tests]
+          (if-not test
+            (mark-completed id code)
+            (let [testcase (s/replace test "__" (str code))]
+              (if (sb sb-tester (read-string testcase))
+                (recur more)
+                (do
+                  (session/flash-put! :code code)
+                  (flash-error "You failed the unit tests."
+                               (str "/problem/" id)))))))
+        (catch Exception e
+          (do
+            (session/flash-put! :code code)
+            (flash-error (.getMessage e) (str "/problem/" id))))))))
 
 
 (def-page code-box [id]
@@ -83,9 +95,10 @@
      [:hr]
      [:div {:id "prob-desc"}
       (problem :description)[:br]
-      [:div {:id "testcases"}
-       (for [test (:tests problem)]
-         [:li {:class "testcase"} test])]
+      [:div {:class "testcases"}
+       [:pre {:class "brush: clojure;gutter: false;toolbar: false;light: true"}
+        (for [test (:tests problem)]
+          (str test "\n"))]]
       (if-let [restricted (problem :restricted)]
         [:div {:id "restrictions"}
          [:u "Special Restrictions"] [:br]
@@ -93,16 +106,17 @@
      [:div
       [:b "Enter your code:" [:br]
        [:span {:class "error"} (session/flash-get :error)]]]
-     (form-to [:post "/run-code"] 
-       (text-area {:id "code-box"
-                   :spellcheck "false"}
-                  :code (session/flash-get :code))
-       (hidden-field :id id)
-       [:br]
-       [:button.large {:type "submit"} "Run"])]))
+     (form-to [:post "/run-code"]
+              (text-area {:id "code-box"
+                          :spellcheck "false"}
+                         :code (session/flash-get :code))
+              (hidden-field :id id)
+              [:br]
+              [:button.large {:type "submit"} "Run"])]))
 
 (def-page problem-page []
   [:div.congrats (session/flash-get :message)]
+  (link-to "/problems/rss" [:div {:class "rss"}])
   [:table#problem-table.my-table
    [:thead
     [:tr
@@ -131,5 +145,11 @@
 (defroutes problems-routes
   (GET "/problems" [] (problem-page))
   (GET "/problem/:id" [id] (code-box id))
+  (GET "/problems/rss" [] (create-feed
+                           "4Clojure: Recent Problems"
+                           "http://4clojure.com/problems"
+                           "Recent problems at 4Clojure.com"
+                           "http://4clojure.com/problems/rss"
+                           (problem-feed 20)))
   (POST "/run-code" {{:strs [id code]} :form-params}
-    (run-code (Integer. id) code)))
+        (run-code (Integer. id) code)))

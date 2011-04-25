@@ -1,7 +1,8 @@
 (ns foreclojure.users
   (:use foreclojure.utils
         somnium.congomongo
-        compojure.core)) 
+        compojure.core
+        [hiccup.page-helpers :only (link-to)]))
 
 (defn get-users []
   (let [users (from-mongo
@@ -11,14 +12,18 @@
     (reverse (sort-by sortfn users))))
 
 (def-page users-page []
-  [:div [:span.contributor "*"]" 4clojure contributor"]
+  [:div
+   [:span.contributor "*"] " "
+   (link-to "https://github.com/dbyrne/4clojure" "4clojure contributor")]
   [:br]
   [:table#user-table.my-table
    [:thead
     [:tr
-     [:th  "Username"]
+     [:th "Rank"]
+     [:th "Username"]
      [:th "Problems Solved"]]]
    (map-indexed #(vec [:tr (row-class %1)
+                       [:td (inc %1)]
                        [:td
                         (when (:contributor %2)
                           [:span.contributor "* "])
