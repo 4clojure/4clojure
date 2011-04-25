@@ -45,8 +45,6 @@
    [:li "(fn [x] (* 2 x))"]
    [:li "#(* 2 %)"]
    [:li "(partial * 2)"]
-   [:br]
-   "Keep in mind that problems which ask for a function might also check your code against secret test cases.  This is to stop users from \"gaming\" the system by writing code which passes the test cases but is against the spirit of the problem."
    [:br][:br]
    "Some operations are prohibited for security reasons.  For instance, you will not be able to use \"def\" or switch namespaces.  In addition, some problems have special restrictions.  For example, a function which is supposed to count the number of elements in a sequence will not be allowed to use the \"count\" function.  Obviously, this would defeat the purpose.  Any special restrictions will be listed on the problem page."
    [:br][:br]
