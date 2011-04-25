@@ -1,6 +1,9 @@
 (ns foreclojure.feeds
   (:use [clojure.contrib.prxml :only [prxml]]))
 
+(defn escape [x]
+  (str "<![CDATA[" x "]>"))
+
 (defn create-feed
   "Creates a feed with title, link, description, a link to the location of the feed itself, and is populated with a collection of items in the following format:
 
@@ -19,7 +22,7 @@
                :type "application/rss+xml"}]
              [:title feed-title]
              [:link feed-link]
-             [:description feed-description]
+             [:description (escape feed-description)]
              items]])))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -67,6 +67,7 @@
    [:html 
     [:head 
      [:title "4Clojure"]
+     [:link {:rel "alternate" :type "application/atom+xml" :title "Atom" :href "http://4clojure.com/problems/rss"}]
      (include-js "/script/jquery-1.5.2.min.js" "/script/jquery.dataTables.min.js")
      (include-js "/script/foreclojure.js")
      (include-js "/script/xregexp.js" "/script/shCore.js" "/script/shBrushClojure.js")
@@ -76,7 +77,7 @@
      [:script {:type "text/javascript"} "SyntaxHighlighter.all()"]
     [:body
      [:div#top
-      [:img#logo {:src "/images/logo.png"}]]
+      [:a {:href "/"} [:img#logo {:src "/images/logo.png"}]]]
      
      [:div#content
       (if  (session/session-get :user)
@@ -96,7 +97,7 @@
           [:div
            [:a#login {:href "/login"} "Login"]
            [:a#register {:href "/register"} "Register"]])]]
-      [:div#content body]
+      [:div#content_body body]
       [:div#footer
        "The content on 4clojure.com is available under the EPL v 1.0 license."
        [:a#contact {:href "mailto:team@4clojure.com"} "Contact us!"]]

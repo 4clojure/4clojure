@@ -104,7 +104,7 @@
          [:u "Special Restrictions"] [:br]
          (map (partial vector :li) restricted)])]
      [:div
-      [:b "Enter your code:" [:br]
+      [:b "Code which fills in the blank:" [:br]
        [:span {:class "error"} (session/flash-get :error)]]]
      (form-to [:post "/run-code"]
               (text-area {:id "code-box"
