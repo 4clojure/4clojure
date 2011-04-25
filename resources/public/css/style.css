@@ -202,6 +202,18 @@ textarea#code-box {
    height: 250px;
 }
 
+#code-div{
+  width: 500px;
+  height: 250px;
+}
+
+#editor { 
+   margin: 0px;
+   float: left;
+   width: 500px;
+   height: 250px;
+}
+
 table.my-table {
    padding: 2px;
    border-collapse: collapse;
