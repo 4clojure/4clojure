@@ -50,12 +50,12 @@
    [:br][:br]
    "Some operations are prohibited for security reasons.  For instance, you will not be able to use \"def\" or switch namespaces.  In addition, some problems have special restrictions.  For example, a function which is supposed to count the number of elements in a sequence will not be allowed to use the \"count\" function.  Obviously, this would defeat the purpose.  Any special restrictions will be listed on the problem page."
    [:br][:br]
-   "Many of the easier problems on this site can be solved using only your browser.  However at some point you will want to install Clojure, and use your favorite IDE or text editor to write your code.  We prefer using Emacs, but its totally a matter of personal preference.  Writing all your code directly on the site has a few disadvantages:"
+   "Many of the easier problems on this site can be solved using only your browser.  However at some point you will want to install Clojure, and use your favorite IDE or text editor to write your code.  We prefer using Emacs, but it's totally a matter of personal preference.  Writing all your code directly on the site has a few disadvantages:"
    [:br][:br]
    [:li "4Clojure is not an IDE, and doesn't try to be"]
    [:li "4Clojure won't save any of your code for later use"]
    [:br]
-   "Check out the official "
+   "Check out the official Clojure "
    [:a {:href "http://clojure.org/getting_started"} "getting started"]
    " page for help with installation."
    [:br][:br]
