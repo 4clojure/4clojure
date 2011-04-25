@@ -186,6 +186,9 @@ li.testcase {
    background-color: #eee;
    font-family: Courier;
 }
+div.syntaxhighlighter {
+  padding: 4px;
+}
 
 div#restrictions {
    list-style-type: none;
