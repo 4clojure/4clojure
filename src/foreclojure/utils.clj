@@ -96,7 +96,7 @@
           [:div
            [:a#login {:href "/login"} "Login"]
            [:a#register {:href "/register"} "Register"]])]]
-      [:div#content body]
+      [:div#content_body body]
       [:div#footer
        "The content on 4clojure.com is available under the EPL v 1.0 license."
        [:a#contact {:href "mailto:team@4clojure.com"} "Contact us!"]]
