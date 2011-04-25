@@ -19,7 +19,7 @@
   [:table#user-table.my-table
    [:thead
     [:tr
-     [:th "Rank"]
+     [:th {:style "width: 40px;"} "Rank"]
      [:th "Username"]
      [:th "Problems Solved"]]]
    (map-indexed #(vec [:tr (row-class %1)
