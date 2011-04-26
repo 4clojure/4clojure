@@ -93,6 +93,9 @@
     [:div
      [:span {:id "prob-title"} (problem :title)]
      [:hr]
+     [:div {:id "tags"} "Tags: "
+      (s/join " " (problem :tags))]
+     [:br]
      [:div {:id "prob-desc"}
       (problem :description)[:br]
       [:div {:class "testcases"}
