@@ -49,6 +49,15 @@
   (count (remove #(Character/isWhitespace %)
                  code)))
 
+(defn fetch-score-frequencies [problem-id]
+  (into {}
+        (for [[k v] (:scores
+                     (from-mongo
+                      (fetch-one :problems
+                                 :where {:_id problem-id}
+                                 :only [:scores])))]
+          [(Integer/parseInt (name k)), v])))
+
 (defn record-golf-score! [user-name problem-id score]
   (let [user-score-key (keyword (str "scores." problem-id))
         problem-score-key (keyword (str "scores." score))
@@ -58,21 +67,23 @@
                (from-mongo
                 (fetch-one :users
                            :where {:user user-name}))]
-      (when (golfer? user)
-        (let [old-score (get scores user-subkey 1e6)
-              old-score-key (keyword (str "scores." old-score))]
-
-          (when (< score old-score)
-            (update! :problems
-                     {:_id problem-id,
-                      old-score-key {:$exists true}}
-                     {:$inc {old-score-key -1}})
-            (update! :problems
-                     {:_id problem-id}
-                     {:$inc {problem-score-key 1}})
-            (update! :users
-                     {:_id _id}
-                     {:$set {user-score-key score}})))))))
+      (let [old-score-real (get scores user-subkey)
+            old-score-test (or old-score-real 1e6)
+            old-score-key (keyword (str "scores." old-score-real))]
+        (when (< score old-score-test)
+          (update! :problems
+                   {:_id problem-id,
+                    old-score-key {:$exists true}}
+                   {:$inc {old-score-key -1}})
+          (update! :problems
+                   {:_id problem-id}
+                   {:$inc {problem-score-key 1}})
+          (update! :users
+                   {:_id _id}
+                   {:$set {user-score-key score}}))
+        {:old-score old-score-real
+         :new-score score
+         :all-scores (fetch-score-frequencies problem-id)}))))
 
 (defn mark-completed [id code & [user]]
   (let [user (or user (session/session-get :user))
