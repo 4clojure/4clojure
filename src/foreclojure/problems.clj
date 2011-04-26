@@ -6,11 +6,23 @@
         [clojail core testers]
         somnium.congomongo
         (hiccup form-helpers page-helpers core)
-        (amalloy.utils [debug :only [?]])
+        (amalloy.utils [debug :only [?]]
+                       [reorder :only [reorder]])
         [amalloy.utils :only [defcomp]]
         compojure.core)
   (:require [sandbar.stateful-session :as session]
-            [clojure.string :as s]))
+            [clojure.string :as s]
+            (incanter [charts :as chart]
+                      [core :as incanter]
+                      [stats :as stats])))
+
+(defn un-group
+  "Turn a compact set of [data-point num-repetitions] pairs into a
+  bunch of repeated data points so that incanter will make a histogram
+  of them."
+  [frequencies]
+  (mapcat (partial apply (reorder repeat))
+          frequencies))
 
 (defn get-solved [user]
   (set
