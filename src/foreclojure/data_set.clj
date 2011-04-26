@@ -625,4 +625,15 @@
             :tags ["medium" "seqs" "core-functions"]
             :tests ["(= (take 5 (__ + (range))) [0 1 3 6 10])"
                     "(= (__ conj [1] [2 3 4]) [[1] [1 2] [1 2 3] [1 2 3 4]])"
-                    "(= (last (__ * 2 [3 4 5])) (reduce * 2 [3 4 5]) 120)"]})))
+                    "(= (last (__ * 2 [3 4 5])) (reduce * 2 [3 4 5]) 120)"]})
+
+      (insert! :problems
+           {:_id 61
+            :title "Map Construction"
+            :times-solved 0
+            :restricted ["zipmap"]
+            :description "Write a function which takes a vector of keys and a vector of values and constructs a map from them."
+            :tags ["easy" "core-functions"]
+            :tests ["(= (__ [:a :b :c] [1 2 3]) {:a 1, :b 2, :c 3})"
+                    "(= (__ [1 2 3 4] [\"one\" \"two\" \"three\"]) {1 \"one\", 2 \"two\", 3 \"three\"})"
+                    "(= (__ [:foo :bar] [\"foo\" \"bar\" \"baz\"]) {:foo \"foo\", :bar \"bar\"})"]})))
