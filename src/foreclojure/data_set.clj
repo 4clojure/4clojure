@@ -614,4 +614,15 @@
             :tags ["medium" "higher-order-functions" "core-functions"]
             :tests ["(= [21 6 1] ((__ + max min) 2 3 5 1 6 4))"
                     "(= [\"HELLO\" 5] ((__ #(.toUpperCase %) count) \"hello\"))"
-                    "(= [2 6 4] ((__ :a :c :b) {:a 2, :b 4, :c 6, :d 8 :e 10}))"]})))
+                    "(= [2 6 4] ((__ :a :c :b) {:a 2, :b 4, :c 6, :d 8 :e 10}))"]})
+
+      (insert! :problems
+           {:_id 60
+            :title "Sequence Reductions"
+            :times-solved 0
+            :restricted ["reductions"]
+            :description "Write a function which behaves like reduce, but returns each intermediate value of the reduction."
+            :tags ["medium" "seqs" "core-functions"]
+            :tests ["(= (take 5 (__ + (range))) [0 1 3 6 10])"
+                    "(= (__ conj [1] [2 3 4]) [[1] [1 2] [1 2 3] [1 2 3 4]])"
+                    "(= (last (__ * 2 [3 4 5])) (reduce * 2 [3 4 5]) 120)"]})))
