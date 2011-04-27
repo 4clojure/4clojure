@@ -65,7 +65,7 @@
         (when (< score old-score-test)
           (update! :problems
                    {:_id problem-id,
-                    old-score-key {:$exists true}}
+                    old-score-key {:$gt 0}}
                    {:$inc {old-score-key -1}})
           (update! :problems
                    {:_id problem-id}
