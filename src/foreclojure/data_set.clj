@@ -638,6 +638,7 @@
                     "(= (__ [1 2 3 4] [\"one\" \"two\" \"three\"]) {1 \"one\", 2 \"two\", 3 \"three\"})"
                     "(= (__ [:foo :bar] [\"foo\" \"bar\" \"baz\"]) {:foo \"foo\", :bar \"bar\"})"]})
 
+
       (insert! :problems
            {:_id 62
             :title "Re-implement Iteration"
@@ -658,6 +659,17 @@
             :tags ["medium" "seqs" "core-functions"]
             :tests ["(= (__ #(> % 5) #{1 3 6 8}) {false [1 3], true [6 8]})"
                     "(= (__ #(apply / %) [[1 2] [2 4] [4 6] [3 6]])\n   {1/2 [[1 2] [2 4] [3 6]], 2/3 [[4 6]]})"
-                    "(= (__ count [[1] [1 2] [3] [1 2 3] [2 3]])\n   {1 [[1] [3]], 2 [[1 2] [2 3]], 3 [[1 2 3]]})"]})))
+                    "(= (__ count [[1] [1 2] [3] [1 2 3] [2 3]])\n   {1 [[1] [3]], 2 [[1 2] [2 3]], 3 [[1 2 3]]})"]})
+      (insert! :problems
+           {:_id 64
+            :title "Intro to reduce"
+            :times-solved 0
+            :description "<a href='http://clojuredocs.org/clojure_core/clojure.core/reduce'>Reduce</a> takes a 2 argument fuction and and an optional starting value. It then applies the function to the first 2 items in the sequence (or the starting value and the first element of the sequence). In the next iteration the function will be called on the previous return value and the next item from the sequence, thus reducing the entire collection to one value. Don't worry, it's not really that complicated."
+            :tags ["easy" "core-functions" "reduce"]
+            :tests ["(= 15 (reduce __ [1 2 3 4 5]))"
+                    "(=  0 (reduce __ []))"
+                    "(=  6 (reduce __ 1 [2 3]))"]})
+
+      ))
 
 (load-problems)
