@@ -6,7 +6,8 @@
         [clojail core testers]
         somnium.congomongo
         (hiccup form-helpers page-helpers core)
-        (amalloy.utils [debug :only [?]])
+        (amalloy.utils [debug :only [?]]
+                       [reorder :only [reorder]])
         [amalloy.utils :only [defcomp]]
         compojure.core)
   (:require [sandbar.stateful-session :as session]
@@ -58,21 +59,22 @@
                (from-mongo
                 (fetch-one :users
                            :where {:user user-name}))]
-      (when (golfer? user)
-        (let [old-score (get scores user-subkey 1e6)
-              old-score-key (keyword (str "scores." old-score))]
-
-          (when (< score old-score)
-            (update! :problems
-                     {:_id problem-id,
-                      old-score-key {:$exists true}}
-                     {:$inc {old-score-key -1}})
-            (update! :problems
-                     {:_id problem-id}
-                     {:$inc {problem-score-key 1}})
-            (update! :users
-                     {:_id _id}
-                     {:$set {user-score-key score}})))))))
+      (let [old-score-real (get scores user-subkey)
+            old-score-test (or old-score-real 1e6)
+            old-score-key (keyword (str "scores." old-score-real))]
+        (when (< score old-score-test)
+          (update! :problems
+                   {:_id problem-id,
+                    old-score-key {:$exists true}}
+                   {:$inc {old-score-key -1}})
+          (update! :problems
+                   {:_id problem-id}
+                   {:$inc {problem-score-key 1}})
+          (update! :users
+                   {:_id _id}
+                   {:$set {user-score-key score}}))
+        {:old-score old-score-real
+         :new-score score}))))
 
 (defn mark-completed [id code & [user]]
   (let [user (or user (session/session-get :user))
