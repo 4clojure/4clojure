@@ -38,13 +38,15 @@ vaguely like this:
 
 ## Contributors
 
- * David Byrne (dbyrne)
- * Alan Malloy (amalloy)
- * Anthony Grimes (raynes)
- * Carin Meier (gigasquid)
- * Clint Harrison (clinteger)
- * David Davis (daviddavis)
- * Devin Walters (devn)
+* [David Byrne](https://github.com/dbyrne) (dbyrne)
+ * [Alan Malloy](https://github.com/amalloy) (amalloy)
+ * [Anthony Grimes](https://github.com/Raynes) (raynes)
+ * [Carin Meier](https://github.com/gigasquid) (cmeier)
+ * [Clint Harrison](https://github.com/Clinteger) (clinteger)
+ * [David Davis](https://github.com/daviddavis) (daviddavis)
+ * [Devin Walters](https://github.com/devn) (devn)
+ * [Michael Kohl](https://github.com/citizen428) (citizen428)
+
 
 Problem sources:
 

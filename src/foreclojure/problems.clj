@@ -36,7 +36,8 @@
                         [:guid (str "http://4clojure.com/problem/" (:_id v))]
                         [:title (:title v)]
                         [:description (:description v)]]))
-          () (get-recent-problems n)))
+          ()
+          (get-recent-problems n)))
 
 (defn mark-completed [id code & [user]]
   (let [user (or user (session/session-get :user))
@@ -93,6 +94,9 @@
     [:div
      [:span {:id "prob-title"} (problem :title)]
      [:hr]
+     [:div {:id "tags"} "Tags: "
+      (s/join " " (problem :tags))]
+     [:br]
      [:div {:id "prob-desc"}
       (problem :description)[:br]
       [:div {:class "testcases"}
@@ -104,7 +108,7 @@
          [:u "Special Restrictions"] [:br]
          (map (partial vector :li) restricted)])]
      [:div
-      [:b "Enter your code:" [:br]
+      [:b "Code which fills in the blank:" [:br]
        [:span {:class "error"} (session/flash-get :error)]]]
      (form-to [:post "/run-code"]
               [:div#code-div

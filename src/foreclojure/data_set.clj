@@ -603,4 +603,61 @@
             :tests ["(= [3 2 1] ((__ rest reverse) [1 2 3 4]))"
                     "(= 5 ((__ (partial + 3) second) [1 2 3 4]))"
                     "(= true ((__ zero? #(mod % 8) +) 3 5 7 9))"
-                    "(= \"HELLO\" ((__ #(.toUpperCase %) #(apply str %) take) 5 \"hello world\"))"]})))
+                    "(= \"HELLO\" ((__ #(.toUpperCase %) #(apply str %) take) 5 \"hello world\"))"]})
+
+      (insert! :problems
+           {:_id 59
+            :title "Juxtaposition"
+            :times-solved 0
+            :restricted ["juxt"]
+            :description "Take a set of functions and return a new function that takes a variable number of arguments and returns a sequence containing the result of applying each function left-to-right to the argument list."
+            :tags ["medium" "higher-order-functions" "core-functions"]
+            :tests ["(= [21 6 1] ((__ + max min) 2 3 5 1 6 4))"
+                    "(= [\"HELLO\" 5] ((__ #(.toUpperCase %) count) \"hello\"))"
+                    "(= [2 6 4] ((__ :a :c :b) {:a 2, :b 4, :c 6, :d 8 :e 10}))"]})
+
+      (insert! :problems
+           {:_id 60
+            :title "Sequence Reductions"
+            :times-solved 0
+            :restricted ["reductions"]
+            :description "Write a function which behaves like reduce, but returns each intermediate value of the reduction.  Your function must accept either two or three arguments, and the return sequence must be lazy."
+            :tags ["medium" "seqs" "core-functions"]
+            :tests ["(= (take 5 (__ + (range))) [0 1 3 6 10])"
+                    "(= (__ conj [1] [2 3 4]) [[1] [1 2] [1 2 3] [1 2 3 4]])"
+                    "(= (last (__ * 2 [3 4 5])) (reduce * 2 [3 4 5]) 120)"]})
+
+      (insert! :problems
+           {:_id 61
+            :title "Map Construction"
+            :times-solved 0
+            :restricted ["zipmap"]
+            :description "Write a function which takes a vector of keys and a vector of values and constructs a map from them."
+            :tags ["easy" "core-functions"]
+            :tests ["(= (__ [:a :b :c] [1 2 3]) {:a 1, :b 2, :c 3})"
+                    "(= (__ [1 2 3 4] [\"one\" \"two\" \"three\"]) {1 \"one\", 2 \"two\", 3 \"three\"})"
+                    "(= (__ [:foo :bar] [\"foo\" \"bar\" \"baz\"]) {:foo \"foo\", :bar \"bar\"})"]})
+
+      (insert! :problems
+           {:_id 62
+            :title "Re-implement Iteration"
+            :times-solved 0
+            :restricted ["iterate"]
+            :description "Given a side-effect free function f and an initial value x write a function which returns an infinite lazy sequence of x, (f x), (f (f x)), (f (f (f x))), etc."
+            :tags ["easy" "seqs" "core-functions"]
+            :tests ["(= (take 5 (__ #(* 2 %) 1)) [1 2 4 8 16])"
+                    "(= (take 100 (__ inc 0)) (take 100 (range)))"
+                    "(= (take 9 (__ #(inc (mod % 3)) 1)) (take 9 (cycle [1 2 3])))"]})
+
+      (insert! :problems
+           {:_id 63
+            :title "Group a Sequence"
+            :times-solved 0
+            :restricted ["group-by"]
+            :description "Given a function f and a sequence s, write a function which return a map.  The keys should be the values of f applied to each item in s.  The value at each key should be a vector of corresponding items in the order they appear in s."
+            :tags ["medium" "seqs" "core-functions"]
+            :tests ["(= (__ #(> % 5) #{1 3 6 8}) {false [1 3], true [6 8]})"
+                    "(= (__ #(apply / %) [[1 2] [2 4] [4 6] [3 6]])\n   {1/2 [[1 2] [2 4] [3 6]], 2/3 [[4 6]]})"
+                    "(= (__ count [[1] [1 2] [3] [1 2 3] [2 3]])\n   {1 [[1] [3]], 2 [[1 2] [2 3]], 3 [[1 2 3]]})"]})))
+
+(load-problems)

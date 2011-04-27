@@ -44,6 +44,16 @@ body {
    border-radius: 15px;
 }
 
+#content_body {
+   margin: 15px;
+   padding: 15px 0px 15px 0px;
+   text-align: left;
+   background-color: #fff;
+   overflow: auto;
+   -moz-border-radius: 15px;
+   border-radius: 15px;
+}
+
 #top {
    width: 95%;
    padding: 15px 0px 15px 0px;
@@ -175,6 +185,9 @@ li.testcase {
    list-style-type: none;
    background-color: #eee;
    font-family: Courier;
+}
+div.syntaxhighlighter {
+  padding: 4px;
 }
 
 div#restrictions {
