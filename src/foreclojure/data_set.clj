@@ -391,7 +391,7 @@
             :times-solved 0
             :restricted ["interleave"]
             :description "Write a function which takes two sequences and returns the first item from each, then the second item from each, then the third, etc."
-            :tags ["easy" "seqs" "core-functions"]
+            :Tags ["easy" "seqs" "core-functions"]
             :tests ["(= (__ [1 2 3] [:a :b :c]) '(1 :a 2 :b 3 :c))"
                     "(= (__ [1 2] [3 4 5 6]) '(1 3 2 4))"
                     "(= (__ [1 2 3 4] [5]) [1 5])"
@@ -636,6 +636,17 @@
             :tags ["easy" "core-functions"]
             :tests ["(= (__ [:a :b :c] [1 2 3]) {:a 1, :b 2, :c 3})"
                     "(= (__ [1 2 3 4] [\"one\" \"two\" \"three\"]) {1 \"one\", 2 \"two\", 3 \"three\"})"
-                    "(= (__ [:foo :bar] [\"foo\" \"bar\" \"baz\"]) {:foo \"foo\", :bar \"bar\"})"]})))
+                    "(= (__ [:foo :bar] [\"foo\" \"bar\" \"baz\"]) {:foo \"foo\", :bar \"bar\"})"]})
+
+      (insert! :problems
+           {:_id 62
+            :title "Intro to reduce"
+            :times-solved 0
+            :description "<a href='http://clojuredocs.org/clojure_core/clojure.core/reduce'>Reduce</a> takes a 2 argument fuction and and an optional starting value. It then applies the function to the first 2 items in the sequence (or the starting value and the first element of the sequence). In the next iteration the function will be called on the previous return value and the next item from the sequence, thus reducing the entire collection to one value. Don't worry, it's not really that complicated."
+            :tags ["easy" "core-functions" "reduce"]
+            :tests ["(= 15 (reduce __ [1 2 3 4 5]))"
+                    "(=  0 (reduce __ []))"
+                    "(=  6 (reduce __ 1 [2 3]))"]})
+      ))
 
 (load-problems)
