@@ -70,7 +70,7 @@
      (include-js "/script/jquery-1.5.2.min.js" "/script/jquery.dataTables.min.js")
      (include-js "/script/foreclojure.js")
      (include-js "/script/xregexp.js" "/script/shCore.js" "/script/shBrushClojure.js")
-     (include-js "/script/ace/src/ace.js" "/script/ace/src/theme-twilight.js" "/script/ace/src/mode-javascript.js")
+     (include-js "/script/ace/src/ace.js" "/script/ace/src/theme-textmate.js" "/script/ace/src/mode-clojure.js")
      (include-css "/css/style.css" "/css/demo_table.css" "/css/shCore.css" "/css/shThemeDefault.css")
      [:style {:type "text/css"}
       ".syntaxhighlighter { overflow-y: hidden !important; }"]]

@@ -41,7 +41,7 @@ vaguely like this:
  * David Byrne (dbyrne)
  * Alan Malloy (amalloy)
  * Anthony Grimes (raynes)
- * Carin Meier (cmeier)
+ * Carin Meier (gigasquid)
  * Clint Harrison (clinteger)
  * David Davis (daviddavis)
  * Devin Walters (devn)

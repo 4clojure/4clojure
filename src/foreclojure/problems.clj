@@ -108,7 +108,7 @@
        [:span {:class "error"} (session/flash-get :error)]]]
      (form-to [:post "/run-code"]
               [:div#code-div
-               [:pre#editor "Hello"]]
+               [:pre#editor ]]
               (hidden-field :code  "blank")
               (hidden-field :id id)
               [:br]

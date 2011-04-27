@@ -30,15 +30,20 @@ function configureDataTables(){
 }
 
 function configureCodeBox(){
-    var editor = ace.edit("editor");
-    editor.setTheme("ace/theme/twilight");
+    if ($("#run-button").length){
+       console.log("configuring");
+       var editor = ace.edit("editor");
+       editor.setTheme("ace/theme/textmate");
 
-    var JavaScriptMode = require("ace/mode/javascript").Mode;
-    editor.getSession().setMode(new JavaScriptMode());
+       var ClojureMode = require("ace/mode/clojure").Mode;
+       editor.getSession().setMode(new ClojureMode());
 
-    $("#run-button").click(function(){
-      var text = editor.getSession().getValue(); 
-      $('#code').val(text);
-    });
+       $("#run-button").click(function(){
+         var text = editor.getSession().getValue(); 
+         $('#code').val(text);
+       });
+}
+    
+   
 
 }
