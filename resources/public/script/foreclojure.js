@@ -32,7 +32,6 @@ function configureDataTables(){
 
 function configureCodeBox(){
     if ($("#run-button").length){
-       console.log("configuring");
        var editor = ace.edit("editor");
        editor.setTheme("ace/theme/textmate");
 
