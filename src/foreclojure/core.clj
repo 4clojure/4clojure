@@ -1,10 +1,11 @@
 (ns foreclojure.core
   (:use compojure.core
         [foreclojure static problems login register
-         users config social version]
+         users config social version graphs]
         ring.adapter.jetty
         somnium.congomongo
-        [ring.middleware.reload :only [wrap-reload]])
+        (ring.middleware (reload :only [wrap-reload])
+                         (stacktrace :only [wrap-stacktrace])))
   (:require [compojure [route :as route] [handler :as handler]]
             [sandbar.stateful-session :as session]
             [ring.util.response :as response]))
@@ -31,6 +32,7 @@
   static-routes
   social-routes
   version-routes
+  graph-routes
   (route/resources "/")
   (route/not-found "Page not found"))
 

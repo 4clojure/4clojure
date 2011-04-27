@@ -11,18 +11,7 @@
         [amalloy.utils :only [defcomp]]
         compojure.core)
   (:require [sandbar.stateful-session :as session]
-            [clojure.string :as s]
-            (incanter [charts :as chart]
-                      [core :as incanter]
-                      [stats :as stats])))
-
-(defn un-group
-  "Turn a compact set of [data-point num-repetitions] pairs into a
-  bunch of repeated data points so that incanter will make a histogram
-  of them."
-  [frequencies]
-  (mapcat (partial apply (reorder repeat))
-          frequencies))
+            [clojure.string :as s]))
 
 (defn get-solved [user]
   (set
@@ -61,15 +50,6 @@
   (count (remove #(Character/isWhitespace %)
                  code)))
 
-(defn fetch-score-frequencies [problem-id]
-  (into {}
-        (for [[k v] (:scores
-                     (from-mongo
-                      (fetch-one :problems
-                                 :where {:_id problem-id}
-                                 :only [:scores])))]
-          [(Integer/parseInt (name k)), v])))
-
 (defn record-golf-score! [user-name problem-id score]
   (let [user-score-key (keyword (str "scores." problem-id))
         problem-score-key (keyword (str "scores." score))
@@ -94,8 +74,7 @@
                    {:_id _id}
                    {:$set {user-score-key score}}))
         {:old-score old-score-real
-         :new-score score
-         :all-scores (fetch-score-frequencies problem-id)}))))
+         :new-score score}))))
 
 (defn mark-completed [id code & [user]]
   (let [user (or user (session/session-get :user))
