@@ -36,7 +36,8 @@
                         [:guid (str "http://4clojure.com/problem/" (:_id v))]
                         [:title (:title v)]
                         [:description (:description v)]]))
-          () (get-recent-problems n)))
+          ()
+          (get-recent-problems n)))
 
 (defn mark-completed [id code & [user]]
   (let [user (or user (session/session-get :user))
