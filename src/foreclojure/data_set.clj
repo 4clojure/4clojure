@@ -636,6 +636,17 @@
             :tags ["easy" "core-functions"]
             :tests ["(= (__ [:a :b :c] [1 2 3]) {:a 1, :b 2, :c 3})"
                     "(= (__ [1 2 3 4] [\"one\" \"two\" \"three\"]) {1 \"one\", 2 \"two\", 3 \"three\"})"
-                    "(= (__ [:foo :bar] [\"foo\" \"bar\" \"baz\"]) {:foo \"foo\", :bar \"bar\"})"]})))
+                    "(= (__ [:foo :bar] [\"foo\" \"bar\" \"baz\"]) {:foo \"foo\", :bar \"bar\"})"]})
+
+      (insert! :problems
+           {:_id 62
+            :title "Re-implement Iteration"
+            :times-solved 0
+            :restricted ["iterate"]
+            :description "Given a side-effect free function f and an initial value x write a function which returns an infinite lazy sequence of x, (f x), (f (f x)), (f (f (f x))), etc."
+            :tags ["easy" "seqs" "core-functions"]
+            :tests ["(= (take 5 (__ #(* 2 %) 1)) [1 2 4 8 16])"
+                    "(= (take 100 (__ inc 0)) (take 100 (range)))"
+                    "(= (take 9 (__ #(inc (mod % 3)) 1)) (take 9 (cycle [1 2 3])))"]})))
 
 (load-problems)
