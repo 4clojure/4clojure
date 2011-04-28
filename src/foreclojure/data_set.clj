@@ -685,7 +685,30 @@
                                    list? seq? map? set? getClass])})
 
       (insert! :problems
-           {:_id 66
+          {:_id 66
+           :title "Greatest Common Divisor"
+           :times-solved 0
+           :description "Given two integers, write a function which
+returns the greatest common divisor."
+           :tags ["easy"]
+           :tests ["(= (__ 2 4) 2)"
+                   "(= (__ 10 5) 5)"
+                   "(= (__ 5 7) 1)"
+                   "(= (__ 1023 858) 33)"]})
+
+      (insert! :problems
+          {:_id 67
+           :title "Prime Numbers"
+           :times-solved 0
+           :description "Write a function which returns the first x
+number of prime numbers."
+           :tags ["medium" "primes"]
+           :tests ["(= (__ 2) [2 3])"
+                   "(= (__ 5) [2 3 5 7 11])"
+                   "(= (last (__ 100)) 541)"]})
+      
+      (insert! :problems
+           {:_id 68
             :title "Power Set"
             :times-solved 0
             :description "A power set is the set of all subsets of a given set. Given a list, produce a set of sublists while preserving the order of elements."
