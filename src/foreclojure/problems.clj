@@ -111,9 +111,9 @@
       [:b "Code which fills in the blank:" [:br]
        [:span {:class "error"} (session/flash-get :error)]]]
      (form-to [:post "/run-code"]
-              [:div#code-div
-               [:pre#editor ]]
-              (hidden-field :code  "blank")
+             (text-area {:id "code-box"
+                          :spellcheck "false"}
+                         :code (session/flash-get :code))
               (hidden-field :id id)
               [:br]
               [:button.large {:id "run-button" :type "submit"} "Run"])]))
