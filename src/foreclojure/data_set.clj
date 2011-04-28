@@ -684,8 +684,6 @@
             :restricted (map str '[class type Class vector? sequential?
                                    list? seq? map? set? getClass])})
 
-      )
-
       (insert! :problems
            {:_id 66
             :title "Power Set"
