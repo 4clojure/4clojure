@@ -37,7 +37,7 @@ function configureCodeBox(){
 
        var ClojureMode = require("ace/mode/clojure").Mode;
        editor.getSession().setMode(new ClojureMode());
-
+       document.getElementById('editor').style.fontSize='14px';
        $("#run-button").click(function(){
          var text = editor.getSession().getValue(); 
          $('#code').val(text);
