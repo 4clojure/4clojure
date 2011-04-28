@@ -77,7 +77,7 @@
           (if-not test
             (mark-completed id code)
             (let [testcase (s/replace test "__" (str code))]
-              (if (sb sb-tester (read-string testcase))
+              (if (sb sb-tester (safe-read testcase))
                 (recur more)
                 (do
                   (session/flash-put! :code code)
