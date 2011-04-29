@@ -102,15 +102,15 @@
      [:br]
      [:div {:id "prob-desc"}
       (problem :description)[:br]
-      [:div {:class "testcases"}
-       [:table
-        (for [test (:tests problem)]
-          [:tr
-           [:td
-            [:img {:src "/images/bluelight.png" :class "teststatus"}]]
-           [:td
-            [:pre {:class "brush: clojure;gutter: false;toolbar: false;light: true"}
-             test]]])]]
+      [:table {:class "testcases"}
+       (let [tests (:tests problem)]
+         (for [i (range (count tests))]
+           [:tr
+            [:td
+             [:img {:src "/images/bluelight.png" :class "teststatus"}]]
+            [:td
+             [:pre {:class "brush: clojure;gutter: false;toolbar: false;light: true"}
+              (nth tests i)]]]))]
       (if-let [restricted (problem :restricted)]
         [:div {:id "restrictions"}
          [:u "Special Restrictions"] [:br]

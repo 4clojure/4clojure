@@ -176,7 +176,7 @@ div#prob-desc {
    overflow: hidden;
 }
 
-div.testcases {
+table.testcases {
   font-size: 1.3em;
   float: left;
 }
