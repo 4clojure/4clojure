@@ -181,6 +181,12 @@ div.testcases {
   float: left;
 }
 
+div#shared-code-box {
+  width: 90%;
+  font-size: 1.3em;
+  float: left;
+}
+
 div#testcases {
    float: left;
    margin: 10px;
