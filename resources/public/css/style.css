@@ -117,6 +117,13 @@ a.novisited {color: #00e;}
    float: left;
 }
 
+#totalcount {
+   float: right;
+   padding: 8px;
+   font-size: 20px;
+   background-color: aliceblue;
+}
+
 #footer{
    background-color:#445599;
    padding: 15px;
