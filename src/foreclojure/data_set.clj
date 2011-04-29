@@ -682,7 +682,7 @@
                     "(= :set (__ #{10 (rand-int 5)}))",
                     "(= [:map :set :vector :list] (map __ [{} #{} [] ()]))"]
             :restricted (map str '[class type Class vector? sequential?
-                                   list? seq? map? set? getClass])})
+                                   list? seq? map? set? instance? getClass])})
 
       (insert! :problems
           {:_id 66
