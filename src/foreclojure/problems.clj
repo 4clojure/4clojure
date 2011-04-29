@@ -57,7 +57,7 @@
             "Congratulations, you've solved the problem!")
           "You've solved the problem! If you log in we can track your progress.")]
     (session/session-put! :code [id code])
-    (flash-msg (str message " " gist-link) "/problems")))
+    (flash-msg (str message " " gist-link) (str "/problem/" id))))
 
 (def restricted-list '[use require in-ns future agent send send-off pmap pcalls])
 
@@ -73,25 +73,25 @@
     (if (empty? code)
       (do
         (session/flash-put! :code code)
-        (flash-error "Empty input is not allowed"
-                     (str "/problem/" id)))
+        (flash-msg "Empty input is not allowed"
+                   (str "/problem/" id)))
       (try
         (loop [[test & more] tests
                i 0]
+          (session/flash-put! :failing-test i)
           (if-not test
             (mark-completed id code)
             (let [testcase (s/replace test "__" (str code))]
               (if (sb sb-tester (safe-read testcase))
                 (recur more (inc i))
-                (do
+                (do                  
                   (session/flash-put! :code code)
-                  (session/flash-put! :failing-test i)
-                  (flash-error "You failed the unit tests."
-                               (str "/problem/" id)))))))
+                  (flash-msg "You failed the unit tests."
+                             (str "/problem/" id)))))))
         (catch Exception e
           (do
             (session/flash-put! :code code)
-            (flash-error (.getMessage e) (str "/problem/" id))))))))
+            (flash-msg (.getMessage e) (str "/problem/" id))))))))
 
 
 (def-page code-box [id]
@@ -121,8 +121,8 @@
          [:u "Special Restrictions"] [:br]
          (map (partial vector :li) restricted)])]
      [:div
-      [:b "Code which fills in the blank:" [:br]
-       [:span {:class "error"} (session/flash-get :error)]]]
+      [:div.message (session/flash-get :message)]
+      [:b "Code which fills in the blank:" [:br]]]
      (form-to [:post "/run-code"]
              (text-area {:id "code-box"
                           :spellcheck "false"}
@@ -132,7 +132,6 @@
               [:button.large {:id "run-button" :type "submit"} "Run"])]))
 
 (def-page problem-page []
-  [:div.congrats (session/flash-get :message)]
   (link-to "/problems/rss" [:div {:class "rss"}])
   [:table#problem-table.my-table
    [:thead

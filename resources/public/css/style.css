@@ -160,7 +160,7 @@ span.error, div.error {
    color: red;
 }
 
-div.congrats {
+div.message {
    color: red;
    margin-bottom: 8px;
    font-size: 16px;
