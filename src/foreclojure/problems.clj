@@ -76,14 +76,16 @@
         (flash-error "Empty input is not allowed"
                      (str "/problem/" id)))
       (try
-        (loop [[test & more] tests]
+        (loop [[test & more] tests
+               i 0]
           (if-not test
             (mark-completed id code)
             (let [testcase (s/replace test "__" (str code))]
               (if (sb sb-tester (safe-read testcase))
-                (recur more)
+                (recur more (inc i))
                 (do
                   (session/flash-put! :code code)
+                  (session/flash-put! :failing-test i)
                   (flash-error "You failed the unit tests."
                                (str "/problem/" id)))))))
         (catch Exception e
@@ -107,7 +109,10 @@
          (for [i (range (count tests))]
            [:tr
             [:td
-             [:img {:src "/images/bluelight.png" :class "teststatus"}]]
+             (let [f (session/flash-get :failing-test)]
+               (cond (or (nil? f) (> i f)) [:img {:src "/images/bluelight.png"}]
+                     (= i f) [:img {:src "/images/redlight.png"}]
+                     :else [:img {:src "/images/greenlight.png"}]))]
             [:td
              [:pre {:class "brush: clojure;gutter: false;toolbar: false;light: true"}
               (nth tests i)]]]))]
