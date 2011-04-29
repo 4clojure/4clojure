@@ -103,9 +103,14 @@
      [:div {:id "prob-desc"}
       (problem :description)[:br]
       [:div {:class "testcases"}
-       [:pre {:class "brush: clojure;gutter: false;toolbar: false;light: true"}
+       [:table
         (for [test (:tests problem)]
-          (str test "\n"))]]
+          [:tr
+           [:td
+            [:img {:src "/images/bluelight.png" :class "teststatus"}]]
+           [:td
+            [:pre {:class "brush: clojure;gutter: false;toolbar: false;light: true"}
+             test]]])]]
       (if-let [restricted (problem :restricted)]
         [:div {:id "restrictions"}
          [:u "Special Restrictions"] [:br]
