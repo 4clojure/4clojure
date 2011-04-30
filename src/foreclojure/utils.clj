@@ -44,10 +44,13 @@
   (walk/postwalk (transform-if float? int)
                  data))
 
+(defn get-user [username]
+  (from-mongo
+   (fetch-one :users :where {:user username})))
+
 (defmacro with-user [[user-binding] & body]
   `(if-let [username# (session/session-get :user)]
-     (let [~user-binding (from-mongo
-                          (fetch-one :users :where {:user username#}))]
+     (let [~user-binding (get-user username#)]
        ~@body)
      [:span.error "You must " (link-to "/login" "Log in") " to do this."]))
 
