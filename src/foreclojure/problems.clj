@@ -10,6 +10,8 @@
   (:require [sandbar.stateful-session :as session]
             [clojure.string :as s]))
 
+(def total-solved (agent 0))
+
 (defn get-solved [user]
   (set
    (:solved (from-mongo
@@ -50,7 +52,8 @@
           (do
             (when (not-any? #{id} (get-solved user))
               (update! :users {:user user} {:$addToSet {:solved id}})
-              (update! :problems {:_id id} {:$inc {:times-solved 1}}))
+              (update! :problems {:_id id} {:$inc {:times-solved 1}})
+              (send total-solved inc))
             "Congratulations, you've solved the problem!")
           "You've solved the problem! If you log in we can track your progress.")]
     (session/session-put! :code [id code])
@@ -77,7 +80,7 @@
           (if-not test
             (mark-completed id code)
             (let [testcase (s/replace test "__" (str code))]
-              (if (sb sb-tester (read-string testcase))
+              (if (sb sb-tester (safe-read testcase))
                 (recur more)
                 (do
                   (session/flash-put! :code code)

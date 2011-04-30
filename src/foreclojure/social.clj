@@ -38,10 +38,10 @@
     (let [user (session/session-get :user)
           gist-url (gist! user id code)
           gist-link (if gist-url
-                      [:div
+                      [:div {:id "shared-code-box"}
                        [:div.code
                         [:h3 "Your Solution"]
-                        [:pre code]]
+                        [:pre {:class "brush: clojure;gutter: false;toolbar: false;light: true"} code]]
                        [:br]
                        [:div.share
                          "Share this " (link-to gist-url "solution")
