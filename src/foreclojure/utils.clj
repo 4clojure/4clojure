@@ -44,10 +44,13 @@
   (walk/postwalk (transform-if float? int)
                  data))
 
+(defn get-user [username]
+  (from-mongo
+   (fetch-one :users :where {:user username})))
+
 (defmacro with-user [[user-binding] & body]
   `(if-let [username# (session/session-get :user)]
-     (let [~user-binding (from-mongo
-                          (fetch-one :users :where {:user username#}))]
+     (let [~user-binding (get-user username#)]
        ~@body)
      [:span.error "You must " (link-to "/login" "Log in") " to do this."]))
 
@@ -71,13 +74,14 @@
      (include-js "/script/jquery-1.5.2.min.js" "/script/jquery.dataTables.min.js")
      (include-js "/script/foreclojure.js")
      (include-js "/script/xregexp.js" "/script/shCore.js" "/script/shBrushClojure.js")
+     (include-js "/script/ace/src/ace.js" "/script/ace/src/theme-textmate.js" "/script/ace/src/mode-clojure.js")
      (include-css "/css/style.css" "/css/demo_table.css" "/css/shCore.css" "/css/shThemeDefault.css")
      [:style {:type "text/css"}
       ".syntaxhighlighter { overflow-y: hidden !important; }"]]
      [:script {:type "text/javascript"} "SyntaxHighlighter.all()"]
     [:body
      [:div#top
-      [:img#logo {:src "/images/logo.png"}]]
+      [:a {:href "/"} [:img#logo {:src "/images/logo.png"}]]]
      
      [:div#content
       (if  (session/session-get :user)
@@ -89,6 +93,8 @@
        [:a.menu {:href "/problems"} "Problem List"]
        [:a.menu {:href "/users"} "Top Users"]
        [:a.menu {:href "/directions"} "Getting Started"]
+       [:a.menu {:href "http://try-clojure.org"} "REPL"]
+       [:a.menu {:href "http://clojuredocs.org"} "Docs"]
        [:span#user-info
         (if-let [user (session/session-get :user)]
           [:div
@@ -97,7 +103,7 @@
           [:div
            [:a#login {:href "/login"} "Login"]
            [:a#register {:href "/register"} "Register"]])]]
-      [:div#content body]
+      [:div#content_body body]
       [:div#footer
        "The content on 4clojure.com is available under the EPL v 1.0 license."
        [:a#contact {:href "mailto:team@4clojure.com"} "Contact us!"]]

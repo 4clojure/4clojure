@@ -614,4 +614,109 @@
             :tags ["medium" "higher-order-functions" "core-functions"]
             :tests ["(= [21 6 1] ((__ + max min) 2 3 5 1 6 4))"
                     "(= [\"HELLO\" 5] ((__ #(.toUpperCase %) count) \"hello\"))"
-                    "(= [2 6 4] ((__ :a :c :b) {:a 2, :b 4, :c 6, :d 8 :e 10}))"]})))
+                    "(= [2 6 4] ((__ :a :c :b) {:a 2, :b 4, :c 6, :d 8 :e 10}))"]})
+
+      (insert! :problems
+           {:_id 60
+            :title "Sequence Reductions"
+            :times-solved 0
+            :restricted ["reductions"]
+            :description "Write a function which behaves like reduce, but returns each intermediate value of the reduction.  Your function must accept either two or three arguments, and the return sequence must be lazy."
+            :tags ["medium" "seqs" "core-functions"]
+            :tests ["(= (take 5 (__ + (range))) [0 1 3 6 10])"
+                    "(= (__ conj [1] [2 3 4]) [[1] [1 2] [1 2 3] [1 2 3 4]])"
+                    "(= (last (__ * 2 [3 4 5])) (reduce * 2 [3 4 5]) 120)"]})
+
+      (insert! :problems
+           {:_id 61
+            :title "Map Construction"
+            :times-solved 0
+            :restricted ["zipmap"]
+            :description "Write a function which takes a vector of keys and a vector of values and constructs a map from them."
+            :tags ["easy" "core-functions"]
+            :tests ["(= (__ [:a :b :c] [1 2 3]) {:a 1, :b 2, :c 3})"
+                    "(= (__ [1 2 3 4] [\"one\" \"two\" \"three\"]) {1 \"one\", 2 \"two\", 3 \"three\"})"
+                    "(= (__ [:foo :bar] [\"foo\" \"bar\" \"baz\"]) {:foo \"foo\", :bar \"bar\"})"]})
+
+      (insert! :problems
+           {:_id 62
+            :title "Re-implement Iteration"
+            :times-solved 0
+            :restricted ["iterate"]
+            :description "Given a side-effect free function f and an initial value x write a function which returns an infinite lazy sequence of x, (f x), (f (f x)), (f (f (f x))), etc."
+            :tags ["easy" "seqs" "core-functions"]
+            :tests ["(= (take 5 (__ #(* 2 %) 1)) [1 2 4 8 16])"
+                    "(= (take 100 (__ inc 0)) (take 100 (range)))"
+                    "(= (take 9 (__ #(inc (mod % 3)) 1)) (take 9 (cycle [1 2 3])))"]})
+
+      (insert! :problems
+           {:_id 63
+            :title "Group a Sequence"
+            :times-solved 0
+            :restricted ["group-by"]
+            :description "Given a function f and a sequence s, write a function which returns a map.  The keys should be the values of f applied to each item in s.  The value at each key should be a vector of corresponding items in the order they appear in s."
+            :tags ["medium" "seqs" "core-functions"]
+            :tests ["(= (__ #(> % 5) #{1 3 6 8}) {false [1 3], true [6 8]})"
+                    "(= (__ #(apply / %) [[1 2] [2 4] [4 6] [3 6]])\n   {1/2 [[1 2] [2 4] [3 6]], 2/3 [[4 6]]})"
+                    "(= (__ count [[1] [1 2] [3] [1 2 3] [2 3]])\n   {1 [[1] [3]], 2 [[1 2] [2 3]], 3 [[1 2 3]]})"]})
+
+      (insert! :problems
+           {:_id 64
+            :title "Intro to Reduce"
+            :times-solved 0
+            :description "<a href='http://clojuredocs.org/clojure_core/clojure.core/reduce'>Reduce</a> takes a 2 argument function and an optional starting value. It then applies the function to the first 2 items in the sequence (or the starting value and the first element of the sequence). In the next iteration the function will be called on the previous return value and the next item from the sequence, thus reducing the entire collection to one value. Don't worry, it's not as complicated as it sounds."
+            :tags ["elementary" "seqs"]
+            :tests ["(= 15 (reduce __ [1 2 3 4 5]))"
+                    "(=  0 (reduce __ []))"
+                    "(=  6 (reduce __ 1 [2 3]))"]})
+
+      (insert! :problems
+           {:_id 65
+            :title "Black Box Testing"
+            :times-solved 0
+            :description "Clojure has many collection types, which act in subtly different ways. The core functions typically convert them into a uniform \"sequence\" type and work with them that way, but it can be important to understand the behavioral and performance differences so that you know which kind is appropriate for your application.<br /><br />Write a function which takes a collection and returns one of :map, :set, :list, or :vector - describing the type of collection it was given.<br />You won't be allowed to inspect their class or use the built-in predicates like list? - the point is to poke at them and understand their behavior."
+            :tags ["hard" "seqs" "testing"]
+            :tests ["(= :map (__ {:a 1, :b 2}))",
+                    "(= :list (__ (range (rand-int 20))))",
+                    "(= :vector (__ [1 2 3 4 5 6]))",
+                    "(= :set (__ #{10 (rand-int 5)}))",
+                    "(= [:map :set :vector :list] (map __ [{} #{} [] ()]))"]
+            :restricted (map str '[class type Class vector? sequential?
+                                   list? seq? map? set? instance? getClass])})
+
+      (insert! :problems
+          {:_id 66
+           :title "Greatest Common Divisor"
+           :times-solved 0
+           :description "Given two integers, write a function which
+returns the greatest common divisor."
+           :tags ["easy"]
+           :tests ["(= (__ 2 4) 2)"
+                   "(= (__ 10 5) 5)"
+                   "(= (__ 5 7) 1)"
+                   "(= (__ 1023 858) 33)"]})
+
+      (insert! :problems
+          {:_id 67
+           :title "Prime Numbers"
+           :times-solved 0
+           :description "Write a function which returns the first x
+number of prime numbers."
+           :tags ["medium" "primes"]
+           :tests ["(= (__ 2) [2 3])"
+                   "(= (__ 5) [2 3 5 7 11])"
+                   "(= (last (__ 100)) 541)"]})
+      
+      (insert! :problems
+           {:_id 68
+            :title "Power Set"
+            :times-solved 0
+            :description "A power set is the set of all subsets of a given set. Given a list, produce a set of sublists while preserving the order of elements."
+            :tags ["medium" "seqs"]
+            :tests ["(= (__ '(1 :a)) '#{(1 :a) (:a) () (1)})"
+                    "(= (__ '()) '#{()})"
+                    "(= (__ '(1 2 3)) '#{() (1) (2) (3) (1 2) (1 3) (2 3) (1 2 3)})"
+                    "(= (count (__ (range 10))) 1024)"]})
+      ))
+
+(load-problems)

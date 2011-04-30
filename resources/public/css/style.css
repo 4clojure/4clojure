@@ -44,6 +44,16 @@ body {
    border-radius: 15px;
 }
 
+#content_body {
+   margin: 15px;
+   padding: 15px 0px 15px 0px;
+   text-align: left;
+   background-color: #fff;
+   overflow: auto;
+   -moz-border-radius: 15px;
+   border-radius: 15px;
+}
+
 #top {
    width: 95%;
    padding: 15px 0px 15px 0px;
@@ -107,6 +117,13 @@ a.novisited {color: #00e;}
    float: left;
 }
 
+#totalcount {
+   float: right;
+   padding: 8px;
+   font-size: 20px;
+   background-color: aliceblue;
+}
+
 #footer{
    background-color:#445599;
    padding: 15px;
@@ -143,7 +160,7 @@ span.error, div.error {
    color: red;
 }
 
-div.congrats {
+div.message {
    color: red;
    margin-bottom: 8px;
    font-size: 16px;
@@ -159,7 +176,13 @@ div#prob-desc {
    overflow: hidden;
 }
 
-div.testcases {
+table.testcases {
+  font-size: 1.3em;
+  float: left;
+}
+
+div#shared-code-box {
+  width: 90%;
   font-size: 1.3em;
   float: left;
 }
@@ -203,6 +226,19 @@ div#restrictions {
 textarea#code-box {
    width: 500px;
    height: 250px;
+}
+
+#code-div{
+  width: 100%;
+  height: 250px;
+}
+
+#editor { 
+   margin: 0px;
+   float: left;
+   width: 50%;
+   height: 250px;
+   overflow: hidden 
 }
 
 table.my-table {
