@@ -93,6 +93,8 @@
        [:a.menu {:href "/problems"} "Problem List"]
        [:a.menu {:href "/users"} "Top Users"]
        [:a.menu {:href "/directions"} "Getting Started"]
+       [:a.menu {:href "http://try-clojure.org"} "REPL"]
+       [:a.menu {:href "http://clojuredocs.org"} "Docs"]
        [:span#user-info
         (if-let [user (session/session-get :user)]
           [:div
