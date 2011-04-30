@@ -706,9 +706,17 @@ number of prime numbers."
            :tests ["(= (__ 2) [2 3])"
                    "(= (__ 5) [2 3 5 7 11])"
                    "(= (last (__ 100)) 541)"]})
+
+      (insert! :problems
+          {:_id 68
+           :title "Recurring Theme"
+           :times-solved 0
+           :description "Clojure only has one non-stack-consuming looping construct: recur.  Either a function or a loop can be used as the recursion point.  Either way, recur rebinds the bindings of the recursion point to the values it is passed.  Recur must be called from the tail-position, and calling it elsewhere will result in an error."
+           :tags ["elementary" "recursion"]
+           :tests ["(= __\n  (loop [x 5\n         result []]\n    (if (> x 0)\n      (recur (dec x) (conj result (+ 2 x)))\n      result)))"]})
       
       (insert! :problems
-           {:_id 68
+           {:_id 69
             :title "Power Set"
             :times-solved 0
             :description "A power set is the set of all subsets of a given set. Given a list, produce a set of sublists while preserving the order of elements."
