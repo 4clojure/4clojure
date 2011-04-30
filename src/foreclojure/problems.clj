@@ -82,12 +82,11 @@
 (defn run-code [id raw-code]
   (let [code (.trim raw-code)
         {:keys [tests restricted]} (get-problem id)
-        sb-tester (get-tester restricted)]
+        sb-tester (get-tester restricted)
+        this-url (str "/problem/" id)]
+    (session/flash-put! :code code)
     (if (empty? code)
-      (do
-        (session/flash-put! :code code)
-        (flash-msg "Empty input is not allowed"
-                   (str "/problem/" id)))
+      (flash-msg "Empty input is not allowed" this-url)
       (try
         (loop [[test & more] tests
                i 0]
@@ -97,14 +96,9 @@
             (let [testcase (s/replace test "__" (str code))]
               (if (sb sb-tester (safe-read testcase))
                 (recur more (inc i))
-                (do                  
-                  (session/flash-put! :code code)
-                  (flash-msg "You failed the unit tests."
-                             (str "/problem/" id)))))))
+                (flash-msg "You failed the unit tests." this-url)))))
         (catch Exception e
-          (do
-            (session/flash-put! :code code)
-            (flash-msg (.getMessage e) (str "/problem/" id))))))))
+          (flash-msg (.getMessage e) this-url))))))
 
 
 (def-page code-box [id]
