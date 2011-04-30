@@ -8,10 +8,12 @@
         somnium.congomongo)
   (:require [sandbar.stateful-session :as session]
             [ring.util.response :as response])
-  (:import java.net.URLEncoder
-           org.apache.commons.mail.SimpleEmail))
+  (:import org.apache.commons.mail.SimpleEmail))
                         
-(def-page my-login-page []
+(def-page my-login-page [location]
+  (when location
+    (session/session-put! :login-to location)
+    nil) ;; don't include this in HTML output
   [:div.error
    (session/flash-get :error)
    (session/flash-get :message)]
@@ -121,12 +123,12 @@
              " something you'll remember!")})
       (session/session-put! :login-to "/login/update")
       (flash-msg "Your password has been reset! You should receive an email soon"
-                 "/login"))
+                 (login-url "/login/update")))
     (flash-error "We don't know anyone with that email address!"
                  "/login/reset")))
 
 (defroutes login-routes
-  (GET  "/login" [] (my-login-page))
+  (GET  "/login" [location] (my-login-page location))
   (POST "/login" {{:strs [user pwd]} :form-params}
     (do-login user pwd))
 
