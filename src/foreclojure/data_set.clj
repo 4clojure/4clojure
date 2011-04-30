@@ -720,7 +720,7 @@ number of prime numbers."
            :title "Merge with a Function"
            :times-solved 0
            :restricted ["merge-with"]
-           :description "Write a function which takes a function f and a variable number of maps.  Your function should return a map that consists of the rest of the maps conj-ed onto the first.  If a key occurs in more than one map, the new value should be calculated by applying f to each of the two original values."
+           :description "Write a function which takes a function f and a variable number of maps.  Your function should return a map that consists of the rest of the maps conj-ed onto the first.  If a key occurs in more than one map, the mapping(s) from the latter (left-to-right) should be combined with the mapping in the result by calling (f val-in-result val-in-latter)"
            :tags ["medium" "core-functions"]
            :tests ["(= (__ * {:a 2, :b 3, :c 4} {:a 2} {:b 2} {:c 5})\n   {:a 4, :b 6, :c 20})"
                    "(= (__ - {1 10, 2 20} {1 3, 2 10, 3 15})\n   {1 7, 2 10, 3 15})"
