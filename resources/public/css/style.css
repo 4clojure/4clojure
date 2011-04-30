@@ -160,7 +160,7 @@ span.error, div.error {
    color: red;
 }
 
-div.congrats {
+div.message {
    color: red;
    margin-bottom: 8px;
    font-size: 16px;
@@ -176,7 +176,7 @@ div#prob-desc {
    overflow: hidden;
 }
 
-div.testcases {
+table.testcases {
   font-size: 1.3em;
   float: left;
 }
