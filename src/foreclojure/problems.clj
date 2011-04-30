@@ -1,7 +1,7 @@
 (ns foreclojure.problems
-  (:use foreclojure.utils
-        [foreclojure.social :only [tweet-link gist!]]
-        [foreclojure.feeds :only [create-feed]]
+  (:use (foreclojure utils
+                     [social :only [tweet-link gist!]]
+                     [feeds :only [create-feed]])
         [clojail core testers]
         somnium.congomongo
         (hiccup form-helpers page-helpers core)
@@ -29,6 +29,18 @@
           :only [:_id :title :tags :times-solved]
           :sort {:_id 1})))
 
+(defn next-unsolved-problem [solved-problems]
+  (when-let [unsolved (->> (get-problem-list)
+                           (remove (comp (set solved-problems) :_id))
+                           (seq))]
+    (apply min-key :_id unsolved)))
+
+(defn next-problem-link [completed-problem-id]
+  (when-let [{:keys [solved]} (get-user (session/session-get :user))]
+    (if-let [{:keys [_id title]} (next-unsolved-problem solved)]
+      (str "Now try <a href='/problem/" _id "'>" title "</a>!")
+      "You've solved them all! Come back later for more!")))
+
 (defn get-recent-problems [n]
   (map get-problem (map :_id (take-last n (get-problem-list)))))
 
@@ -54,7 +66,8 @@
               (update! :users {:user user} {:$addToSet {:solved id}})
               (update! :problems {:_id id} {:$inc {:times-solved 1}})
               (send total-solved inc))
-            "Congratulations, you've solved the problem!")
+            (str "Congratulations, you've solved the problem!"
+                 "<br />" (next-problem-link id)))
           "You've solved the problem! If you log in we can track your progress.")]
     (session/session-put! :code [id code])
     (flash-msg (str message " " gist-link) (str "/problem/" id))))
