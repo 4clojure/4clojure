@@ -717,7 +717,7 @@ number of prime numbers."
 
       (insert! :problems
           {:_id 69
-           :title "Merge with Function"
+           :title "Merge with a Function"
            :times-solved 0
            :restricted ["merge-with"]
            :description "Write a function which takes a function f and a variable number of maps.  Your function should return a map that consists of the rest of the maps conj-ed onto the first.  If a key occurs in more than one map, the new value should be calculated by applying f to each of the two original values."
