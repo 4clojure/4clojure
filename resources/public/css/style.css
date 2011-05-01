@@ -223,7 +223,7 @@ div#restrictions {
    margin-left: 1.3em;
 }
 
-textarea#code-box {
+textarea#code-box, textarea#problem-submission {
    width: 500px;
    height: 250px;
 }

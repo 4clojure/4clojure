@@ -4,7 +4,8 @@
                                      javascript-tag link-to include-js]]
                 [form-helpers :only [label]])
         [amalloy.utils.transform :only [transform-if]]
-        somnium.congomongo)
+        somnium.congomongo
+        [foreclojure.config :only [advanced-user-count]])
   (:require [sandbar.stateful-session :as session]
             (ring.util [response :as response])
             [clojure.walk :as walk])
@@ -84,7 +85,14 @@
   {:class (if (even? x)
             "evenrow"
             "oddrow")})
-  
+
+(defn get-solved [user]
+  (set
+   (:solved (from-mongo
+             (fetch-one :users
+                        :where {:user user}
+                        :only [:solved])))))
+
 (defn html-doc [& body] 
   (html 
    (doctype :html5)
@@ -116,6 +124,9 @@
        [:a.menu {:href "/directions"} "Getting Started"]
        [:a.menu {:href "http://try-clojure.org"} "REPL"]
        [:a.menu {:href "http://clojuredocs.org"} "Docs"]
+       (if-let [solved (get-solved (session/session-get :user))]
+          (if (>= (count solved) advanced-user-count)
+            [:a.menu {:href "/problems/submit"} "Submit a Problem"]))
        [:span#user-info
         (if-let [user (session/session-get :user)]
           [:div

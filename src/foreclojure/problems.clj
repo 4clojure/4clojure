@@ -12,13 +12,6 @@
 
 (def total-solved (agent 0))
 
-(defn get-solved [user]
-  (set
-   (:solved (from-mongo
-             (fetch-one :users
-                        :where {:user user}
-                        :only [:solved])))))
-
 (defn get-problem [x]
   (from-mongo
    (fetch-one :problems :where {:_id x})))
@@ -166,9 +159,31 @@
                         "/images/empty-sq.png")}]]])
       problems))])
 
+
+(def-page problem-submission-page []
+  [:div.instructions
+    [:p "Thanks for choosing to submit a problem. Please make sure that you own the rights to the code you are submitting and that you wouldn't
+        mind having us use the code as a 4clojure problem."]
+    [:b "Enter your problem here:" [:br]]
+    (form-to [:post "/submit-problem"]
+             (text-area {:id "problem-submission"
+                         :spellcheck "false"}
+                        :code (session/flash-get :code)))
+   ])
+
+(defn create-problem
+  "create a user submitted problem"
+  [code tags]
+  )
+
+
+
 (defroutes problems-routes
   (GET "/problems" [] (problem-page))
   (GET "/problem/:id" [id] (code-box id))
+  (GET "/problems/submit" [] (problem-submission-page))
+  (POST "problems/submit" [code tags]
+    (create-problem code tags))
   (POST "/problem/:id" [id code]
     (run-code (Integer. id) code))
   (GET "/problems/rss" [] (create-feed
