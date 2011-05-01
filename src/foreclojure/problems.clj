@@ -22,6 +22,10 @@
           :only [:_id :title :tags :times-solved]
           :sort {:_id 1})))
 
+(defn get-next-id []
+  (from-mongo
+    (inc (count (fetch :problems)))))
+
 (defn next-unsolved-problem [solved-problems]
   (when-let [unsolved (->> (get-problem-list)
                            (remove (comp (set solved-problems) :_id))
@@ -133,6 +137,7 @@
               [:button.large {:id "run-button" :type "submit"} "Run"])]))
 
 (def-page problem-page []
+  [:div.message (session/flash-get :message)]
   (link-to "/problems/rss" [:div {:class "rss"}])
   [:table#problem-table.my-table
    [:thead
@@ -163,18 +168,38 @@
 (def-page problem-submission-page []
   [:div.instructions
     [:p "Thanks for choosing to submit a problem. Please make sure that you own the rights to the code you are submitting and that you wouldn't
-        mind having us use the code as a 4clojure problem."]
-    [:b "Enter your problem here:" [:br]]
-    (form-to [:post "/submit-problem"]
-             (text-area {:id "problem-submission"
-                         :spellcheck "false"}
-                        :code (session/flash-get :code)))
-   ])
+        mind having us use the code as a 4clojure problem."]]
+  (form-to {:id "problem-submission"} [:post "/problems/submit"]
+           (label :title "Problem Title")
+           (text-field :title)
+           (label :tags "Tags (space separated)")
+           (text-field :tags)
+           (label :description "Problem Description")
+           (text-area {:id "problem-description"} :description)
+           [:br]
+           (label :code-box "Problem test cases. Use two underscores (__) for user input. Multiple tests ought to be on one line each.")
+           (text-area {:id "code-box" :spellcheck "false"}
+                         :code (session/flash-get :code))
+           [:p
+             [:button.large {:id "run-button" :type "submit"} "Submit"]])
+   )
 
 (defn create-problem
   "create a user submitted problem"
-  [code tags]
+  [title tags description code]
+  (do
+    (mongo! :db :mydb)
+    (insert! :problems
+             {:_id (get-next-id)
+              :title title
+              :times-solved 0
+              :description description
+              :tags (s/split tags #"\s+")
+              :tests (s/split-lines code)
+              :user (session/session-get :user)
+              :approved false})
   )
+  (flash-msg "Thank you for submitting a problem! Be sure to check back to see it posted." "/problems"))
 
 
 
@@ -182,8 +207,8 @@
   (GET "/problems" [] (problem-page))
   (GET "/problem/:id" [id] (code-box id))
   (GET "/problems/submit" [] (problem-submission-page))
-  (POST "problems/submit" [code tags]
-    (create-problem code tags))
+  (POST "/problems/submit" [title tags description code]
+    (create-problem title tags description code))
   (POST "/problem/:id" [id code]
     (run-code (Integer. id) code))
   (GET "/problems/rss" [] (create-feed
