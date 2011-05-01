@@ -7,7 +7,15 @@
         somnium.congomongo)
   (:require [sandbar.stateful-session :as session]
             (ring.util [response :as response])
-            [clojure.walk :as walk]))
+            [clojure.walk :as walk])
+  (:import java.net.URLEncoder))
+
+(def ^{:dynamic true} *url* nil)
+
+(defn wrap-uri-binding [handler]
+  (fn [req]
+    (binding [*url* (:uri req)]
+      (handler req))))
 
 (defmacro dbg [x]
   `(let [x# ~x] (println '~x "=" x#) x#))
@@ -26,6 +34,19 @@
                        (partition 2 clauses)))]
      ~fail-expr
      ~body))
+
+(defn login-url
+  ([] (login-url *url*))
+  ([location]
+     (str "/login?location=" (URLEncoder/encode location))))
+
+(defn login-link
+  ([] (login-link "Log in" *url*))
+  ([text] (login-link text *url*))
+  ([text location]
+     (html
+      (link-to (login-url location)
+               text))))
 
 (defn flash-fn [type]
   (fn [msg url]
@@ -52,7 +73,7 @@
   `(if-let [username# (session/session-get :user)]
      (let [~user-binding (get-user username#)]
        ~@body)
-     [:span.error "You must " (link-to "/login" "Log in") " to do this."]))
+     [:span.error "You must " (login-link) " to do this."]))
 
 (defn form-row [[type name info]]
   [:tr
@@ -101,7 +122,7 @@
            [:span#username (str "Logged in as " user )]
            [:a#logout {:href "/logout"} "Logout"]]
           [:div
-           [:a#login {:href "/login"} "Login"]
+           [:a#login {:href (login-url)} "Login"]
            [:a#register {:href "/register"} "Register"]])]]
       [:div#content_body body]
       [:div#footer

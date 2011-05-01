@@ -706,9 +706,38 @@ number of prime numbers."
            :tests ["(= (__ 2) [2 3])"
                    "(= (__ 5) [2 3 5 7 11])"
                    "(= (last (__ 100)) 541)"]})
+
+      (insert! :problems
+          {:_id 68
+           :title "Recurring Theme"
+           :times-solved 0
+           :description "Clojure only has one non-stack-consuming looping construct: recur.  Either a function or a loop can be used as the recursion point.  Either way, recur rebinds the bindings of the recursion point to the values it is passed.  Recur must be called from the tail-position, and calling it elsewhere will result in an error."
+           :tags ["elementary" "recursion"]
+           :tests ["(= __\n  (loop [x 5\n         result []]\n    (if (> x 0)\n      (recur (dec x) (conj result (+ 2 x)))\n      result)))"]})
+
+      (insert! :problems
+          {:_id 69
+           :title "Merge with a Function"
+           :times-solved 0
+           :restricted ["merge-with"]
+           :description "Write a function which takes a function f and a variable number of maps.  Your function should return a map that consists of the rest of the maps conj-ed onto the first.  If a key occurs in more than one map, the mapping(s) from the latter (left-to-right) should be combined with the mapping in the result by calling (f val-in-result val-in-latter)"
+           :tags ["medium" "core-functions"]
+           :tests ["(= (__ * {:a 2, :b 3, :c 4} {:a 2} {:b 2} {:c 5})\n   {:a 4, :b 6, :c 20})"
+                   "(= (__ - {1 10, 2 20} {1 3, 2 10, 3 15})\n   {1 7, 2 10, 3 15})"
+                   "(= (__ concat {:a [3], :b [6]} {:a [4 5], :c [8 9]} {:b [7]})\n   {:a [3 4 5], :b [6 7], :c [8 9]})"]})
+
+      (insert! :problems
+          {:_id 70
+           :title "Word Sorting"
+           :times-solved 0
+           :description "Write a function which splits a sentence up into a sorted list of words.  Capitalization should not affect sort order and punctuation should be ignored."
+           :tags ["medium" "sorting"]
+           :tests ["(= (__  \"Have a nice day.\")\n   [\"a\" \"day\" \"Have\" \"nice\"])"
+                   "(= (__  \"Clojure is a fun language!\")\n   [\"a\" \"Clojure\" \"fun\" \"is\" \"language\"])"
+                   "(= (__  \"Fools fall for foolish follies.\")\n   [\"fall\" \"follies\" \"foolish\" \"Fools\" \"for\"])"]})
       
       (insert! :problems
-           {:_id 68
+           {:_id 71
             :title "Power Set"
             :times-solved 0
             :description "A power set is the set of all subsets of a given set. Given a list, produce a set of sublists while preserving the order of elements."

@@ -68,7 +68,8 @@
               (send total-solved inc))
             (str "Congratulations, you've solved the problem!"
                  "<br />" (next-problem-link id)))
-          "You've solved the problem! If you log in we can track your progress.")]
+          (str "You've solved the problem! If you "
+               (login-link "log in") " we can track your progress."))]
     (session/session-put! :code [id code])
     (flash-msg (str message " " gist-link) (str "/problem/" id))))
 
@@ -130,7 +131,7 @@
      [:div
       [:div.message (session/flash-get :message)]
       [:b "Code which fills in the blank:" [:br]]]
-     (form-to [:post "/run-code"]
+     (form-to [:post *url*]
              (text-area {:id "code-box"
                           :spellcheck "false"}
                          :code (session/flash-get :code))
@@ -168,11 +169,11 @@
 (defroutes problems-routes
   (GET "/problems" [] (problem-page))
   (GET "/problem/:id" [id] (code-box id))
+  (POST "/problem/:id" [id code]
+    (run-code (Integer. id) code))
   (GET "/problems/rss" [] (create-feed
                            "4Clojure: Recent Problems"
                            "http://4clojure.com/problems"
                            "Recent problems at 4Clojure.com"
                            "http://4clojure.com/problems/rss"
-                           (problem-feed 20)))
-  (POST "/run-code" {{:strs [id code]} :form-params}
-          (run-code (Integer. id) code)))
+                           (problem-feed 20))))
