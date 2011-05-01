@@ -734,7 +734,7 @@ number of prime numbers."
            :tags ["medium" "sorting"]
            :tests ["(= (__  \"Have a nice day.\")\n   [\"a\" \"day\" \"Have\" \"nice\"])"
                    "(= (__  \"Clojure is a fun language!\")\n   [\"a\" \"Clojure\" \"fun\" \"is\" \"language\"])"
-                   "(= (__  \"Fools fall for foolish follies.\")\n   [\"fall\" \"follies\" \"foolish\" \"fools\" \"for\"])"]})
+                   "(= (__  \"Fools fall for foolish follies.\")\n   [\"fall\" \"follies\" \"foolish\" \"Fools\" \"for\"])"]})
       
       (insert! :problems
            {:_id 71
