@@ -61,6 +61,9 @@ img {border:none}
    width: 95%;
    padding: 15px 0px 15px 0px;
 }
+div#top a {
+  border: 0;
+}
 
 h3 {
    font-size: 18px;
@@ -113,6 +116,7 @@ a.novisited {color: #00e;}
 #logo {
    float:left;
    padding:15px 0px 15px 0px;
+   border: 0;
 }
 
 #welcome{
