@@ -751,9 +751,23 @@ number of prime numbers."
            :description "The ->> macro threads an expression x through a variable number of forms. First, x is inserted as the last item in the first form, making a list of it if it is not a list already.  Then the first form is inserted as the last item in the second form, making a list of that form if necessary.  This process continues for all the forms.  Using ->> can sometimes make your code more readable."
            :tags ["elementary"]
            :tests ["(= (__ (map inc (take 3 (drop 2 [2 5 4 1 3 6]))))\n   (->> [2 5 4 1 3 6] (drop 2) (take 3) (map inc) (__))\n   11)"]})
+
+(insert! :problems
+          {:_id 73
+           :title "Analyze a Tic-Tac-Toe Board"
+           :times-solved 0
+           :description "A <a href=\"http://en.wikipedia.org/wiki/Tic-tac-toe\">tic-tac-toe</a> board is represented by a two dimensional vector. X is represented by :x, O is represented by :o, and empty is represented by :e.  A player wins by placing three Xs or three Os in a horizontal, vertical, or diagonal row.  Write a function which analyzes a tic-tac-toe board and returns :x if X has won, :o if O has won, and :e if neither player has won."
+           :tags ["medium" "game"]
+           :tests ["(= :e (__ [[:e :e :e]\n           [:e :e :e]\n           [:e :e :e]]))"
+		   "(= :x (__ [[:x :e :o]\n           [:x :e :e]\n           [:x :e :o]]))"
+		   "(= :o (__ [[:e :x :e]\n           [:o :o :o]\n           [:x :e :x]]))"
+		   "(= :e (__ [[:x :e :o]\n           [:x :x :e]\n           [:o :x :o]]))"
+		   "(= :x (__ [[:x :e :e]\n           [:o :x :e]\n           [:o :e :x]]))"
+		   "(= :o (__ [[:x :e :o]\n           [:x :o :e]\n           [:o :e :x]]))"
+		   "(= :e (__ [[:x :o :x]\n           [:x :o :x]\n           [:o :x :o]]))"]}) 
       
       (insert! :problems
-           {:_id 73
+           {:_id 74
             :title "Power Set"
             :times-solved 0
             :description "A power set is the set of all subsets of a given set. Given a list, produce a set of sublists while preserving the order of elements."
