@@ -771,7 +771,7 @@ number of prime numbers."
             :title "Power Set"
             :times-solved 0
             :description "A power set is the set of all subsets of a given set. Given a list, produce a set of sublists while preserving the order of elements."
-            :tags ["medium" "seqs"]
+            :tags ["hard" "seqs"]
             :tests ["(= (__ '(1 :a)) '#{(1 :a) (:a) () (1)})"
                     "(= (__ '()) '#{()})"
                     "(= (__ '(1 2 3)) '#{() (1) (2) (3) (1 2) (1 3) (2 3) (1 2 3)})"
