@@ -533,7 +533,7 @@
            {:_id 53
             :title "Longest Increasing Sub-Seq"
             :times-solved 0
-            :description "Given a vector of integers, find the longest consecutive sub-sequence of increasing numbers. If two sub-sequences have the same length, use the one that occurs first."
+            :description "Given a vector of integers, find the longest consecutive sub-sequence of increasing numbers. If two sub-sequences have the same length, use the one that occurs first. An increasing sub-sequence must have a length of 2 or greater to qualify."
             :tags ["hard" "seqs"]
             :tests ["(= (__ [1 0 1 2 3 0 4 5]) [0 1 2 3])"
 		    "(= (__ [5 6 1 3 2 7]) [5 6])"
