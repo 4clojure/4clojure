@@ -2,6 +2,7 @@
   (:use (foreclojure utils
                      [social :only [tweet-link gist!]]
                      [feeds :only [create-feed]])
+        [foreclojure.config :only [advanced-user-count]]
         [clojail core testers]
         somnium.congomongo
         (hiccup form-helpers page-helpers core)
@@ -20,6 +21,7 @@
   (from-mongo
    (fetch :problems
           :only [:_id :title :tags :times-solved]
+          :where {:approved true}
           :sort {:_id 1})))
 
 (defn get-next-id []
