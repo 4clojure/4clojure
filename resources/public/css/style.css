@@ -238,7 +238,7 @@ form#problem-submission #problem-description {
   height: 4em;
 }
 
-div#problem-error {
+div#problems-error {
   font-size: 1.4em;
   margin: 2px 0 10px;
 }
