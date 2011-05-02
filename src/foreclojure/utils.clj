@@ -124,9 +124,8 @@
        [:a.menu {:href "/directions"} "Getting Started"]
        [:a.menu {:href "http://try-clojure.org"} "REPL"]
        [:a.menu {:href "http://clojuredocs.org"} "Docs"]
-       (if-let [solved (get-solved (session/session-get :user))]
-          (if (>= (count solved) advanced-user-count)
-            [:a.menu {:href "/problems/submit"} "Submit a Problem"]))
+       (if (>= (count (get-solved (session/session-get :user))) advanced-user-count)
+         [:a.menu {:href "/problems/submit"} "Submit a Problem"])
        [:span#user-info
         (if-let [user (session/session-get :user)]
           [:div

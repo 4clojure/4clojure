@@ -138,6 +138,7 @@
 
 (def-page problem-page []
   [:div.message (session/flash-get :message)]
+  [:div.error {:id "problems-error"} (session/flash-get :error)]
   (link-to "/problems/rss" [:div {:class "rss"}])
   [:table#problem-table.my-table
    [:thead
@@ -187,19 +188,20 @@
 (defn create-problem
   "create a user submitted problem"
   [title tags description code]
-  (do
-    (mongo! :db :mydb)
-    (insert! :problems
-             {:_id (get-next-id)
-              :title title
-              :times-solved 0
-              :description description
-              :tags (s/split tags #"\s+")
-              :tests (s/split-lines code)
-              :user (session/session-get :user)
-              :approved false})
-  )
-  (flash-msg "Thank you for submitting a problem! Be sure to check back to see it posted." "/problems"))
+  (if (>= (count (get-solved (session/session-get :user))) advanced-user-count)
+    (do
+      (mongo! :db :mydb)
+      (insert! :problems
+               {:_id (get-next-id)
+                :title title
+                :times-solved 0
+                :description description
+                :tags (s/split tags #"\s+")
+                :tests (s/split-lines code)
+                :user (session/session-get :user)
+                :approved false})
+      (flash-msg "Thank you for submitting a problem! Be sure to check back to see it posted." "/problems"))
+    (flash-error "You are not authorized to submit a problem." "/problems")))
 
 
 

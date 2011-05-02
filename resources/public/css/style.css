@@ -238,6 +238,11 @@ form#problem-submission #problem-description {
   height: 4em;
 }
 
+div#problem-error {
+  font-size: 1.4em;
+  margin: 2px 0 10px;
+}
+
 #code-div{
   width: 100%;
   height: 250px;

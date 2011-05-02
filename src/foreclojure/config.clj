@@ -8,4 +8,4 @@
 
 ;; number of problems solved to be an "advanced user" and 
 ;; submit problems of your own
-(def advanced-user-count 0)
+(def advanced-user-count 50)
