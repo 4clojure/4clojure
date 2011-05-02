@@ -46,17 +46,25 @@
 
 (def-page update-password-page []
   (with-user [{:keys [user]}]
-    [:div#update-pwd
-     [:h2 "Change password for " user]
-     [:span.error (session/flash-get :error)]
-     [:table
-      (form-to [:post "/login/update"]
-        (map form-row
-             [[password-field :old-pwd "Current password"]
-              [password-field :pwd "New password"]
-              [password-field :repeat-pwd "Repeat password"]])
-        [:tr
-         [:td [:button {:type "submit"} "Reset now"]]])]]))
+    [:div#account-settings
+     [:div#update-pwd
+      [:h2 "Change password for " user]
+      [:span.error (session/flash-get :error)]
+      [:table
+       (form-to [:post "/login/update"]
+                (map form-row
+                     [[password-field :old-pwd "Current password"]
+                      [password-field :pwd "New password"]
+                      [password-field :repeat-pwd "Repeat password"]])
+                [:tr
+                 [:td [:button {:type "submit"} "Reset now"]]])]]
+     [:div#golf-opt-in
+      [:h2 "Wanna go golfing?"]
+      [:table
+       (form-to [:post "/golf/opt-in"]
+                (form-row [check-box :opt-in "I want to join the golf league"])
+                [:tr
+                 [:td [:button {:type "opt-in"} "Golf!"]]])]]]))
 
 (defn do-update-password! [old-pwd new-pwd repeat-pwd]
   (with-user [{:keys [user pwd]}]
