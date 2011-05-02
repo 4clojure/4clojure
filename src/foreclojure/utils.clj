@@ -92,7 +92,7 @@
     [:head 
      [:title "4Clojure"]
      [:link {:rel "alternate" :type "application/atom+xml" :title "Atom" :href "http://4clojure.com/problems/rss"}]
-     [:link {:rel "shortcut icon" :href "/favicon.ico?"}]
+     [:link {:rel "shortcut icon" :href "/favicon.ico"}]
      (include-js "/script/jquery-1.5.2.min.js" "/script/jquery.dataTables.min.js")
      (include-js "/script/foreclojure.js")
      (include-js "/script/xregexp.js" "/script/shCore.js" "/script/shBrushClojure.js")
