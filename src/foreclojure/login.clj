@@ -2,7 +2,7 @@
   (:import org.jasypt.util.password.StrongPasswordEncryptor)
   (:use hiccup.form-helpers
         hiccup.page-helpers
-        [foreclojure utils config]
+        [foreclojure utils config users]
         compojure.core
         [amalloy.utils :only [rand-in-range]]
         somnium.congomongo)
@@ -47,7 +47,7 @@
       (flash-error "Error logging in." "/login"))))
 
 (def-page update-password-page []
-  (with-user [{:keys [user]}]
+  (with-user [{:keys [user] :as user-obj}]
     [:div#account-settings
      [:div#update-pwd
       [:h2 "Change password for " user]
@@ -61,12 +61,16 @@
                 [:tr
                  [:td [:button {:type "submit"} "Reset now"]]])]]
      [:div#golf-opt-in
-      [:h2 "Wanna go golfing?"]
+      [:h2 "Code golf!"]
       [:table
        (form-to [:post "/golf/opt-in"]
-                (form-row [check-box :opt-in "I want to join the golf league"])
-                [:tr
-                 [:td [:button {:type "opt-in"} "Golf!"]]])]]]))
+         [:tr
+          [:td
+           (check-box :opt-in
+                          (golfer? user-obj))
+           [:label {:for "opt-in"} 
+            "I want to join the golf league and compete to find the shortest solutions"]]]
+         [:tr [:td [:button {:type "submit"} "Update"]]])]]]))
 
 (defn do-update-password! [old-pwd new-pwd repeat-pwd]
   (with-user [{:keys [user pwd]}]

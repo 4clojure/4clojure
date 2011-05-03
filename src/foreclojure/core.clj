@@ -1,6 +1,6 @@
 (ns foreclojure.core
   (:use compojure.core
-        [foreclojure static problems login register
+        [foreclojure static problems login register golf
          users config social version graphs db-utils utils]
         ring.adapter.jetty
         somnium.congomongo
@@ -35,6 +35,7 @@
   social-routes
   version-routes
   graph-routes
+  golf-routes
   (route/resources "/")
   (route/not-found "Page not found"))
 
