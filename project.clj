@@ -7,7 +7,7 @@
                  [clojail "0.4.0-SNAPSHOT"]
                  [sandbar "0.4.0-SNAPSHOT"]
                  [org.clojars.christophermaier/congomongo "0.1.4-SNAPSHOT"]
-		 [org.jasypt/jasypt "1.7"]
+                 [org.jasypt/jasypt "1.7"]
                  [amalloy/utils "[0.3.7,)"]
                  [clj-github "1.0.1"]
                  [ring "0.3.7"]
