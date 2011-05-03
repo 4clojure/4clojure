@@ -39,10 +39,13 @@
       (chart/add-pointer chart best (freqs best 0)
                          :text "best"
                          :angle :south))
-    (when curr
+    (when (and curr (not= curr best))
       (chart/add-pointer chart curr (freqs curr 0)
                          :text "this"
                          :angle :south))
+    (when-not (> (count freqs) 1)
+      (chart/add-text chart best (freqs best 0)
+                      "Very little golfing data - chart may suck"))
     chart))
 
 (defn serve-plot [plot]
