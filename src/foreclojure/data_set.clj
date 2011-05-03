@@ -533,7 +533,7 @@
            {:_id 53
             :title "Longest Increasing Sub-Seq"
             :times-solved 0
-            :description "Given a vector of integers, find the longest consecutive sub-sequence of increasing numbers. If two sub-sequences have the same length, use the one that occurs first."
+            :description "Given a vector of integers, find the longest consecutive sub-sequence of increasing numbers. If two sub-sequences have the same length, use the one that occurs first. An increasing sub-sequence must have a length of 2 or greater to qualify."
             :tags ["hard" "seqs"]
             :tests ["(= (__ [1 0 1 2 3 0 4 5]) [0 1 2 3])"
 		    "(= (__ [5 6 1 3 2 7]) [5 6])"
@@ -636,4 +636,156 @@
             :tags ["easy" "core-functions"]
             :tests ["(= (__ [:a :b :c] [1 2 3]) {:a 1, :b 2, :c 3})"
                     "(= (__ [1 2 3 4] [\"one\" \"two\" \"three\"]) {1 \"one\", 2 \"two\", 3 \"three\"})"
-                    "(= (__ [:foo :bar] [\"foo\" \"bar\" \"baz\"]) {:foo \"foo\", :bar \"bar\"})"]})))
+                    "(= (__ [:foo :bar] [\"foo\" \"bar\" \"baz\"]) {:foo \"foo\", :bar \"bar\"})"]})
+
+      (insert! :problems
+           {:_id 62
+            :title "Re-implement Iteration"
+            :times-solved 0
+            :restricted ["iterate"]
+            :description "Given a side-effect free function f and an initial value x write a function which returns an infinite lazy sequence of x, (f x), (f (f x)), (f (f (f x))), etc."
+            :tags ["easy" "seqs" "core-functions"]
+            :tests ["(= (take 5 (__ #(* 2 %) 1)) [1 2 4 8 16])"
+                    "(= (take 100 (__ inc 0)) (take 100 (range)))"
+                    "(= (take 9 (__ #(inc (mod % 3)) 1)) (take 9 (cycle [1 2 3])))"]})
+
+      (insert! :problems
+           {:_id 63
+            :title "Group a Sequence"
+            :times-solved 0
+            :restricted ["group-by"]
+            :description "Given a function f and a sequence s, write a function which returns a map.  The keys should be the values of f applied to each item in s.  The value at each key should be a vector of corresponding items in the order they appear in s."
+            :tags ["medium" "seqs" "core-functions"]
+            :tests ["(= (__ #(> % 5) #{1 3 6 8}) {false [1 3], true [6 8]})"
+                    "(= (__ #(apply / %) [[1 2] [2 4] [4 6] [3 6]])\n   {1/2 [[1 2] [2 4] [3 6]], 2/3 [[4 6]]})"
+                    "(= (__ count [[1] [1 2] [3] [1 2 3] [2 3]])\n   {1 [[1] [3]], 2 [[1 2] [2 3]], 3 [[1 2 3]]})"]})
+
+      (insert! :problems
+           {:_id 64
+            :title "Intro to Reduce"
+            :times-solved 0
+            :description "<a href='http://clojuredocs.org/clojure_core/clojure.core/reduce'>Reduce</a> takes a 2 argument function and an optional starting value. It then applies the function to the first 2 items in the sequence (or the starting value and the first element of the sequence). In the next iteration the function will be called on the previous return value and the next item from the sequence, thus reducing the entire collection to one value. Don't worry, it's not as complicated as it sounds."
+            :tags ["elementary" "seqs"]
+            :tests ["(= 15 (reduce __ [1 2 3 4 5]))"
+                    "(=  0 (reduce __ []))"
+                    "(=  6 (reduce __ 1 [2 3]))"]})
+
+      (insert! :problems
+           {:_id 65
+            :title "Black Box Testing"
+            :times-solved 0
+            :description "Clojure has many collection types, which act in subtly different ways. The core functions typically convert them into a uniform \"sequence\" type and work with them that way, but it can be important to understand the behavioral and performance differences so that you know which kind is appropriate for your application.<br /><br />Write a function which takes a collection and returns one of :map, :set, :list, or :vector - describing the type of collection it was given.<br />You won't be allowed to inspect their class or use the built-in predicates like list? - the point is to poke at them and understand their behavior."
+            :tags ["hard" "seqs" "testing"]
+            :tests ["(= :map (__ {:a 1, :b 2}))",
+                    "(= :list (__ (range (rand-int 20))))",
+                    "(= :vector (__ [1 2 3 4 5 6]))",
+                    "(= :set (__ #{10 (rand-int 5)}))",
+                    "(= [:map :set :vector :list] (map __ [{} #{} [] ()]))"]
+            :restricted (map str '[class type Class vector? sequential?
+                                   list? seq? map? set? instance? getClass])})
+
+      (insert! :problems
+          {:_id 66
+           :title "Greatest Common Divisor"
+           :times-solved 0
+           :description "Given two integers, write a function which
+returns the greatest common divisor."
+           :tags ["easy"]
+           :tests ["(= (__ 2 4) 2)"
+                   "(= (__ 10 5) 5)"
+                   "(= (__ 5 7) 1)"
+                   "(= (__ 1023 858) 33)"]})
+
+      (insert! :problems
+          {:_id 67
+           :title "Prime Numbers"
+           :times-solved 0
+           :description "Write a function which returns the first x
+number of prime numbers."
+           :tags ["medium" "primes"]
+           :tests ["(= (__ 2) [2 3])"
+                   "(= (__ 5) [2 3 5 7 11])"
+                   "(= (last (__ 100)) 541)"]})
+
+      (insert! :problems
+          {:_id 68
+           :title "Recurring Theme"
+           :times-solved 0
+           :description "Clojure only has one non-stack-consuming looping construct: recur.  Either a function or a loop can be used as the recursion point.  Either way, recur rebinds the bindings of the recursion point to the values it is passed.  Recur must be called from the tail-position, and calling it elsewhere will result in an error."
+           :tags ["elementary" "recursion"]
+           :tests ["(= __\n  (loop [x 5\n         result []]\n    (if (> x 0)\n      (recur (dec x) (conj result (+ 2 x)))\n      result)))"]})
+
+      (insert! :problems
+          {:_id 69
+           :title "Merge with a Function"
+           :times-solved 0
+           :restricted ["merge-with"]
+           :description "Write a function which takes a function f and a variable number of maps.  Your function should return a map that consists of the rest of the maps conj-ed onto the first.  If a key occurs in more than one map, the mapping(s) from the latter (left-to-right) should be combined with the mapping in the result by calling (f val-in-result val-in-latter)"
+           :tags ["medium" "core-functions"]
+           :tests ["(= (__ * {:a 2, :b 3, :c 4} {:a 2} {:b 2} {:c 5})\n   {:a 4, :b 6, :c 20})"
+                   "(= (__ - {1 10, 2 20} {1 3, 2 10, 3 15})\n   {1 7, 2 10, 3 15})"
+                   "(= (__ concat {:a [3], :b [6]} {:a [4 5], :c [8 9]} {:b [7]})\n   {:a [3 4 5], :b [6 7], :c [8 9]})"]})
+
+      (insert! :problems
+          {:_id 70
+           :title "Word Sorting"
+           :times-solved 0
+           :description "Write a function which splits a sentence up into a sorted list of words.  Capitalization should not affect sort order and punctuation should be ignored."
+           :tags ["medium" "sorting"]
+           :tests ["(= (__  \"Have a nice day.\")\n   [\"a\" \"day\" \"Have\" \"nice\"])"
+                   "(= (__  \"Clojure is a fun language!\")\n   [\"a\" \"Clojure\" \"fun\" \"is\" \"language\"])"
+                   "(= (__  \"Fools fall for foolish follies.\")\n   [\"fall\" \"follies\" \"foolish\" \"Fools\" \"for\"])"]})
+
+      (insert! :problems
+          {:_id 71
+           :title "Rearranging Code: ->"
+           :times-solved 0
+           :description "The -> macro threads an expression x through a variable number of forms. First, x is inserted as the second item in the first form, making a list of it if it is not a list already.  Then the first form is inserted as the second item in the second form, making a list of that form if necessary.  This process continues for all the forms.  Using -> can sometimes make your code more readable."
+           :tags ["elementary"]
+           :tests ["(= (__ (sort (rest (reverse [2 5 4 1 3 6]))))\n   (-> [2 5 4 1 3 6] reverse rest sort __)\n   5)"]})
+
+      (insert! :problems
+          {:_id 72
+           :title "Rearranging Code: ->>"
+           :times-solved 0
+           :description "The ->> macro threads an expression x through a variable number of forms. First, x is inserted as the last item in the first form, making a list of it if it is not a list already.  Then the first form is inserted as the last item in the second form, making a list of that form if necessary.  This process continues for all the forms.  Using ->> can sometimes make your code more readable."
+           :tags ["elementary"]
+           :tests ["(= (__ (map inc (take 3 (drop 2 [2 5 4 1 3 6]))))\n   (->> [2 5 4 1 3 6] (drop 2) (take 3) (map inc) (__))\n   11)"]})
+
+(insert! :problems
+          {:_id 73
+           :title "Analyze a Tic-Tac-Toe Board"
+           :times-solved 0
+           :description "A <a href=\"http://en.wikipedia.org/wiki/Tic-tac-toe\">tic-tac-toe</a> board is represented by a two dimensional vector. X is represented by :x, O is represented by :o, and empty is represented by :e.  A player wins by placing three Xs or three Os in a horizontal, vertical, or diagonal row.  Write a function which analyzes a tic-tac-toe board and returns :x if X has won, :o if O has won, and nil if neither player has won."
+           :tags ["medium" "game"]
+           :tests ["(= nil (__ [[:e :e :e]\n            [:e :e :e]\n            [:e :e :e]]))"
+		   "(= :x (__ [[:x :e :o]\n           [:x :e :e]\n           [:x :e :o]]))"
+		   "(= :o (__ [[:e :x :e]\n           [:o :o :o]\n           [:x :e :x]]))"
+		   "(= nil (__ [[:x :e :o]\n            [:x :x :e]\n            [:o :x :o]]))"
+		   "(= :x (__ [[:x :e :e]\n           [:o :x :e]\n           [:o :e :x]]))"
+		   "(= :o (__ [[:x :e :o]\n           [:x :o :e]\n           [:o :e :x]]))"
+		   "(= nil (__ [[:x :o :x]\n            [:x :o :x]\n            [:o :x :o]]))"]}) 
+
+ (insert! :problems
+          {:_id 74
+           :title "Filter Perfect Squares"
+           :times-solved 0
+           :description "Given a string of comma separated integers, write a function which returns a new comma separated string that only contains the numbers which are perfect squares."
+           :tags ["medium"]
+           :tests ["(= (__ \"4,5,6,7,8,9\") \"4,9\")"
+		   "(= (__ \"15,16,25,36,37\") \"16,25,36\")"]}) 
+
+
+      (insert! :problems
+           {:_id 75
+            :title "Power Set"
+            :times-solved 0
+            :description "A power set is the set of all subsets of a given set. Given a list, produce a set of sublists while preserving the order of elements."
+            :tags ["hard" "seqs"]
+            :tests ["(= (__ '(1 :a)) '#{(1 :a) (:a) () (1)})"
+                    "(= (__ '()) '#{()})"
+                    "(= (__ '(1 2 3)) '#{() (1) (2) (3) (1 2) (1 3) (2 3) (1 2 3)})"
+                    "(= (count (__ (range 10))) 1024)"]})
+      ))
+
+(load-problems)

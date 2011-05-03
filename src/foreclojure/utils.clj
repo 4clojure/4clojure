@@ -7,7 +7,15 @@
         somnium.congomongo)
   (:require [sandbar.stateful-session :as session]
             (ring.util [response :as response])
-            [clojure.walk :as walk]))
+            [clojure.walk :as walk])
+  (:import java.net.URLEncoder))
+
+(def ^{:dynamic true} *url* nil)
+
+(defn wrap-uri-binding [handler]
+  (fn [req]
+    (binding [*url* (:uri req)]
+      (handler req))))
 
 (defmacro dbg [x]
   `(let [x# ~x] (println '~x "=" x#) x#))
@@ -27,6 +35,19 @@
      ~fail-expr
      ~body))
 
+(defn login-url
+  ([] (login-url *url*))
+  ([location]
+     (str "/login?location=" (URLEncoder/encode location))))
+
+(defn login-link
+  ([] (login-link "Log in" *url*))
+  ([text] (login-link text *url*))
+  ([text location]
+     (html
+      (link-to (login-url location)
+               text))))
+
 (defn flash-fn [type]
   (fn [msg url]
     (session/flash-put! type msg)
@@ -44,12 +65,15 @@
   (walk/postwalk (transform-if float? int)
                  data))
 
+(defn get-user [username]
+  (from-mongo
+   (fetch-one :users :where {:user username})))
+
 (defmacro with-user [[user-binding] & body]
   `(if-let [username# (session/session-get :user)]
-     (let [~user-binding (from-mongo
-                          (fetch-one :users :where {:user username#}))]
+     (let [~user-binding (get-user username#)]
        ~@body)
-     [:span.error "You must " (link-to "/login" "Log in") " to do this."]))
+     [:span.error "You must " (login-link) " to do this."]))
 
 (defn form-row [[type name info]]
   [:tr
@@ -68,9 +92,11 @@
     [:head 
      [:title "4Clojure"]
      [:link {:rel "alternate" :type "application/atom+xml" :title "Atom" :href "http://4clojure.com/problems/rss"}]
+     [:link {:rel "shortcut icon" :href "/favicon.ico"}]
      (include-js "/script/jquery-1.5.2.min.js" "/script/jquery.dataTables.min.js")
      (include-js "/script/foreclojure.js")
      (include-js "/script/xregexp.js" "/script/shCore.js" "/script/shBrushClojure.js")
+     (include-js "/script/ace/src/ace.js" "/script/ace/src/theme-textmate.js" "/script/ace/src/mode-clojure.js")
      (include-css "/css/style.css" "/css/demo_table.css" "/css/shCore.css" "/css/shThemeDefault.css")
      [:style {:type "text/css"}
       ".syntaxhighlighter { overflow-y: hidden !important; }"]]
@@ -89,13 +115,15 @@
        [:a.menu {:href "/problems"} "Problem List"]
        [:a.menu {:href "/users"} "Top Users"]
        [:a.menu {:href "/directions"} "Getting Started"]
+       [:a.menu {:href "http://try-clojure.org"} "REPL"]
+       [:a.menu {:href "http://clojuredocs.org"} "Docs"]
        [:span#user-info
         (if-let [user (session/session-get :user)]
           [:div
            [:span#username (str "Logged in as " user )]
            [:a#logout {:href "/logout"} "Logout"]]
           [:div
-           [:a#login {:href "/login"} "Login"]
+           [:a#login {:href (login-url)} "Login"]
            [:a#register {:href "/register"} "Register"]])]]
       [:div#content_body body]
       [:div#footer
