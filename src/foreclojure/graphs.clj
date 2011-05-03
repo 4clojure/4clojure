@@ -27,22 +27,23 @@
                                  :only [:scores])))]
           [(Integer/parseInt (name k)), v])))
 
-(defn make-problem-plot [id best prev]
+(defn make-problem-plot [id best curr]
   (let [freqs (fetch-score-frequencies id)
         chart-data (un-group freqs)
-        best (or best prev)
+        [best curr] [(or best curr) (or curr best)]
         chart (chart/histogram chart-data
                                :title (str "League scores: problem " id)
                                :x-label "Solution length"
                                :y-label "How often")]
-    (doto chart
-;;      (chart/set-theme :dark)
-      (chart/add-pointer best (freqs best 0)
+    (when best
+      (chart/add-pointer chart best (freqs best 0)
                          :text "best"
-                         :angle :south)
-      (chart/add-pointer prev (freqs prev 0)
+                         :angle :south))
+    (when curr
+      (chart/add-pointer chart curr (freqs curr 0)
                          :text "this"
-                         :angle :south))))
+                         :angle :south))
+    chart))
 
 (defn serve-plot [plot]
   (let [out (ByteArrayOutputStream.)
@@ -54,7 +55,7 @@
      :body in}))
 
 (defroutes graph-routes
-  (GET "/leagues/golf/:id" [id best prev]
-    (with-adjustments #(when % (Integer/parseInt %)) [id best prev]
-      (serve-plot (make-problem-plot id best prev)))))
+  (GET "/leagues/golf/:id" [id best curr]
+    (with-adjustments #(when (seq %) (Integer/parseInt %)) [id best curr]
+      (serve-plot (make-problem-plot id best curr)))))
 

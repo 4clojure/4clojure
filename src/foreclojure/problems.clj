@@ -77,6 +77,11 @@
       (let [old-score-real (get scores user-subkey)
             old-score-test (or old-score-real 1e6)
             old-score-key (keyword (str "scores." old-score-real))]
+        (when (golfer? user)
+          (session/session-put! :golf-chart
+                                {:id problem-id
+                                 :score score
+                                 :best old-score-real}))
         (when (< score old-score-test)
           (update! :problems
                    {:_id problem-id,
@@ -87,9 +92,7 @@
                    {:$inc {problem-score-key 1}})
           (update! :users
                    {:_id _id}
-                   {:$set {user-score-key score}}))
-        {:old-score old-score-real
-         :new-score score}))))
+                   {:$set {user-score-key score}}))))))
 
 (defn mark-completed [id code & [user]]
   (let [user (or user (session/session-get :user))
@@ -103,8 +106,8 @@
             (when (not-any? #{id} (get-solved user))
               (update! :users {:user user} {:$addToSet {:solved id}})
               (update! :problems {:_id id} {:$inc {:times-solved 1}})
-              (record-golf-score! user id (code-length code))
               (send total-solved inc))
+            (record-golf-score! user id (code-length code))
             (str "Congratulations, you've solved the problem!"
                  "<br />" (next-problem-link id)))
           (str "You've solved the problem! If you "
@@ -140,43 +143,56 @@
         (catch Exception e
           (flash-msg (.getMessage e) this-url))))))
 
+(defn render-test-cases [tests]
+  [:table {:class "testcases"}
+   (let [fail (session/flash-get :failing-test)]
+     (for [[idx test] (map-indexed list tests)]
+       [:tr
+        [:td
+         [:img {:src (cond
+                      (or (nil? fail) (> idx fail)) "/images/bluelight.png"
+                      (= idx fail) "/images/redlight.png"
+                      :else "/images/greenlight.png")}]]
+        [:td
+         [:pre {:class "brush: clojure;gutter: false;toolbar: false;light: true"}
+          test]]]))])
+
+(defn render-golf-chart []
+  (let [{:keys [id best score] :as settings}
+        (session/session-get :golf-chart)
+
+        url (str "/leagues/golf/" id "?best=" best "&curr=" score)]
+    (session/session-delete-key! :golf-chart)
+    (when settings
+      [:img {:src url}])))
 
 (def-page code-box [id]
-  (let [problem (get-problem (Integer. id))]
+  (let [{:keys [title tags description restricted tests]}
+        (get-problem (Integer. id))]
     [:div
-     [:span {:id "prob-title"} (problem :title)]
+     [:span {:id "prob-title"} title]
      [:hr]
      [:div {:id "tags"} "Tags: "
-      (s/join " " (problem :tags))]
+      (s/join " " tags)]
      [:br]
      [:div {:id "prob-desc"}
-      (problem :description)[:br]
-      [:table {:class "testcases"}
-       (let [tests (:tests problem)]
-         (for [i (range (count tests))]
-           [:tr
-            [:td
-             (let [f (session/flash-get :failing-test)]
-               (cond (or (nil? f) (> i f)) [:img {:src "/images/bluelight.png"}]
-                     (= i f) [:img {:src "/images/redlight.png"}]
-                     :else [:img {:src "/images/greenlight.png"}]))]
-            [:td
-             [:pre {:class "brush: clojure;gutter: false;toolbar: false;light: true"}
-              (nth tests i)]]]))]
-      (if-let [restricted (problem :restricted)]
+      description[:br]
+      (render-test-cases tests)
+      (when restricted
         [:div {:id "restrictions"}
          [:u "Special Restrictions"] [:br]
-         (map (partial vector :li) restricted)])]
+         (map (partial vector :li) restricted)])
+      (render-golf-chart)]
      [:div
       [:div.message (session/flash-get :message)]
       [:b "Code which fills in the blank:" [:br]]]
      (form-to [:post *url*]
-             (text-area {:id "code-box"
-                          :spellcheck "false"}
-                         :code (session/flash-get :code))
-              (hidden-field :id id)
-              [:br]
-              [:button.large {:id "run-button" :type "submit"} "Run"])]))
+       (text-area {:id "code-box"
+                   :spellcheck "false"}
+                  :code (session/flash-get :code))
+       (hidden-field :id id)
+       [:br]
+       [:button.large {:id "run-button" :type "submit"} "Run"])]))
 
 (def-page problem-page []
   (link-to "/problems/rss" [:div {:class "rss"}])
