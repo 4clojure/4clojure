@@ -752,7 +752,7 @@ number of prime numbers."
            :tags ["elementary"]
            :tests ["(= (__ (map inc (take 3 (drop 2 [2 5 4 1 3 6]))))\n   (->> [2 5 4 1 3 6] (drop 2) (take 3) (map inc) (__))\n   11)"]})
 
-(insert! :problems
+      (insert! :problems
           {:_id 73
            :title "Analyze a Tic-Tac-Toe Board"
            :times-solved 0
@@ -766,7 +766,7 @@ number of prime numbers."
 		   "(= :o (__ [[:x :e :o]\n           [:x :o :e]\n           [:o :e :x]]))"
 		   "(= nil (__ [[:x :o :x]\n            [:x :o :x]\n            [:o :x :o]]))"]}) 
 
- (insert! :problems
+      (insert! :problems
           {:_id 74
            :title "Filter Perfect Squares"
            :times-solved 0
@@ -775,9 +775,20 @@ number of prime numbers."
            :tests ["(= (__ \"4,5,6,7,8,9\") \"4,9\")"
 		   "(= (__ \"15,16,25,36,37\") \"16,25,36\")"]}) 
 
+      (insert! :problems
+          {:_id 75
+           :title "Euler's Totient Function"
+           :times-solved 0
+           :description "Two numbers are coprime if their greatest common divisor equals 1.  Euler's totient function f(x) is defined as the number of positive integers less than x which are coprime to x.  The special case f(1) equals 1.  Write a function which calculates Euler's totient function."
+           :tags ["medium"]
+           :tests ["(= (__ 1) 1)"
+		   "(= (__ 10) (count '(1 3 7 9)) 4)"
+		   "(= (__ 40) 16)"
+		   "(= (__ 99) 60)"]}) 
+
 
       (insert! :problems
-           {:_id 75
+           {:_id 76
             :title "Power Set"
             :times-solved 0
             :description "A power set is the set of all subsets of a given set. Given a list, produce a set of sublists while preserving the order of elements."
