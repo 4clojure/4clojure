@@ -765,9 +765,19 @@ number of prime numbers."
 		   "(= :x (__ [[:x :e :e]\n           [:o :x :e]\n           [:o :e :x]]))"
 		   "(= :o (__ [[:x :e :o]\n           [:x :o :e]\n           [:o :e :x]]))"
 		   "(= nil (__ [[:x :o :x]\n            [:x :o :x]\n            [:o :x :o]]))"]}) 
-      
+
+ (insert! :problems
+          {:_id 74
+           :title "Filter Perfect Squares"
+           :times-solved 0
+           :description "Given a string of comma separated integers, write a function which returns a new comma separated string that only contains the numbers which are perfect squares."
+           :tags ["medium"]
+           :tests ["(= (__ \"4,5,6,7,8,9\") \"4,9\")"
+		   "(= (__ \"15,16,25,36,37\") \"16,25,36\")"]}) 
+
+
       (insert! :problems
-           {:_id 74
+           {:_id 75
             :title "Power Set"
             :times-solved 0
             :description "A power set is the set of all subsets of a given set. Given a list, produce a set of sublists while preserving the order of elements."
