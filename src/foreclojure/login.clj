@@ -2,7 +2,7 @@
   (:import org.jasypt.util.password.StrongPasswordEncryptor)
   (:use hiccup.form-helpers
         hiccup.page-helpers
-        [foreclojure utils config]
+        [foreclojure utils config users]
         compojure.core
         [amalloy.utils :only [rand-in-range]]
         somnium.congomongo)
@@ -47,18 +47,31 @@
       (flash-error "Error logging in." "/login"))))
 
 (def-page update-password-page []
-  (with-user [{:keys [user]}]
-    [:div#update-pwd
-     [:h2 "Change password for " user]
-     [:span.error (session/flash-get :error)]
-     [:table
-      (form-to [:post "/login/update"]
-        (map form-row
-             [[password-field :old-pwd "Current password"]
-              [password-field :pwd "New password"]
-              [password-field :repeat-pwd "Repeat password"]])
-        [:tr
-         [:td [:button {:type "submit"} "Reset now"]]])]]))
+  (with-user [{:keys [user] :as user-obj}]
+    [:div#account-settings
+     [:div#update-pwd
+      [:h2 "Change password for " user]
+      [:span.error (session/flash-get :error)]
+      [:table
+       (form-to [:post "/login/update"]
+                (map form-row
+                     [[password-field :old-pwd "Current password"]
+                      [password-field :pwd "New password"]
+                      [password-field :repeat-pwd "Repeat password"]])
+                [:tr
+                 [:td [:button {:type "submit"} "Reset now"]]])]]
+     (when (:golfing-active config)
+       [:div#golf-opt-in
+       [:h2 "Code golf!"]
+       [:table
+        (form-to [:post "/golf/opt-in"]
+          [:tr
+           [:td
+            (check-box :opt-in
+                       (golfer? user-obj))
+            [:label {:for "opt-in"} 
+             "I want to join the golf league and compete to find the shortest solutions"]]]
+          [:tr [:td [:button {:type "submit"} "Update"]]])]])]))
 
 (defn do-update-password! [old-pwd new-pwd repeat-pwd]
   (with-user [{:keys [user pwd]}]

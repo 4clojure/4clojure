@@ -313,3 +313,13 @@ button:active {
    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#A1CC59', endColorstr='#A7D45C')";
    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#A1CC59', endColorstr='#A7D45C');
 }
+
+#golfgraph{ 
+  width: 90%
+}
+
+#golfgraph img{
+  height: 300px;
+  padding-top: 25px;
+}
+
