@@ -181,8 +181,7 @@
       (when restricted
         [:div {:id "restrictions"}
          [:u "Special Restrictions"] [:br]
-         (map (partial vector :li) restricted)])
-      (render-golf-chart)]
+         (map (partial vector :li) restricted)])]
      [:div
       [:div.message (session/flash-get :message)]
       [:b "Code which fills in the blank:" [:br]]]
@@ -190,9 +189,12 @@
        (text-area {:id "code-box"
                    :spellcheck "false"}
                   :code (session/flash-get :code))
+       [:div#golfgraph
+        (render-golf-chart)]
        (hidden-field :id id)
        [:br]
-       [:button.large {:id "run-button" :type "submit"} "Run"])]))
+       [:button.large {:id "run-button" :type "submit"} "Run"])
+     ]))
 
 (def-page problem-page []
   (link-to "/problems/rss" [:div {:class "rss"}])
