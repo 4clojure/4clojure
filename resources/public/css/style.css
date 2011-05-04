@@ -230,9 +230,24 @@ div#restrictions {
    margin-left: 1.3em;
 }
 
-textarea#code-box {
+textarea#code-box, #problem-submission textarea {
    width: 500px;
    height: 250px;
+}
+
+form#problem-submission label {
+  font-weight: bold;
+  display: block;
+  margin: 10px 0 4px;
+}
+
+form#problem-submission #problem-description {
+  height: 4em;
+}
+
+div#problems-error {
+  font-size: 1.4em;
+  margin: 2px 0 10px;
 }
 
 #code-div{
