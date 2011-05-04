@@ -1,8 +1,12 @@
 (ns foreclojure.users
-  (:use foreclojure.utils
+  (:use [foreclojure utils config]
         somnium.congomongo
         compojure.core
         [hiccup.page-helpers :only (link-to)]))
+
+(def golfer-tags (into [:contributor]
+                       (when (:golfing-active config)
+                         [:golfer])))
 
 (defn get-users []
   (let [users (from-mongo
@@ -11,8 +15,8 @@
         sortfn  (comp count :solved)]
     (reverse (sort-by sortfn users))))
 
-(defn golfer? [user]              ; contributors signed up for testing
-  (some user [:contributor :golfer]))
+(defn golfer? [user]
+  (some user golfer-tags))
 
 (def-page users-page []
   [:div

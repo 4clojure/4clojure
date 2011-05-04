@@ -60,17 +60,18 @@
                       [password-field :repeat-pwd "Repeat password"]])
                 [:tr
                  [:td [:button {:type "submit"} "Reset now"]]])]]
-     [:div#golf-opt-in
-      [:h2 "Code golf!"]
-      [:table
-       (form-to [:post "/golf/opt-in"]
-         [:tr
-          [:td
-           (check-box :opt-in
-                          (golfer? user-obj))
-           [:label {:for "opt-in"} 
-            "I want to join the golf league and compete to find the shortest solutions"]]]
-         [:tr [:td [:button {:type "submit"} "Update"]]])]]]))
+     (when (:golfing-active config)
+       [:div#golf-opt-in
+       [:h2 "Code golf!"]
+       [:table
+        (form-to [:post "/golf/opt-in"]
+          [:tr
+           [:td
+            (check-box :opt-in
+                       (golfer? user-obj))
+            [:label {:for "opt-in"} 
+             "I want to join the golf league and compete to find the shortest solutions"]]]
+          [:tr [:td [:button {:type "submit"} "Update"]]])]])]))
 
 (defn do-update-password! [old-pwd new-pwd repeat-pwd]
   (with-user [{:keys [user pwd]}]
