@@ -2,7 +2,7 @@
   (:use (foreclojure utils
                      [social :only [tweet-link gist!]]
                      [feeds :only [create-feed]]
-                     [foreclojure.config :only [advanced-user-count]]
+                     [config :only [advanced-user-count]]
                      [users :only [golfer?]])
         [clojail core testers]
         somnium.congomongo
