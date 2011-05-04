@@ -46,7 +46,7 @@
     (when-not (> (count freqs) 1)
       (chart/add-text chart best (freqs best 0)
                       "Very little golfing data - chart may suck"))
-    (doto chart (chart/set-theme :bw)))))
+    (doto chart (chart/set-theme :bw))))
 
 (defn serve-plot [plot]
   (let [out (ByteArrayOutputStream.)
