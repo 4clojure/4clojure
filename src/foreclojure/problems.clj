@@ -1,7 +1,9 @@
 (ns foreclojure.problems
   (:use (foreclojure utils
                      [social :only [tweet-link gist!]]
-                     [feeds :only [create-feed]])
+                     [feeds :only [create-feed]]
+                     [config :only [advanced-user-count]]
+                     [users :only [golfer?]])
         [clojail core testers]
         somnium.congomongo
         (hiccup form-helpers page-helpers core)
