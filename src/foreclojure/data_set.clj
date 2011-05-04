@@ -586,7 +586,7 @@
            {:_id 53
             :title "Longest Increasing Sub-Seq"
             :times-solved 0
-            :description "Given a vector of integers, find the longest consecutive sub-sequence of increasing numbers. If two sub-sequences have the same length, use the one that occurs first."
+            :description "Given a vector of integers, find the longest consecutive sub-sequence of increasing numbers. If two sub-sequences have the same length, use the one that occurs first. An increasing sub-sequence must have a length of 2 or greater to qualify."
             :tags ["hard" "seqs"]
             :approved true
             :tests ["(= (__ [1 0 1 2 3 0 4 5]) [0 1 2 3])"
@@ -825,14 +825,38 @@ number of prime numbers."
            :tags ["elementary"]
            :approved true
            :tests ["(= (__ (map inc (take 3 (drop 2 [2 5 4 1 3 6]))))\n   (->> [2 5 4 1 3 6] (drop 2) (take 3) (map inc) (__))\n   11)"]})
-      
+
+(insert! :problems
+          {:_id 73
+           :title "Analyze a Tic-Tac-Toe Board"
+           :times-solved 0
+           :description "A <a href=\"http://en.wikipedia.org/wiki/Tic-tac-toe\">tic-tac-toe</a> board is represented by a two dimensional vector. X is represented by :x, O is represented by :o, and empty is represented by :e.  A player wins by placing three Xs or three Os in a horizontal, vertical, or diagonal row.  Write a function which analyzes a tic-tac-toe board and returns :x if X has won, :o if O has won, and nil if neither player has won."
+           :tags ["medium" "game"]
+           :tests ["(= nil (__ [[:e :e :e]\n            [:e :e :e]\n            [:e :e :e]]))"
+		   "(= :x (__ [[:x :e :o]\n           [:x :e :e]\n           [:x :e :o]]))"
+		   "(= :o (__ [[:e :x :e]\n           [:o :o :o]\n           [:x :e :x]]))"
+		   "(= nil (__ [[:x :e :o]\n            [:x :x :e]\n            [:o :x :o]]))"
+		   "(= :x (__ [[:x :e :e]\n           [:o :x :e]\n           [:o :e :x]]))"
+		   "(= :o (__ [[:x :e :o]\n           [:x :o :e]\n           [:o :e :x]]))"
+		   "(= nil (__ [[:x :o :x]\n            [:x :o :x]\n            [:o :x :o]]))"]}) 
+
+ (insert! :problems
+          {:_id 74
+           :title "Filter Perfect Squares"
+           :times-solved 0
+           :description "Given a string of comma separated integers, write a function which returns a new comma separated string that only contains the numbers which are perfect squares."
+           :tags ["medium"]
+           :tests ["(= (__ \"4,5,6,7,8,9\") \"4,9\")"
+		   "(= (__ \"15,16,25,36,37\") \"16,25,36\")"]}) 
+
+
       (insert! :problems
-           {:_id 73
+           {:_id 75
             :title "Power Set"
             :times-solved 0
             :description "A power set is the set of all subsets of a given set. Given a list, produce a set of sublists while preserving the order of elements."
-            :tags ["medium" "seqs"]
             :approved true
+            :tags ["hard" "seqs"]
             :tests ["(= (__ '(1 :a)) '#{(1 :a) (:a) () (1)})"
                     "(= (__ '()) '#{()})"
                     "(= (__ '(1 2 3)) '#{() (1) (2) (3) (1 2) (1 3) (2 3) (1 2 3)})"

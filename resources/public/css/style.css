@@ -7,6 +7,9 @@ body {
    text-align: center;
 }
 
+img {border:none}
+
+
 #account{
    float:right;
    width: 100%;
@@ -57,6 +60,9 @@ body {
 #top {
    width: 95%;
    padding: 15px 0px 15px 0px;
+}
+div#top a {
+  border: 0;
 }
 
 h3 {
@@ -110,6 +116,7 @@ a.novisited {color: #00e;}
 #logo {
    float:left;
    padding:15px 0px 15px 0px;
+   border: 0;
 }
 
 #welcome{
@@ -325,3 +332,13 @@ button:active {
    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#A1CC59', endColorstr='#A7D45C')";
    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#A1CC59', endColorstr='#A7D45C');
 }
+
+#golfgraph{ 
+  width: 90%
+}
+
+#golfgraph img{
+  height: 300px;
+  padding-top: 25px;
+}
+
