@@ -869,7 +869,25 @@ number of prime numbers."
            :tests ["(= __\n   (letfn\n     [(foo [x y] #(bar (conj x y) y))\n      (bar [x y] (if (> (last x) 10)\n                   x\n                   #(foo x (+ 2 y))))]\n     (trampoline foo [] 1)))"]})
 
       (insert! :problems
-           {:_id 77
+          {:_id 77
+           :title "Create an Equation"
+           :times-solved 0
+           :description "Write a function which takes three or more integers.  Using these integers, your function should generate clojure code representing an equation.  The following rules for the equation must be satisfied:\n\n    1. All integers must be used once and only once.\n    2. The order of the integers must be maintained when reading the equation left-to-right.\n    3. The only functions you may use are +, *, or =.\n    4. The equation must use the minimum number of parentheses.\n    5. If no satisfying equation exists, return nil."
+           :tags ["hard", "code-generation"]
+           :tests ["(= (__ 3 4 7) '(= (+ 3 4) 7))"
+		   "(= (__ 3 4 12) '(= (* 3 4) 12))"
+		   "(= (__ 3 4 14) nil)"
+		   "(= (__ 3 4 5 35) '(= (* (+ 3 4) 5) 35))"
+		   "(= (__ 3 4 5 60) '(= (+ (* 3 4) 5) 60))"
+		   "(= (__ 3 4 5 23) '(= (+ 3 (* 4 5)) 23))"
+		   "(= (__ 3 4 5 27) '(= (* 3 (+ 4 5)) 27))"
+		   "(= (__ 3 4 5 6) nil)"
+		   "(= (__ 1 2 10 100 2001) '(= (+ 1 (* 2 10 100)) 2001)"
+		   "(= (__ 1 2 10 100 1300) '(= (* (+ 1 2 10) 100) 1300)"]})
+
+      
+      (insert! :problems
+           {:_id 78
             :title "Power Set"
             :times-solved 0
             :description "A power set is the set of all subsets of a given set. Given a list, produce a set of sublists while preserving the order of elements."
