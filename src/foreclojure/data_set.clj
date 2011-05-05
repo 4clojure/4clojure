@@ -888,6 +888,17 @@ number of prime numbers."
       
       (insert! :problems
            {:_id 78
+            :title "Reimplement Trampoline"
+            :times-solved 0
+            :restricted ["trampoline"]
+            :description ""
+            :approved true
+            :tags ["medium" "core-functions"]
+            :tests ["(= (letfn [(triple [x] #(sub-two (* 3 x)))\n          (sub-two [x] #(stop?(- x 2)))\n          (stop? [x] (if (> x 50) x #(triple x)))]\n    (__ triple 2))\n  82)"
+                    "(= (letfn [(my-even? [x] (if (zero? x) true #(my-odd? (dec x))))\n          (my-odd? [x] (if (zero? x) false #(my-even? (dec x))))]\n    (map #(__ my-even? %) (range 6)))\n  [true false true false true false])"]})
+
+      (insert! :problems
+           {:_id 79
             :title "Power Set"
             :times-solved 0
             :description "A power set is the set of all subsets of a given set. Given a list, produce a set of sublists while preserving the order of elements."
@@ -897,6 +908,7 @@ number of prime numbers."
                     "(= (__ '()) '#{()})"
                     "(= (__ '(1 2 3)) '#{() (1) (2) (3) (1 2) (1 3) (2 3) (1 2 3)})"
                     "(= (count (__ (range 10))) 1024)"]})
+      
       ))
 
 (load-problems)
