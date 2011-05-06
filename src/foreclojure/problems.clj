@@ -1,8 +1,7 @@
 (ns foreclojure.problems
-  (:use (foreclojure utils
+  (:use (foreclojure utils config
                      [social :only [tweet-link gist!]]
                      [feeds :only [create-feed]]
-                     [config :only [advanced-user-count]]
                      [users :only [golfer?]])
         [clojail core testers]
         somnium.congomongo
@@ -247,7 +246,8 @@
 (defn create-problem
   "create a user submitted problem"
   [title tags description code]
-  (if (>= (count (get-solved (session/session-get :user))) advanced-user-count)
+  (if (>= (count (get-solved (session/session-get :user)))
+          (:advanced-user-count config))
     (do
       (mongo! :db :mydb)
       (insert! :problems

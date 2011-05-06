@@ -5,7 +5,7 @@
                 [form-helpers :only [label]])
         [amalloy.utils.transform :only [transform-if]]
         somnium.congomongo
-        [foreclojure.config :only [advanced-user-count]])
+        [foreclojure.config])
   (:require [sandbar.stateful-session :as session]
             (ring.util [response :as response])
             [clojure.walk :as walk])
@@ -125,7 +125,8 @@
        [:a.menu {:href "/directions"} "Getting Started"]
        [:a.menu {:href "http://try-clojure.org"} "REPL"]
        [:a.menu {:href "http://clojuredocs.org"} "Docs"]
-       (if (>= (count (get-solved (session/session-get :user))) advanced-user-count)
+       (if (>= (count (get-solved (session/session-get :user)))
+               (:advanced-user-count config))
          [:a.menu {:href "/problems/submit"} "Submit a Problem"])
        [:span#user-info
         (if-let [user (session/session-get :user)]
