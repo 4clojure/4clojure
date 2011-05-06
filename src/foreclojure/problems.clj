@@ -246,8 +246,9 @@
 (defn create-problem
   "create a user submitted problem"
   [title tags description code]
-  (if (>= (count (get-solved (session/session-get :user)))
-          (:advanced-user-count config))
+  (if (and (:problem-submission config)
+           (>= (count (get-solved (session/session-get :user)))
+               (:advanced-user-count config)))
     (do
       (mongo! :db :mydb)
       (insert! :problems
