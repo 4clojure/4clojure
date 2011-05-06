@@ -23,7 +23,7 @@
 (add-index! :users [:user] :unique true)
 (add-index! :users [[:solved -1]])
 
-; (reconcile-solved-count)
+(reconcile-solved-count)
 
 (defroutes main-routes
   (GET "/" [] (welcome-page))
