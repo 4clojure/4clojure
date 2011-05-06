@@ -123,11 +123,10 @@
 (defn run-code [id raw-code]
   (let [code (.trim raw-code)
         {:keys [tests restricted]} (get-problem id)
-        sb-tester (get-tester restricted)
-        this-url (str "/problem/" id)]
+        sb-tester (get-tester restricted)]
     (session/flash-put! :code code)
     (if (empty? code)
-      (flash-msg "Empty input is not allowed" this-url)
+      (flash-msg "Empty input is not allowed" *url*)
       (try
         (loop [[test & more] tests
                i 0]
@@ -137,9 +136,9 @@
             (let [testcase (s/replace test "__" (str code))]
               (if (sb sb-tester (safe-read testcase))
                 (recur more (inc i))
-                (flash-msg "You failed the unit tests." this-url)))))
+                (flash-msg "You failed the unit tests." *url*)))))
         (catch Exception e
-          (flash-msg (.getMessage e) this-url))))))
+          (flash-msg (.getMessage e) *url*))))))
 
 (defn render-test-cases [tests]
   [:table {:class "testcases"}
