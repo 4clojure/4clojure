@@ -891,7 +891,7 @@ number of prime numbers."
             :title "Reimplement Trampoline"
             :times-solved 0
             :restricted ["trampoline"]
-            :description ""
+            :description "Reimplement the function described in <a href=\"76\"> \"Intro to Trampoline\"</a>."
             :approved true
             :tags ["medium" "core-functions"]
             :tests ["(= (letfn [(triple [x] #(sub-two (* 3 x)))\n          (sub-two [x] #(stop?(- x 2)))\n          (stop? [x] (if (> x 50) x #(triple x)))]\n    (__ triple 2))\n  82)"
