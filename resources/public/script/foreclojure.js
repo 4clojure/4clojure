@@ -35,9 +35,8 @@ function configureCodeBox(){
     //If we have javascript on then we remove it and replace it with
     //the proper div
     var oldBox = $('#code-box');
-    oldBox.replaceWith("<div id=\"code-div\"> <pre id=\"editor\">" + oldBox.val() + "</pre></div>");
     var hiddenCodeInput = "<input type=\"hidden\" value=\"blank\" name=\"code\" id=\"code\">";
-    $(hiddenCodeInput).insertBefore('#id');
+    oldBox.replaceWith("<div id=\"code-div\"> <pre id=\"editor\">" + oldBox.val() + "</pre></div>"+hiddenCodeInput);
 
     if ($("#run-button").length){
        var editor = ace.edit("editor");
