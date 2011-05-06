@@ -113,9 +113,6 @@
     (session/session-put! :code [id code])
     (flash-msg (str message " " gist-link) (str "/problem/" id))))
 
-(defn read-whole-string [s]
-  ())
-
 (def restricted-list '[use require in-ns future agent send send-off pmap pcalls])
 
 (defn get-tester [restricted]
