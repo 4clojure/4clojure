@@ -135,10 +135,10 @@
         {:keys [tests restricted]} (get-problem id)
         sb-tester (get-tester restricted)]
     (session/flash-put! :code code)
-    (if (empty? code)
-      (flash-msg "Empty input is not allowed" *url*)
-      (try
-        (let [user-forms (s/join " " (map pr-str (read-string-safely code)))]
+    (try
+      (let [user-forms (s/join " " (map pr-str (read-string-safely code)))]
+        (if (empty? user-forms)
+          (flash-msg "Empty input is not allowed" *url*)
           (loop [[test & more] tests
                  i 0]
             (session/flash-put! :failing-test i)
@@ -147,9 +147,9 @@
               (let [testcase (s/replace test "__" user-forms)]
                 (if (sb sb-tester (first (read-string-safely testcase)))
                   (recur more (inc i))
-                  (flash-msg "You failed the unit tests." *url*))))))
-        (catch Exception e
-          (flash-msg (.getMessage e) *url*))))))
+                  (flash-msg "You failed the unit tests." *url*)))))))
+      (catch Exception e
+        (flash-msg (.getMessage e) *url*)))))
 
 (defn render-test-cases [tests]
   [:table {:class "testcases"}
