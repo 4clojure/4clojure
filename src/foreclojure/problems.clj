@@ -3,7 +3,7 @@
                      [social :only [tweet-link gist!]]
                      [feeds :only [create-feed]]
                      [users :only [golfer?]])
-        [clojail core testers]
+        (clojail [core :exclude [safe-read]] testers)
         somnium.congomongo
         (hiccup form-helpers page-helpers core)
         (amalloy.utils [debug :only [?]]
@@ -113,12 +113,22 @@
     (session/session-put! :code [id code])
     (flash-msg (str message " " gist-link) (str "/problem/" id))))
 
+(defn read-whole-string [s]
+  ())
+
 (def restricted-list '[use require in-ns future agent send send-off pmap pcalls])
 
 (defn get-tester [restricted]
   (into secure-tester (concat restricted-list (map symbol restricted))))
 
 (def sb (sandbox*))
+
+(defn read-string-safely [s]
+  (binding [*read-eval* false]
+    (with-in-str s
+      (let [end (Object.)]
+        (doall (take-while (complement #{end})
+                           (repeatedly #(read *in* false end))))))))
 
 (defn run-code [id raw-code]
   (let [code (.trim raw-code)
@@ -128,15 +138,16 @@
     (if (empty? code)
       (flash-msg "Empty input is not allowed" *url*)
       (try
-        (loop [[test & more] tests
-               i 0]
-          (session/flash-put! :failing-test i)
-          (if-not test
-            (mark-completed id code)
-            (let [testcase (s/replace test "__" (str code))]
-              (if (sb sb-tester (safe-read testcase))
-                (recur more (inc i))
-                (flash-msg "You failed the unit tests." *url*)))))
+        (let [user-forms (s/join " " (map pr-str (read-string-safely code)))]
+          (loop [[test & more] tests
+                 i 0]
+            (session/flash-put! :failing-test i)
+            (if-not test
+              (mark-completed id code)
+              (let [testcase (s/replace test "__" user-forms)]
+                (if (sb sb-tester (first (read-string-safely testcase)))
+                  (recur more (inc i))
+                  (flash-msg "You failed the unit tests." *url*))))))
         (catch Exception e
           (flash-msg (.getMessage e) *url*))))))
 
