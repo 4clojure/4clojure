@@ -3,7 +3,13 @@ $(document).ready(function() {
   configureDataTables();
   configureCodeBox();
 
+  $("form#run-code button#approve-button").live("click", function(e) {
+    e.preventDefault();
+    $(this).parent("form").attr("action", "/problem/approve").submit();
+  });
+
 });
+
 
 function configureDataTables(){
 
@@ -18,6 +24,15 @@ function configureDataTables(){
         ]
     } );
 
+    $('#unapproved-problems').dataTable( {
+        "iDisplayLength": 25,
+        "aaSorting": [[ 2, "desc" ]],
+        "aoColumns": [
+            null,
+            null,
+            null
+        ]
+    } );
 
     $('#user-table').dataTable( {
         "iDisplayLength":25,

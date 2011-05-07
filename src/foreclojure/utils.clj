@@ -93,6 +93,12 @@
                         :where {:user user}
                         :only [:solved])))))
 
+(defn approver? [user]
+  (:approver (from-mongo
+             (fetch-one :users
+                        :where {:user user}
+                        :only [:approver]))))
+
 (defn html-doc [& body] 
   (html 
    (doctype :html5)
@@ -115,8 +121,11 @@
      
      [:div#content
       (if  (session/session-get :user)
-        [:div#account
+        [:div#account.header-option
          [:a {:href "/login/update"} "Account Settings"]])
+      (if (approver? (session/session-get :user))
+        [:div#manage-unapproved.header-option
+         [:a {:href "/problems/unapproved"} "View Unapproved Problems"]])
       [:br]
       [:div#menu
        [:a.menu {:href "/"} "Main Page"]
