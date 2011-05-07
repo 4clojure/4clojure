@@ -832,6 +832,7 @@ number of prime numbers."
            :times-solved 0
            :description "A <a href=\"http://en.wikipedia.org/wiki/Tic-tac-toe\">tic-tac-toe</a> board is represented by a two dimensional vector. X is represented by :x, O is represented by :o, and empty is represented by :e.  A player wins by placing three Xs or three Os in a horizontal, vertical, or diagonal row.  Write a function which analyzes a tic-tac-toe board and returns :x if X has won, :o if O has won, and nil if neither player has won."
            :tags ["medium" "game"]
+	   :approved true
            :tests ["(= nil (__ [[:e :e :e]\n            [:e :e :e]\n            [:e :e :e]]))"
 		   "(= :x (__ [[:x :e :o]\n           [:x :e :e]\n           [:x :e :o]]))"
 		   "(= :o (__ [[:e :x :e]\n           [:o :o :o]\n           [:x :e :x]]))"
@@ -846,6 +847,7 @@ number of prime numbers."
            :times-solved 0
            :description "Given a string of comma separated integers, write a function which returns a new comma separated string that only contains the numbers which are perfect squares."
            :tags ["medium"]
+	   :approved true
            :tests ["(= (__ \"4,5,6,7,8,9\") \"4,9\")"
 		   "(= (__ \"15,16,25,36,37\") \"16,25,36\")"]}) 
 
@@ -855,6 +857,7 @@ number of prime numbers."
            :times-solved 0
            :description "Two numbers are coprime if their greatest common divisor equals 1.  Euler's totient function f(x) is defined as the number of positive integers less than x which are coprime to x.  The special case f(1) equals 1.  Write a function which calculates Euler's totient function."
            :tags ["medium"]
+	   :approved true
            :tests ["(= (__ 1) 1)"
 		   "(= (__ 10) (count '(1 3 7 9)) 4)"
 		   "(= (__ 40) 16)"
@@ -866,24 +869,18 @@ number of prime numbers."
            :times-solved 0
            :description "The trampoline function takes a function f and a variable number of parameters.  Trampoline calls f with any parameters that were supplied.  If f returns a function, trampoline calls that function with no arguments.  This is repeated, until the return value is not a function, and then trampoline returns that non-function value.  This is useful for implementing mutually recursive algorithms in a way that won't consume the stack."
            :tags ["medium", "recursion"]
+	   :approved true
            :tests ["(= __\n   (letfn\n     [(foo [x y] #(bar (conj x y) y))\n      (bar [x y] (if (> (last x) 10)\n                   x\n                   #(foo x (+ 2 y))))]\n     (trampoline foo [] 1)))"]})
 
       (insert! :problems
           {:_id 77
-           :title "Create an Equation"
+           :title "Anagram Finder"
            :times-solved 0
-           :description "Write a function which takes three or more integers.  Using these integers, your function should generate clojure code representing an equation.  The following rules for the equation must be satisfied:\n\n    1. All integers must be used once and only once.\n    2. The order of the integers must be maintained when reading the equation left-to-right.\n    3. The only functions you may use are +, *, or =.\n    4. The equation must use the minimum number of parentheses.\n    5. If no satisfying equation exists, return nil."
-           :tags ["hard", "code-generation"]
-           :tests ["(= (__ 3 4 7) '(= (+ 3 4) 7))"
-		   "(= (__ 3 4 12) '(= (* 3 4) 12))"
-		   "(= (__ 3 4 14) nil)"
-		   "(= (__ 3 4 5 35) '(= (* (+ 3 4) 5) 35))"
-		   "(= (__ 3 4 5 60) '(= (+ (* 3 4) 5) 60))"
-		   "(= (__ 3 4 5 23) '(= (+ 3 (* 4 5)) 23))"
-		   "(= (__ 3 4 5 27) '(= (* 3 (+ 4 5)) 27))"
-		   "(= (__ 3 4 5 6) nil)"
-		   "(= (__ 1 2 10 100 2001) '(= (+ 1 (* 2 10 100)) 2001)"
-		   "(= (__ 1 2 10 100 1300) '(= (* (+ 1 2 10) 100) 1300)"]})
+           :description "Write a function which finds all the anagrams in a vector of words.  A word x is an anagram of word y if all the letters in x can be rearranged in a different order to form y.  Your function should return a set of sets, where each sub-set is a group of words which are anagrams of each other.  Each sub-set should have at least two words.  Words without any anagrams should not be included in the result."
+           :tags ["medium"]
+	   :approved true
+           :tests ["(= (__ [\"meat\" \"mat\" \"team\" \"mate\" \"eat\"])\n   #{#{\"meat\" \"team\" \"mate\"}})"
+		   "(= (__ [\"veer\" \"lake\" \"item\" \"kale\" \"mite\" \"ever\"])\n   #{#{\"veer\" \"ever\"} #{\"lake\" \"kale\"} #{\"mite\" \"item\"}})"]})
 
       
       (insert! :problems
@@ -898,12 +895,32 @@ number of prime numbers."
                     "(= (letfn [(my-even? [x] (if (zero? x) true #(my-odd? (dec x))))\n          (my-odd? [x] (if (zero? x) false #(my-even? (dec x))))]\n    (map (partial __ my-even?) (range 6)))\n  [true false true false true false])"]})
 
       (insert! :problems
-           {:_id 79
+          {:_id 79
+           :title "Create an Equation"
+           :times-solved 0
+           :description "Write a function which takes three or more integers.  Using these integers, your function should generate clojure code representing an equation.  The following rules for the equation must be satisfied:\n\n    1. All integers must be used once and only once.\n    2. The order of the integers must be maintained when reading the equation left-to-right.\n    3. The only functions you may use are +, *, or =.\n    4. The equation must use the minimum number of parentheses.\n    5. If no satisfying equation exists, return nil."
+           :tags ["hard", "code-generation"]
+	   :approved true
+           :tests ["(= (__ 3 4 7) '(= (+ 3 4) 7))"
+		   "(= (__ 3 4 12) '(= (* 3 4) 12))"
+		   "(= (__ 3 4 14) nil)"
+		   "(= (__ 3 4 5 35) '(= (* (+ 3 4) 5) 35))"
+		   "(= (__ 3 4 5 60) '(= (+ (* 3 4) 5) 60))"
+		   "(= (__ 3 4 5 23) '(= (+ 3 (* 4 5)) 23))"
+		   "(= (__ 3 4 5 27) '(= (* 3 (+ 4 5)) 27))"
+		   "(= (__ 3 4 5 6) nil)"
+		   "(= (__ 1 2 10 100 2001) '(= (+ 1 (* 2 10 100)) 2001)"
+		   "(= (__ 1 2 10 100 1300) '(= (* (+ 1 2 10) 100) 1300)"]})
+
+      
+      (insert! :problems
+           {:_id 80
             :title "Power Set"
             :times-solved 0
             :description "A power set is the set of all subsets of a given set. Given a list, produce a set of sublists while preserving the order of elements."
             :approved true
             :tags ["hard" "seqs"]
+	    :approved true
             :tests ["(= (__ '(1 :a)) '#{(1 :a) (:a) () (1)})"
                     "(= (__ '()) '#{()})"
                     "(= (__ '(1 2 3)) '#{() (1) (2) (3) (1 2) (1 3) (2 3) (1 2 3)})"
