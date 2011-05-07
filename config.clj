@@ -5,5 +5,5 @@
  :host "smtp.googlemail.com"
  :user "team@4clojure.com"
  :pass ""
- :problem-submission true
- :advanced-user-count 1}
+ :problem-submission false
+ :advanced-user-count 50}

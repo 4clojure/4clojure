@@ -5,7 +5,8 @@ $(document).ready(function() {
 
   $("form#run-code button#approve-button").live("click", function(e) {
     e.preventDefault();
-    $(this).parent("form").attr("action", "/problem/approve").submit();
+    if(confirm("Are you sure you want to mark this problem as approved?"))
+      $(this).parent("form").attr("action", "/problem/approve").submit();
   });
 
 });
