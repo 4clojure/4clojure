@@ -166,6 +166,14 @@
     (when settings
       [:img {:src url}])))
 
+(defn render-golf-score []
+  (let [{:keys [id best score] :as settings}
+        (session/session-get :golf-chart)]
+    (when settings
+      [:div#golf-scores
+       [:p#golfheader (str "Code Golf Score: " score)]
+       [:a.graph-class [:span#graph-link "View Chart"]]])))
+
 (def-page code-box [id]
   (let [{:keys [title tags description restricted tests]}
         (get-problem (Integer. id))]
@@ -183,9 +191,11 @@
          [:u "Special Restrictions"] [:br]
          (map (partial vector :li) restricted)])]
      [:div
-      [:div.message (session/flash-get :message)]
-      [:b "Code which fills in the blank:" [:br]]]
+      [:div.message
+       [:span#message-text (session/flash-get :message)]]
+      (render-golf-score)]
      (form-to [:post *url*]
+              [:p#instruct "Code which fills in the blank: "]
        (text-area {:id "code-box"
                    :spellcheck "false"}
                   :code (session/flash-get :code))
