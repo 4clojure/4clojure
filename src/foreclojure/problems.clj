@@ -3,7 +3,7 @@
                      [social :only [tweet-link gist!]]
                      [feeds :only [create-feed]]
                      [users :only [golfer?]])
-        [clojail core testers]
+        (clojail [core :exclude [safe-read]] testers)
         somnium.congomongo
         (hiccup form-helpers page-helpers core)
         (amalloy.utils [debug :only [?]]
@@ -19,12 +19,14 @@
   (from-mongo
    (fetch-one :problems :where {:_id x})))
 
-(defn get-problem-list []
-  (from-mongo
-   (fetch :problems
-          :only [:_id :title :tags :times-solved]
-          :where {:approved true}
-          :sort {:_id 1})))
+(defn get-problem-list 
+  ([] (get-problem-list {:approved true}))
+  ([criteria] 
+    (from-mongo
+    (fetch :problems
+           :only [:_id :title :tags :times-solved :user]
+           :where criteria
+           :sort {:_id 1}))))
 
 (defn get-next-id []
   (from-mongo
@@ -92,14 +94,16 @@
                    {:_id _id}
                    {:$set {user-score-key score}}))))))
 
-(defn mark-completed [id code & [user]]
+(defn mark-completed [id code & [user approved]]
   (let [user (or user (session/session-get :user))
         gist-link (html [:div.share
                          [:a.novisited {:href "/share/code"} "Share"]
                          " this solution with your friends!"])
 
         message
-        (if user
+        (cond (and user (not approved))
+          (str "You've solved the unapproved problem. Now you can approve it!")
+        (user)
           (do
             (when (not-any? #{id} (get-solved user))
               (update! :users {:user user} {:$addToSet {:solved id}})
@@ -107,9 +111,10 @@
               (send total-solved inc))
             (record-golf-score! user id (code-length code))
             (str "Congratulations, you've solved the problem!"
-                 "<br />" (next-problem-link id)))
-          (str "You've solved the problem! If you "
-               (login-link "log in") " we can track your progress."))]
+                 "<br />" (next-problem-link id))))
+         else
+            (str "You've solved the problem! If you "
+              (login-link "log in") " we can track your progress.")]
     (session/session-put! :code [id code])
     (flash-msg (str message " " gist-link) (str "/problem/" id))))
 
@@ -120,26 +125,33 @@
 
 (def sb (sandbox*))
 
+(defn read-string-safely [s]
+  (binding [*read-eval* false]
+    (with-in-str s
+      (let [end (Object.)]
+        (doall (take-while (complement #{end})
+                           (repeatedly #(read *in* false end))))))))
+
 (defn run-code [id raw-code]
   (let [code (.trim raw-code)
-        {:keys [tests restricted]} (get-problem id)
-        sb-tester (get-tester restricted)
-        this-url (str "/problem/" id)]
+        {:keys [tests restricted approved]} (get-problem id)
+        sb-tester (get-tester restricted)]
     (session/flash-put! :code code)
-    (if (empty? code)
-      (flash-msg "Empty input is not allowed" this-url)
-      (try
-        (loop [[test & more] tests
-               i 0]
-          (session/flash-put! :failing-test i)
-          (if-not test
-            (mark-completed id code)
-            (let [testcase (s/replace test "__" (str code))]
-              (if (sb sb-tester (safe-read testcase))
-                (recur more (inc i))
-                (flash-msg "You failed the unit tests." this-url)))))
-        (catch Exception e
-          (flash-msg (.getMessage e) this-url))))))
+    (try
+      (let [user-forms (s/join " " (map pr-str (read-string-safely code)))]
+        (if (empty? user-forms)
+          (flash-msg "Empty input is not allowed" *url*)
+          (loop [[test & more] tests
+                 i 0]
+            (session/flash-put! :failing-test i)
+            (if-not test
+              (mark-completed id code () approved)
+              (let [testcase (s/replace test "__" user-forms)]
+                (if (sb sb-tester (first (read-string-safely testcase)))
+                  (recur more (inc i))
+                  (flash-msg "You failed the unit tests." *url*)))))))
+      (catch Exception e
+        (flash-msg (.getMessage e) *url*)))))
 
 (defn render-test-cases [tests]
   [:table {:class "testcases"}
@@ -165,13 +177,16 @@
       [:img {:src url}])))
 
 (def-page code-box [id]
-  (let [{:keys [title tags description restricted tests]}
+  (let [{:keys [title tags description restricted tests approved user]}
         (get-problem (Integer. id))]
     [:div
-     [:span {:id "prob-title"} title]
+     [:span {:id "prob-title"} (if approved title (str "Unapproved: " title))]
      [:hr]
      [:div {:id "tags"} "Tags: "
       (s/join " " tags)]
+     [:br]
+     (if (not approved)
+       [:div {:id "submitter"} "Submitted by: " user])
      [:br]
      [:div {:id "prob-desc"}
       description[:br]
@@ -183,7 +198,7 @@
      [:div
       [:div.message (session/flash-get :message)]
       [:b "Code which fills in the blank:" [:br]]]
-     (form-to [:post *url*]
+     (form-to {:id "run-code"} [:post *url*]
        (text-area {:id "code-box"
                    :spellcheck "false"}
                   :code (session/flash-get :code))
@@ -191,7 +206,9 @@
         (render-golf-chart)]
        (hidden-field :id id)
        [:br]
-       [:button.large {:id "run-button" :type "submit"} "Run"])
+       [:button.large {:id "run-button" :type "submit"} "Run"]
+       (if (not approved)
+         [:button.large {:id "approve-button"} "Approve"]))
      ]))
 
 (def-page problem-page []
@@ -222,6 +239,34 @@
                         "/images/checkmark.png"
                         "/images/empty-sq.png")}]]])
       problems))])
+
+(def-page unapproved-problem-page []
+  [:div.message (session/flash-get :message)]
+  [:div.error {:id "problems-error"} (session/flash-get :error)]
+  [:table#unapproved-problems.my-table
+   [:thead
+    [:tr
+     [:th "Title"]
+     [:th "Tags"]
+     [:th "Submitted By"]]]
+   (let [problems (get-problem-list {:approved false})]
+     (map-indexed
+      (fn [x {:keys [title tags user], id :_id}]
+        [:tr (row-class x)
+         [:td.titlelink
+          [:a {:href (str "/problem/" id)}
+           title]]
+         [:td.centered
+          (s/join " " (map #(str "<span class='tag'>" % "</span>")
+                           tags))]
+         [:td.centered user]])
+      problems))])
+
+(defn unapproved-problems []
+  (let [user (session/session-get :user)]
+    (if (approver? user)
+      (unapproved-problem-page)
+      (flash-error "You cannot access this page" "/problems"))))
 
 
 (def-page problem-submission-page []
@@ -263,7 +308,15 @@
       (flash-msg "Thank you for submitting a problem! Be sure to check back to see it posted." "/problems"))
     (flash-error "You are not authorized to submit a problem." "/problems")))
 
-
+(defn approve-problem [id]
+  "take a user submitted problem and approve it"
+  (if (approver? (session/session-get :user))
+    (do
+      (update! :problems
+        {:_id id}
+        {:$set {:approved true}})
+      (flash-msg (str "Problem " id " has been approved!") (str "/problem/" id)))
+    (flash-error "You don't have access to this page" "/problems")))
 
 (defroutes problems-routes
   (GET "/problems" [] (problem-page))
@@ -271,6 +324,9 @@
   (GET "/problems/submit" [] (problem-submission-page))
   (POST "/problems/submit" [title tags description code]
     (create-problem title tags description code))
+  (GET "/problems/unapproved" [] (unapproved-problems))
+  (POST "/problem/approve" [id]
+    (approve-problem (Integer. id)))
   (POST "/problem/:id" [id code]
     (run-code (Integer. id) code))
   (GET "/problems/rss" [] (create-feed

@@ -10,7 +10,7 @@ body {
 img {border:none}
 
 
-#account{
+#account.header-option {
    float:right;
    width: 100%;
    text-align: right;
@@ -19,11 +19,16 @@ img {border:none}
    font-weight: bold;
 }
 
-#account a:link {color: #445599;}
-#account a:visited {color: #445599;}
-#account a:active {color: #445599;}
-#account a:hover {color: #7CFC00;}
-#account a {text-decoration: none; font-size: 12px; font-weight:bold;}
+#manage-unapproved {
+  position: absolute;
+  right: 150px;
+}
+
+.header-option a:link {color: #445599;}
+.header-option a:visited {color: #445599;}
+.header-option a:active {color: #445599;}
+.header-option a:hover {color: #7CFC00;}
+.header-option a {text-decoration: none; font-size: 12px; font-weight:bold;}
 
 #wrapper {
    width: 100%;
@@ -45,6 +50,7 @@ img {border:none}
    overflow: auto;
    -moz-border-radius: 15px;
    border-radius: 15px;
+   position: relative;
 }
 
 #content_body {
@@ -142,7 +148,7 @@ a.novisited {color: #00e;}
    float: left;
 }
 
-#problem-table{
+#problem-table, table#unapproved-problems {
    float: left;
    width: 100%;
 }
