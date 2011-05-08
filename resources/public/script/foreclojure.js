@@ -6,7 +6,14 @@ $(document).ready(function() {
   $("form#run-code button#approve-button").live("click", function(e) {
     e.preventDefault();
     if(confirm("Are you sure you want to mark this problem as approved?"))
-      $(this).parent("form").attr("action", "/problem/approve").submit();
+      $(this).parents("form").attr("action", "/problem/approve").submit();
+  });
+
+  $("form#run-code button#reject-button").live("click", function(e) {
+    e.preventDefault();
+    if(confirm("Are you sure you want to reject this problem? It will be permanently deleted.")) {
+      $(this).parents("form").attr("action", "/problem/reject").submit();
+    }
   });
 
 });

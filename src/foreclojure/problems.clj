@@ -208,7 +208,8 @@
        [:br]
        [:button.large {:id "run-button" :type "submit"} "Run"]
        (if (not approved)
-         [:button.large {:id "approve-button"} "Approve"]))
+         [:span [:button.large {:id "reject-button"} "Reject"]
+                [:button.large {:id "approve-button"} "Approve"]]))
      ]))
 
 (def-page problem-page []
@@ -316,7 +317,17 @@
         {:_id id}
         {:$set {:approved true}})
       (flash-msg (str "Problem " id " has been approved!") (str "/problem/" id)))
-    (flash-error "You don't have access to this page" "/problems")))
+    (flash-error "You do not have access to this page" "/problems")))
+
+(defn reject-problem [id]
+  "reject a user submitted problem by deleting it from the database"
+  (if (approver? (session/session-get :user))
+    (do
+      (destroy! :problems
+        {:_id id})
+      ;; TODO: email submitting user
+      (flash-msg (str "Problem " id " was rejected and deleted.") "/problems"))
+    (flash-error "You do not have permission to access this page" "/problems")))
 
 (defroutes problems-routes
   (GET "/problems" [] (problem-page))
@@ -327,6 +338,8 @@
   (GET "/problems/unapproved" [] (unapproved-problems))
   (POST "/problem/approve" [id]
     (approve-problem (Integer. id)))
+  (POST "/problem/reject" [id]
+    (reject-problem (Integer. id)))
   (POST "/problem/:id" [id code]
     (run-code (Integer. id) code))
   (GET "/problems/rss" [] (create-feed
