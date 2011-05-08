@@ -902,9 +902,22 @@ number of prime numbers."
             :tags ["hard"]
             :tests ["(= (__ [   [1]\n          [2 4]\n         [5 1 4]\n        [2 3 4 5]])\n   (+ 1 2 1 3)\n   7)"
 		    "(= (__ [     [3]\n            [2 4]\n           [1 9 3]\n          [9 9 2 4]\n         [4 6 6 7 8]\n        [5 7 3 5 1 4]])\n   (+ 3 4 3 2 7 1)\n   20)"]})
+
+      (insert! :problems
+           {:_id 80
+            :title "Perfect Numbers"
+            :times-solved 0
+            :description "A number is \"perfect\" if the sum of its divisors equal the number itself.  6 is a perfect number because 1+2+3=6.  Write a function which returns true for perfect numbers and false otherwise."
+            :approved true
+            :tags ["medium"]
+            :tests ["(= (__ 6) true)"
+		    "(= (__ 7) false)"
+		    "(= (__ 496) true)"
+		    "(= (__ 500) false)"
+		    "(= (__ 8128) true)"]})
       
       (insert! :problems
-          {:_id 80
+          {:_id 81
            :title "Create an Equation"
            :times-solved 0
            :description "Write a function which takes three or more integers.  Using these integers, your function should generate clojure code representing an equation.  The following rules for the equation must be satisfied:\n\n    1. All integers must be used once and only once.\n    2. The order of the integers must be maintained when reading the equation left-to-right.\n    3. The only functions you may use are +, *, or =.\n    4. The equation must use the minimum number of parentheses.\n    5. If no satisfying equation exists, return nil."
@@ -923,7 +936,7 @@ number of prime numbers."
 
       
       (insert! :problems
-           {:_id 81
+           {:_id 82
             :title "Power Set"
             :times-solved 0
             :description "A power set is the set of all subsets of a given set. Given a list, produce a set of sublists while preserving the order of elements."
