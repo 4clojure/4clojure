@@ -52,6 +52,7 @@ Problem sources:
 
  * Aaron Bedra's [Clojure Koans](https://github.com/functional-koans/clojure-koans)
  * [Ninety-Nine Lisp Problems](http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html)
+ * [Project Euler](http://www.projecteuler.net)
 
 ## License
 
