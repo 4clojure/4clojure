@@ -881,7 +881,6 @@ number of prime numbers."
 	   :approved true
            :tests ["(= (__ [\"meat\" \"mat\" \"team\" \"mate\" \"eat\"])\n   #{#{\"meat\" \"team\" \"mate\"}})"
 		   "(= (__ [\"veer\" \"lake\" \"item\" \"kale\" \"mite\" \"ever\"])\n   #{#{\"veer\" \"ever\"} #{\"lake\" \"kale\"} #{\"mite\" \"item\"}})"]})
-
       
       (insert! :problems
            {:_id 78
@@ -895,7 +894,17 @@ number of prime numbers."
                     "(= (letfn [(my-even? [x] (if (zero? x) true #(my-odd? (dec x))))\n          (my-odd? [x] (if (zero? x) false #(my-even? (dec x))))]\n    (map (partial __ my-even?) (range 6)))\n  [true false true false true false])"]})
 
       (insert! :problems
-          {:_id 79
+           {:_id 79
+            :title "Triangle Minimal Path"
+            :times-solved 0
+            :description "Write a function which calculates the sum of the minimal path through a triangle.  The triangle is represented as a vector of vectors.  The path should start at the top of the triangle and move to an adjacent number on the next row until the bottom of the triangle is reached."
+            :approved true
+            :tags ["hard"]
+            :tests ["(= (__ [   [1]\n          [2 4]\n         [5 1 4]\n        [2 3 4 5]])\n   (+ 1 2 1 3)\n   7)"
+		    "(= (__ [     [3]\n            [2 4]\n           [1 9 3]\n          [9 9 2 4]\n         [4 6 6 7 8]\n        [5 7 3 5 1 4]])\n   (+ 3 4 3 2 7 1)\n   20)"]})
+      
+      (insert! :problems
+          {:_id 80
            :title "Create an Equation"
            :times-solved 0
            :description "Write a function which takes three or more integers.  Using these integers, your function should generate clojure code representing an equation.  The following rules for the equation must be satisfied:\n\n    1. All integers must be used once and only once.\n    2. The order of the integers must be maintained when reading the equation left-to-right.\n    3. The only functions you may use are +, *, or =.\n    4. The equation must use the minimum number of parentheses.\n    5. If no satisfying equation exists, return nil."
@@ -914,7 +923,7 @@ number of prime numbers."
 
       
       (insert! :problems
-           {:_id 80
+           {:_id 81
             :title "Power Set"
             :times-solved 0
             :description "A power set is the set of all subsets of a given set. Given a list, produce a set of sublists while preserving the order of elements."
