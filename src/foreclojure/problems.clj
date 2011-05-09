@@ -188,19 +188,22 @@
   (let [{:keys [title tags description restricted tests approved user]}
         (get-problem (Integer. id))]
     [:div
-     [:span {:id "prob-title"} (if approved title (str "Unapproved: " title))]
+     [:span#prob-title
+      (when-not approved
+        "Unapproved: ")
+      title]
      [:hr]
-     [:div {:id "tags"} "Tags: "
+     [:div#tags "Tags: "
       (s/join " " tags)]
      [:br]
-     (if (not approved)
-       [:div {:id "submitter"} "Submitted by: " user])
+     (when-not approved
+       [:div#submitter "Submitted by: " user])
      [:br]
-     [:div {:id "prob-desc"}
+     [:div#prob-desc
       description[:br]
       (render-test-cases tests)
       (when restricted
-        [:div {:id "restrictions"}
+        [:div#restrictions
          [:u "Special Restrictions"] [:br]
          (map (partial vector :li) restricted)])]
      [:div
@@ -217,13 +220,12 @@
        (hidden-field :id id)
        [:br]
        [:button.large {:id "run-button" :type "submit"} "Run"]
-       (if (not approved)
-         [:button.large {:id "approve-button"} "Approve"]))
-     ]))
+       (when-not approved
+         [:button.large#approve-button "Approve"]))]))
 
 (def-page problem-page []
   [:div.message (session/flash-get :message)]
-  [:div.error {:id "problems-error"} (session/flash-get :error)]
+  [:div.error#problems-error (session/flash-get :error)]
   (link-to "/problems/rss" [:div {:class "rss"}])
   [:table#problem-table.my-table
    [:thead
@@ -252,7 +254,7 @@
 
 (def-page unapproved-problem-page []
   [:div.message (session/flash-get :message)]
-  [:div.error {:id "problems-error"} (session/flash-get :error)]
+  [:div.error#problems-error (session/flash-get :error)]
   [:table#unapproved-problems.my-table
    [:thead
     [:tr
