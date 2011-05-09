@@ -94,29 +94,27 @@
                    {:_id _id}
                    {:$set {user-score-key score}}))))))
 
-(defn mark-completed [id code & [user approved]]
+(defn mark-completed [problem code & [user]]
   (let [user (or user (session/session-get :user))
+        {:keys [_id approved]} problem
         gist-link (html [:div.share
                          [:a.novisited {:href "/share/code"} "Share"]
                          " this solution with your friends!"])
-
         message
-        (cond (and user (not approved))
-          (str "You've solved the unapproved problem. Now you can approve it!")
-        (user)
-          (do
-            (when (not-any? #{id} (get-solved user))
-              (update! :users {:user user} {:$addToSet {:solved id}})
-              (update! :problems {:_id id} {:$inc {:times-solved 1}})
-              (send total-solved inc))
-            (record-golf-score! user id (code-length code))
-            (str "Congratulations, you've solved the problem!"
-                 "<br />" (next-problem-link id))))
-         else
-            (str "You've solved the problem! If you "
-              (login-link "log in") " we can track your progress.")]
-    (session/session-put! :code [id code])
-    (flash-msg (str message " " gist-link) (str "/problem/" id))))
+        (cond
+         (not approved) (str "You've solved the unapproved problem. Now you can approve it!")
+         user (do
+                (when (not-any? #{_id} (get-solved user))
+                  (update! :users {:user user} {:$addToSet {:solved _id}})
+                  (update! :problems {:_id _id} {:$inc {:times-solved 1}})
+                  (send total-solved inc))
+                (record-golf-score! user _id (code-length code))
+                (str "Congratulations, you've solved the problem!"
+                     "<br />" (next-problem-link _id)))
+         :else (str "You've solved the problem! If you "
+                    (login-link "log in") " we can track your progress."))]
+    (session/session-put! :code [_id code])
+    (flash-msg (str message " " gist-link) (str "/problem/" _id))))
 
 (def restricted-list '[use require in-ns future agent send send-off pmap pcalls])
 
@@ -134,7 +132,7 @@
 
 (defn run-code [id raw-code]
   (let [code (.trim raw-code)
-        {:keys [tests restricted approved]} (get-problem id)
+        {:keys [tests restricted] :as problem} (get-problem id)
         sb-tester (get-tester restricted)]
     (session/flash-put! :code code)
     (try
@@ -145,7 +143,7 @@
                  i 0]
             (session/flash-put! :failing-test i)
             (if-not test
-              (mark-completed id code () approved)
+              (mark-completed problem code)
               (let [testcase (s/replace test "__" user-forms)]
                 (if (sb sb-tester (first (read-string-safely testcase)))
                   (recur more (inc i))
@@ -176,29 +174,44 @@
     (when settings
       [:img {:src url}])))
 
+(defn render-golf-score []
+  (let [{:keys [id best score] :as settings}
+        (session/session-get :golf-chart)]
+    (when settings
+      [:div#golf-scores
+       [:p#golfheader (str "Code Golf Score: " score)]
+       [:a.graph-class {:href "#"
+                        :onclick "return false"}
+        [:span#graph-link "View Chart"]]])))
+
 (def-page code-box [id]
   (let [{:keys [title tags description restricted tests approved user]}
         (get-problem (Integer. id))]
     [:div
-     [:span {:id "prob-title"} (if approved title (str "Unapproved: " title))]
+     [:span#prob-title
+      (when-not approved
+        "Unapproved: ")
+      title]
      [:hr]
-     [:div {:id "tags"} "Tags: "
+     [:div#tags "Tags: "
       (s/join " " tags)]
      [:br]
-     (if (not approved)
-       [:div {:id "submitter"} "Submitted by: " user])
+     (when-not approved
+       [:div#submitter "Submitted by: " user])
      [:br]
-     [:div {:id "prob-desc"}
+     [:div#prob-desc
       description[:br]
       (render-test-cases tests)
       (when restricted
-        [:div {:id "restrictions"}
+        [:div#restrictions
          [:u "Special Restrictions"] [:br]
          (map (partial vector :li) restricted)])]
      [:div
-      [:div.message (session/flash-get :message)]
-      [:b "Code which fills in the blank:" [:br]]]
-     (form-to {:id "run-code"} [:post *url*]
+      [:div.message
+       [:span#message-text (session/flash-get :message)]]
+      (render-golf-score)]
+     (form-to [:post *url*]
+       [:p#instruct "Code which fills in the blank: "]
        (text-area {:id "code-box"
                    :spellcheck "false"}
                   :code (session/flash-get :code))
@@ -207,14 +220,14 @@
        (hidden-field :id id)
        [:br]
        [:button.large {:id "run-button" :type "submit"} "Run"]
-       (if (not approved)
+       (when-not approved
          [:span [:button.large {:id "reject-button"} "Reject"]
                 [:button.large {:id "approve-button"} "Approve"]]))
      ]))
 
 (def-page problem-page []
   [:div.message (session/flash-get :message)]
-  [:div.error {:id "problems-error"} (session/flash-get :error)]
+  [:div#problems-error.error (session/flash-get :error)]
   (link-to "/problems/rss" [:div {:class "rss"}])
   [:table#problem-table.my-table
    [:thead
@@ -243,7 +256,7 @@
 
 (def-page unapproved-problem-page []
   [:div.message (session/flash-get :message)]
-  [:div.error {:id "problems-error"} (session/flash-get :error)]
+  [:div#problems-error.error (session/flash-get :error)]
   [:table#unapproved-problems.my-table
    [:thead
     [:tr
@@ -292,22 +305,21 @@
 (defn create-problem
   "create a user submitted problem"
   [title tags description code]
-  (if (and (:problem-submission config)
-           (>= (count (get-solved (session/session-get :user)))
-               (:advanced-user-count config)))
-    (do
-      (mongo! :db :mydb)
-      (insert! :problems
-               {:_id (get-next-id)
-                :title title
-                :times-solved 0
-                :description description
-                :tags (s/split tags #"\s+")
-                :tests (s/split-lines code)
-                :user (session/session-get :user)
-                :approved false})
-      (flash-msg "Thank you for submitting a problem! Be sure to check back to see it posted." "/problems"))
-    (flash-error "You are not authorized to submit a problem." "/problems")))
+  (let [user (session/session-get :user)]
+    (if (can-submit? user)
+      (do
+        (mongo! :db :mydb)
+        (insert! :problems
+                 {:_id (get-next-id)
+                  :title title
+                  :times-solved 0
+                  :description description
+                  :tags (s/split tags #"\s+")
+                  :tests (s/split-lines code)
+                  :user user
+                  :approved false})
+        (flash-msg "Thank you for submitting a problem! Be sure to check back to see it posted." "/problems"))
+      (flash-error "You are not authorized to submit a problem." "/problems"))))
 
 (defn approve-problem [id]
   "take a user submitted problem and approve it"
@@ -316,8 +328,9 @@
       (update! :problems
         {:_id id}
         {:$set {:approved true}})
-      (flash-msg (str "Problem " id " has been approved!") (str "/problem/" id)))
-    (flash-error "You do not have access to this page" "/problems")))
+      (flash-msg (str "Problem " id " has been approved!")
+                 (str "/problem/" id)))
+    (flash-error "You don't have access to this page" "/problems")))
 
 (defn reject-problem [id]
   "reject a user submitted problem by deleting it from the database"
