@@ -39,7 +39,7 @@
                  {:user lower-user
                   :pwd (.encryptPassword (StrongPasswordEncryptor.) pwd)
                   :email email})
-        (session/session-put! :user user)
+        (session/session-put! :user lower-user)
         (response/redirect "/"))
       (flash-error why "/register"))))
 
