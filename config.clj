@@ -4,6 +4,6 @@
  :db-pwd nil
  :host "smtp.googlemail.com"
  :user "team@4clojure.com"
- :pass ""
  :problem-submission false
  :advanced-user-count 50}
+ :pass ""}

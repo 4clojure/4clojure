@@ -2,6 +2,7 @@ $(document).ready(function() {
 
   configureDataTables();
   configureCodeBox();
+  configureGolf();
 
   $("form#run-code button#approve-button").live("click", function(e) {
     e.preventDefault();
@@ -66,7 +67,24 @@ function configureCodeBox(){
          $('#code').val(text);
        });
 }
+}
+
+function configureGolf(){
+  $('#graph-link').click(function() {
+    $('#code-div').toggle('fast', function() {
+      // Animation complete.
+    });
+    $('#golfgraph').toggle('fast', function() {
+      // Animation complete.
+    });
+    var text = $('#graph-link').html();
+    if (text && text == 'View Chart'){
+       $('#graph-link').html("View Code");
+    }else{
+       $('#graph-link').html("View Chart");
+    }
     
-   
+
+});
 
 }
