@@ -180,7 +180,9 @@
     (when settings
       [:div#golf-scores
        [:p#golfheader (str "Code Golf Score: " score)]
-       [:a.graph-class [:span#graph-link "View Chart"]]])))
+       [:a.graph-class {:href "#"
+                        :onclick "return false"}
+        [:span#graph-link "View Chart"]]])))
 
 (def-page code-box [id]
   (let [{:keys [title tags description restricted tests approved user]}
