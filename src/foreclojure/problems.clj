@@ -221,11 +221,11 @@
        [:br]
        [:button.large {:id "run-button" :type "submit"} "Run"]
        (when-not approved
-         [:button.large#approve-button "Approve"]))]))
+         [:button#approve-button.large "Approve"]))]))
 
 (def-page problem-page []
   [:div.message (session/flash-get :message)]
-  [:div.error#problems-error (session/flash-get :error)]
+  [:div#problems-error.error (session/flash-get :error)]
   (link-to "/problems/rss" [:div {:class "rss"}])
   [:table#problem-table.my-table
    [:thead
@@ -254,7 +254,7 @@
 
 (def-page unapproved-problem-page []
   [:div.message (session/flash-get :message)]
-  [:div.error#problems-error (session/flash-get :error)]
+  [:div#problems-error.error (session/flash-get :error)]
   [:table#unapproved-problems.my-table
    [:thead
     [:tr
@@ -303,22 +303,21 @@
 (defn create-problem
   "create a user submitted problem"
   [title tags description code]
-  (if (and (:problem-submission config)
-           (>= (count (get-solved (session/session-get :user)))
-               (:advanced-user-count config)))
-    (do
-      (mongo! :db :mydb)
-      (insert! :problems
-               {:_id (get-next-id)
-                :title title
-                :times-solved 0
-                :description description
-                :tags (s/split tags #"\s+")
-                :tests (s/split-lines code)
-                :user (session/session-get :user)
-                :approved false})
-      (flash-msg "Thank you for submitting a problem! Be sure to check back to see it posted." "/problems"))
-    (flash-error "You are not authorized to submit a problem." "/problems")))
+  (let [user (session/session-get :user)]
+    (if (can-submit? user)
+      (do
+        (mongo! :db :mydb)
+        (insert! :problems
+                 {:_id (get-next-id)
+                  :title title
+                  :times-solved 0
+                  :description description
+                  :tags (s/split tags #"\s+")
+                  :tests (s/split-lines code)
+                  :user user
+                  :approved false})
+        (flash-msg "Thank you for submitting a problem! Be sure to check back to see it posted." "/problems"))
+      (flash-error "You are not authorized to submit a problem." "/problems"))))
 
 (defn approve-problem [id]
   "take a user submitted problem and approve it"
@@ -327,7 +326,8 @@
       (update! :problems
         {:_id id}
         {:$set {:approved true}})
-      (flash-msg (str "Problem " id " has been approved!") (str "/problem/" id)))
+      (flash-msg (str "Problem " id " has been approved!")
+                 (str "/problem/" id)))
     (flash-error "You don't have access to this page" "/problems")))
 
 (defroutes problems-routes

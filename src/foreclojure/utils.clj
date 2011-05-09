@@ -86,72 +86,73 @@
             "evenrow"
             "oddrow")})
 
-(defn get-solved [user]
-  (set
-   (:solved (from-mongo
-             (fetch-one :users
-                        :where {:user user}
-                        :only [:solved])))))
+(defn user-attribute [attr]
+  (fn [username]
+    (attr (from-mongo
+           (fetch-one :users
+                      :where {:user username}
+                      :only [attr])))))
 
-(defn approver? [user]
-  (:approver (from-mongo
-             (fetch-one :users
-                        :where {:user user}
-                        :only [:approver]))))
+(def get-solved (comp set (user-attribute :solved)))
+(def approver? (user-attribute :approver))
 
-(defn html-doc [& body] 
-  (html 
-   (doctype :html5)
-   [:html 
-    [:head 
-     [:title "4Clojure"]
-     [:link {:rel "alternate" :type "application/atom+xml" :title "Atom" :href "http://4clojure.com/problems/rss"}]
-     [:link {:rel "shortcut icon" :href "/favicon.ico"}]
-     (include-js "/script/jquery-1.5.2.min.js" "/script/jquery.dataTables.min.js")
-     (include-js "/script/foreclojure.js")
-     (include-js "/script/xregexp.js" "/script/shCore.js" "/script/shBrushClojure.js")
-     (include-js "/script/ace/src/ace.js" "/script/ace/src/mode-clojure.js")
-     (include-css "/css/style.css" "/css/demo_table.css" "/css/shCore.css" "/css/shThemeDefault.css")
-     [:style {:type "text/css"}
-      ".syntaxhighlighter { overflow-y: hidden !important; }"]]
-     [:script {:type "text/javascript"} "SyntaxHighlighter.all()"]
-    [:body
-     [:div#top
-      [:a {:href "/"} [:img#logo {:src "/images/logo.png"}]]]
-     
-     [:div#content
-      (if  (session/session-get :user)
-        [:div#account.header-option
-         [:a {:href "/login/update"} "Account Settings"]])
-      (if (approver? (session/session-get :user))
-        [:div#manage-unapproved.header-option
-         [:a {:href "/problems/unapproved"} "View Unapproved Problems"]])
-      [:br]
-      [:div#menu
-       [:a.menu {:href "/"} "Main Page"]
-       [:a.menu {:href "/problems"} "Problem List"]
-       [:a.menu {:href "/users"} "Top Users"]
-       [:a.menu {:href "/directions"} "Getting Started"]
-       [:a.menu {:href "http://try-clojure.org"} "REPL"]
-       [:a.menu {:href "http://clojuredocs.org"} "Docs"]
-       (if (and (:problem-submission config)
-                (>= (count (get-solved (session/session-get :user)))
-                    (:advanced-user-count config)))
-         [:a.menu {:href "/problems/submit"} "Submit a Problem"])
-       [:span#user-info
-        (if-let [user (session/session-get :user)]
-          [:div
-           [:span#username (str "Logged in as " user )]
-           [:a#logout {:href "/logout"} "Logout"]]
-          [:div
-           [:a#login {:href (login-url)} "Login"]
-           [:a#register {:href "/register"} "Register"]])]]
-      [:div#content_body body]
-      [:div#footer
-       "The content on 4clojure.com is available under the EPL v 1.0 license."
-       [:a#contact {:href "mailto:team@4clojure.com"} "Contact us!"]]
-       (javascript-tag
-      " var _gaq = _gaq || [];
+(defn can-submit? [username]
+  (and (:problem-submission config)
+       (>= (count (get-solved username))
+           (:advanced-user-count config))))
+
+(defn html-doc [& body]
+  (let [user (session/session-get :user)]
+    (html 
+     (doctype :html5)
+     [:html 
+      [:head 
+       [:title "4Clojure"]
+       [:link {:rel "alternate" :type "application/atom+xml" :title "Atom" :href "http://4clojure.com/problems/rss"}]
+       [:link {:rel "shortcut icon" :href "/favicon.ico"}]
+       (include-js "/script/jquery-1.5.2.min.js" "/script/jquery.dataTables.min.js")
+       (include-js "/script/foreclojure.js")
+       (include-js "/script/xregexp.js" "/script/shCore.js" "/script/shBrushClojure.js")
+       (include-js "/script/ace/src/ace.js" "/script/ace/src/mode-clojure.js")
+       (include-css "/css/style.css" "/css/demo_table.css" "/css/shCore.css" "/css/shThemeDefault.css")
+       [:style {:type "text/css"}
+        ".syntaxhighlighter { overflow-y: hidden !important; }"]]
+      [:script {:type "text/javascript"} "SyntaxHighlighter.all()"]
+      [:body
+       [:div#top
+        [:a {:href "/"} [:img#logo {:src "/images/logo.png"}]]]
+
+       [:div#content
+        (when user
+          [:div#account.header-option
+           (link-to "/login/update" "Account Settings")]
+          (when (approver? user)
+            [:div#manage-unapproved.header-option
+             (link-to "/problems/unapproved" "View Unapproved Problems")]))
+        [:br]
+        [:div#menu
+         [:a.menu {:href "/"} "Main Page"]
+         [:a.menu {:href "/problems"} "Problem List"]
+         [:a.menu {:href "/users"} "Top Users"]
+         [:a.menu {:href "/directions"} "Getting Started"]
+         [:a.menu {:href "http://try-clojure.org"} "REPL"]
+         [:a.menu {:href "http://clojuredocs.org"} "Docs"]
+         (when (can-submit? user)
+           [:a.menu {:href "/problems/submit"} "Submit a Problem"])
+         [:span#user-info
+          (if user
+            [:div
+             [:span#username (str "Logged in as " user)]
+             [:a#logout {:href "/logout"} "Logout"]]
+            [:div
+             [:a#login {:href (login-url)} "Login"]
+             [:a#register {:href "/register"} "Register"]])]]
+        [:div#content_body body]
+        [:div#footer
+         "The content on 4clojure.com is available under the EPL v 1.0 license."
+         [:a#contact {:href "mailto:team@4clojure.com"} "Contact us!"]]
+        (javascript-tag
+         " var _gaq = _gaq || [];
         _gaq.push(['_setAccount', 'UA-22844856-1']);
         _gaq.push(['_trackPageview']);
 
@@ -161,4 +162,4 @@
           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
         })();
 "
-      )]]]))
+         )]]])))
