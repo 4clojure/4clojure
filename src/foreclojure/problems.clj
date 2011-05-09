@@ -94,27 +94,25 @@
                    {:_id _id}
                    {:$set {user-score-key score}}))))))
 
-(defn mark-completed [id code & [user approved]]
+(defn mark-completed [id code & [user]]
   (let [user (or user (session/session-get :user))
+        approved (:approved (get-problem id))
         gist-link (html [:div.share
                          [:a.novisited {:href "/share/code"} "Share"]
                          " this solution with your friends!"])
-
         message
-        (cond (and user (not approved))
-          (str "You've solved the unapproved problem. Now you can approve it!")
-        (user)
-          (do
-            (when (not-any? #{id} (get-solved user))
-              (update! :users {:user user} {:$addToSet {:solved id}})
-              (update! :problems {:_id id} {:$inc {:times-solved 1}})
-              (send total-solved inc))
-            (record-golf-score! user id (code-length code))
-            (str "Congratulations, you've solved the problem!"
-                 "<br />" (next-problem-link id))))
-         else
-            (str "You've solved the problem! If you "
-              (login-link "log in") " we can track your progress.")]
+        (cond
+         (not approved) (str "You've solved the unapproved problem. Now you can approve it!")
+         user (do
+                (when (not-any? #{id} (get-solved user))
+                  (update! :users {:user user} {:$addToSet {:solved id}})
+                  (update! :problems {:_id id} {:$inc {:times-solved 1}})
+                  (send total-solved inc))
+                (record-golf-score! user id (code-length code))
+                (str "Congratulations, you've solved the problem!"
+                     "<br />" (next-problem-link id)))
+         :else (str "You've solved the problem! If you "
+                    (login-link "log in") " we can track your progress."))]
     (session/session-put! :code [id code])
     (flash-msg (str message " " gist-link) (str "/problem/" id))))
 
@@ -134,7 +132,7 @@
 
 (defn run-code [id raw-code]
   (let [code (.trim raw-code)
-        {:keys [tests restricted approved]} (get-problem id)
+        {:keys [tests restricted]} (get-problem id)
         sb-tester (get-tester restricted)]
     (session/flash-put! :code code)
     (try
@@ -145,7 +143,7 @@
                  i 0]
             (session/flash-put! :failing-test i)
             (if-not test
-              (mark-completed id code () approved)
+              (mark-completed id code)
               (let [testcase (s/replace test "__" user-forms)]
                 (if (sb sb-tester (first (read-string-safely testcase)))
                   (recur more (inc i))
