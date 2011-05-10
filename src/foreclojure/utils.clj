@@ -113,7 +113,7 @@
        (include-js "/vendor/script/jquery-1.5.2.min.js" "/vendor/script/jquery.dataTables.min.js")
        (include-js "/vendor/script/foreclojure.js")
        (include-js "/vendor/script/xregexp.js" "/vendor/script/shCore.js" "/vendor/script/shBrushClojure.js")
-       (include-js "/vendor/script/ace/src/ace.js" "/script/ace/src/mode-clojure.js")
+       (include-js "/vendor/script/ace/ace.js" "/vendor/script/ace/mode-clojure.js")
        (include-css "/css/style.css" "/css/demo_table.css" "/css/shCore.css" "/css/shThemeDefault.css")
        [:style {:type "text/css"}
         ".syntaxhighlighter { overflow-y: hidden !important; }"]]
