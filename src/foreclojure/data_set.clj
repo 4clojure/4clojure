@@ -189,7 +189,6 @@
               :title "Last Element"
               :times-solved 0
               :restricted ["last"]
-              :approved true
               :description "Write a function which returns the last element in a sequence."
               :tags ["easy" "seqs" "core-functions"]
               :approved true
@@ -954,7 +953,6 @@ number of prime numbers."
             :description "A power set is the set of all subsets of a given set. Given a list, produce a set of sublists while preserving the order of elements."
             :approved true
             :tags ["hard" "seqs"]
-	    :approved true
             :tests ["(= (__ '(1 :a)) '#{(1 :a) (:a) () (1)})"
                     "(= (__ '()) '#{()})"
                     "(= (__ '(1 2 3)) '#{() (1) (2) (3) (1 2) (1 3) (2 3) (1 2 3)})"
