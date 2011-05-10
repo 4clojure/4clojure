@@ -927,9 +927,23 @@ number of prime numbers."
             :tests ["(= (__ #{0 1 2 3} #{2 3 4 5}) #{2 3})"
 		    "(= (__ #{0 1 2} #{3 4 5}) #{})"
 		    "(= (__ #{:a :b :c :d} #{:c :e :a :f :d}) #{:a :c :d})"]})
+
+(insert! :problems
+           {:_id 82
+            :title "Word Chains"
+            :times-solved 0
+            :description "A word chain consists of a set of words ordered so that each word differs by only one letter from the words directly before and after it.  The one letter difference can be either an insertion, a deletion, or a substitution.  Here is an example word chain:\n\ncat -> cot -> coat -> oat -> hat -> hot -> hog -> dog\n\nWrite a function which takes a sequence of words, and returns true if they can be arranged into one continous word chain, and false if they cannot."
+            :approved true
+            :tags ["hard" "seqs"]
+            :tests ["(= true (__ #{\"hat\" \"coat\" \"dog\" \"cat\" \"oat\" \"cot\" \"hot\" \"hog\"}))"
+                    "(= false (__ #{\"cot\" \"hot\" \"bat\" \"fat\"}))"
+                    "(= false (__ #{\"to\" \"top\" \"stop\" \"tops\" \"toss\"}))"
+                    "(= true (__ #{\"spout\" \"do\" \"pot\" \"pout\" \"spot\" \"dot\"}))"
+                    "(= true (__ #{\"share\" \"hares\" \"shares\" \"hare\" \"are\"}))"
+                    "(= false (__ #{\"share\" \"hares\" \"hare\" \"are\"}))"]})
       
       (insert! :problems
-          {:_id 81
+          {:_id 83
            :title "Create an Equation"
            :times-solved 0
            :description "Write a function which takes three or more integers.  Using these integers, your function should generate clojure code representing an equation.  The following rules for the equation must be satisfied:\n\n    1. All integers must be used once and only once.\n    2. The order of the integers must be maintained when reading the equation left-to-right.\n    3. The only functions you may use are +, *, or =.\n    4. The equation must use the minimum number of parentheses.\n    5. If no satisfying equation exists, return nil."
@@ -948,7 +962,7 @@ number of prime numbers."
 
       
       (insert! :problems
-           {:_id 82
+           {:_id 84
             :title "Power Set"
             :times-solved 0
             :description "A power set is the set of all subsets of a given set. Given a list, produce a set of sublists while preserving the order of elements."
