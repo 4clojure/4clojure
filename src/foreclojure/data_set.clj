@@ -915,6 +915,18 @@ number of prime numbers."
 		    "(= (__ 496) true)"
 		    "(= (__ 500) false)"
 		    "(= (__ 8128) true)"]})
+
+(insert! :problems
+           {:_id 81
+            :title "Set Intersection"
+            :times-solved 0
+            :restricted ["intersection"]
+            :description "Write a function which returns the intersection of two sets.  The intersection is the sub-set of items that each set has in common."
+            :approved true
+            :tags ["easy" "sets"]
+            :tests ["(= (__ #{0 1 2 3} #{2 3 4 5}) #{2 3})"
+		    "(= (__ #{0 1 2} #{3 4 5}) #{})"
+		    "(= (__ #{:a :b :c :d} #{:c :e :a :f :d}) #{:a :c :d})"]})
       
       (insert! :problems
           {:_id 81
