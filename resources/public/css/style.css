@@ -343,7 +343,6 @@ button:active {
 
 #golfgraph{ 
   width: 90%;
-  display: none;
 }
 
 #golfgraph img{
@@ -383,6 +382,7 @@ button:active {
   font-weight: bold;
   font-size: 12px;
   padding-bottom: 5px;
+  display: none;
 }
 
 a.graph-class :hover {color: #445599;}

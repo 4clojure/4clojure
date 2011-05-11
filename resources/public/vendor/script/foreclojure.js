@@ -77,6 +77,8 @@ function configureCodeBox(){
 }
 
 function configureGolf(){
+  $('#graph-link').show();
+  $('#golfgraph').hide();
   $('#graph-link').click(function() {
     $('#code-div').toggle('fast', function() {
       // Animation complete.
