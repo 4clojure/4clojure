@@ -931,7 +931,7 @@ number of prime numbers."
            {:_id 82
             :title "Word Chains"
             :times-solved 0
-            :description "A word chain consists of a set of words ordered so that each word differs by only one letter from the words directly before and after it.  The one letter difference can be either an insertion, a deletion, or a substitution.  Here is an example word chain:\n\ncat -> cot -> coat -> oat -> hat -> hot -> hog -> dog\n\nWrite a function which takes a sequence of words, and returns true if they can be arranged into one continous word chain, and false if they cannot."
+            :description "A word chain consists of a set of words ordered so that each word differs by only one letter from the words directly before and after it.  The one letter difference can be either an insertion, a deletion, or a substitution.  Here is an example word chain:<br/><br/>cat -> cot -> coat -> oat -> hat -> hot -> hog -> dog<br/><br/>Write a function which takes a sequence of words, and returns true if they can be arranged into one continous word chain, and false if they cannot."
             :approved true
             :tags ["hard" "seqs"]
             :tests ["(= true (__ #{\"hat\" \"coat\" \"dog\" \"cat\" \"oat\" \"cot\" \"hot\" \"hog\"}))"
