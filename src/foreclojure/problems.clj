@@ -211,6 +211,8 @@
        [:span#message-text (session/flash-get :message)]]
       (render-golf-score)]
      (form-to [:post *url*]
+              [:br]
+              [:br]
        [:p#instruct "Code which fills in the blank: "]
        (text-area {:id "code-box"
                    :spellcheck "false"}
