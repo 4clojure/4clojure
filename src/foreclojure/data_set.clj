@@ -940,9 +940,23 @@ number of prime numbers."
                     "(= true (__ #{\"spout\" \"do\" \"pot\" \"pout\" \"spot\" \"dot\"}))"
                     "(= true (__ #{\"share\" \"hares\" \"shares\" \"hare\" \"are\"}))"
                     "(= false (__ #{\"share\" \"hares\" \"hare\" \"are\"}))"]})
+
+(insert! :problems
+           {:_id 83
+            :title "A Half-Truth"
+            :times-solved 0
+            :description "Write a function which takes a variable number of booleans.  Your function should return true if some of the parameters are true, but not all of the parameters are true.  Otherwise your function should return false."
+            :approved true
+            :tags ["easy"]
+            :tests ["(= false (__ false false))"
+                    "(= true (__ true false))"
+                    "(= false (__ true))"
+                    "(= true (__ false true false))"
+                    "(= false (__ true true true))"
+                    "(= true (__ true true true false))"]})
       
       (insert! :problems
-          {:_id 83
+          {:_id 84
            :title "Create an Equation"
            :times-solved 0
            :description "Write a function which takes three or more integers.  Using these integers, your function should generate clojure code representing an equation.  The following rules for the equation must be satisfied:\n\n    1. All integers must be used once and only once.\n    2. The order of the integers must be maintained when reading the equation left-to-right.\n    3. The only functions you may use are +, *, or =.\n    4. The equation must use the minimum number of parentheses.\n    5. If no satisfying equation exists, return nil."
@@ -961,7 +975,7 @@ number of prime numbers."
 
       
       (insert! :problems
-           {:_id 84
+           {:_id 85
             :title "Power Set"
             :times-solved 0
             :description "A power set is the set of all subsets of a given set. Given a list, produce a set of sublists while preserving the order of elements."
