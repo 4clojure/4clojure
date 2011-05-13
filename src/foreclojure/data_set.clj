@@ -959,7 +959,7 @@ number of prime numbers."
            {:_id 84
             :title "Transitive Closure"
             :times-solved 0
-            :description "Write a function which generates the <a href=\"http://en.wikipedia.org/wiki/Transitive_closure\">transitive closure</a> of a binary relation.  The relation will be represented as a set of 2 item vectors."
+            :description "Write a function which generates the <a href=\"http://en.wikipedia.org/wiki/Transitive_closure\">transitive closure</a> of a <a href=\"http://en.wikipedia.org/wiki/Binary_relation\">binary relation</a>.  The relation will be represented as a set of 2 item vectors."
             :approved true
             :tags ["hard" "set-theory"]
             :tests ["(let [divides #{[8 4] [9 3] [4 2] [27 9]}]\n  (= (__ divides) #{[4 2] [8 4] [8 2] [9 3] [27 9] [27 3]}))"
