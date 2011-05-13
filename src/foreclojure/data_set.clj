@@ -922,7 +922,7 @@ number of prime numbers."
             :restricted ["intersection"]
             :description "Write a function which returns the intersection of two sets.  The intersection is the sub-set of items that each set has in common."
             :approved true
-            :tags ["easy" "sets"]
+            :tags ["easy" "set theory"]
             :tests ["(= (__ #{0 1 2 3} #{2 3 4 5}) #{2 3})"
 		    "(= (__ #{0 1 2} #{3 4 5}) #{})"
 		    "(= (__ #{:a :b :c :d} #{:c :e :a :f :d}) #{:a :c :d})"]})
@@ -954,9 +954,20 @@ number of prime numbers."
                     "(= true (__ false true false))"
                     "(= false (__ true true true))"
                     "(= true (__ true true true false))"]})
+
+(insert! :problems
+           {:_id 84
+            :title "Transitive Closure"
+            :times-solved 0
+            :description "Write a function which generates the <a href=\"http://en.wikipedia.org/wiki/Transitive_closure\">transitive closure</a> of a binary relation.  The relation will be represented as a set of 2 item vectors."
+            :approved true
+            :tags ["hard" "set theory"]
+            :tests ["(let [divides #{[8 4] [9 3] [4 2] [27 9]}]\n  (= (__ divides) #{[4 2] [8 4] [8 2] [9 3] [27 9] [27 3]}))"
+                    "(let [more-legs\n      #{[\"cat\" \"man\"] [\"man\" \"snake\"] [\"spider\" \"cat\"]}]\n  (= (__ more-legs)\n     #{[\"cat\" \"man\"] [\"cat\" \"snake\"] [\"man\" \"snake\"]\n       [\"spider\" \"cat\"] [\"spider\" \"man\"] [\"spider\" \"snake\"]}))"
+                    "(let [progeny\n      #{[\"father\" \"son\"] [\"uncle\" \"cousin\"] [\"son\" \"grandson\"]}]\n  (= (__ progeny)\n     #{[\"father\" \"son\"] [\"father\" \"grandson\"]\n       [\"uncle\" \"cousin\"] [\"son\" \"grandson\"]}))"]})
       
       (insert! :problems
-          {:_id 84
+          {:_id 85
            :title "Create an Equation"
            :times-solved 0
            :description "Write a function which takes three or more integers.  Using these integers, your function should generate clojure code representing an equation.  The following rules for the equation must be satisfied:\n\n    1. All integers must be used once and only once.\n    2. The order of the integers must be maintained when reading the equation left-to-right.\n    3. The only functions you may use are +, *, or =.\n    4. The equation must use the minimum number of parentheses.\n    5. If no satisfying equation exists, return nil."
@@ -975,7 +986,7 @@ number of prime numbers."
 
       
       (insert! :problems
-           {:_id 85
+           {:_id 86
             :title "Power Set"
             :times-solved 0
             :description "A power set is the set of all subsets of a given set. Given a list, produce a set of sublists while preserving the order of elements."
