@@ -965,9 +965,21 @@ number of prime numbers."
             :tests ["(let [divides #{[8 4] [9 3] [4 2] [27 9]}]\n  (= (__ divides) #{[4 2] [8 4] [8 2] [9 3] [27 9] [27 3]}))"
                     "(let [more-legs\n      #{[\"cat\" \"man\"] [\"man\" \"snake\"] [\"spider\" \"cat\"]}]\n  (= (__ more-legs)\n     #{[\"cat\" \"man\"] [\"cat\" \"snake\"] [\"man\" \"snake\"]\n       [\"spider\" \"cat\"] [\"spider\" \"man\"] [\"spider\" \"snake\"]}))"
                     "(let [progeny\n      #{[\"father\" \"son\"] [\"uncle\" \"cousin\"] [\"son\" \"grandson\"]}]\n  (= (__ progeny)\n     #{[\"father\" \"son\"] [\"father\" \"grandson\"]\n       [\"uncle\" \"cousin\"] [\"son\" \"grandson\"]}))"]})
-      
-      (insert! :problems
+
+(insert! :problems
           {:_id 85
+           :title "Power Set"
+           :times-solved 0
+           :description "Write a function which generates the <a href=\"http://en.wikipedia.org/wiki/Power_set\">power set</a> of a given set.  The power set of a set x is the set of all subsets of x, including the empty set and x itself."
+           :approved true
+           :tags ["hard" "set-theory"]
+           :tests ["(= (__ #{1 :a}) #{#{1 :a} #{:a} #{} #{1}})"
+                   "(= (__ #{}) #{#{}})"
+                   "(= (__ #{1 2 3})\n   #{#{} #{1} #{2} #{3} #{1 2} #{1 3} #{2 3} #{1 2 3}})"
+                   "(= (count (__ (into #{} (range 10)))) 1024)"]})
+
+      (insert! :problems
+          {:_id 86
            :title "Create an Equation"
            :times-solved 0
            :description "Write a function which takes three or more integers.  Using these integers, your function should generate clojure code representing an equation.  The following rules for the equation must be satisfied:\n\n    1. All integers must be used once and only once.\n    2. The order of the integers must be maintained when reading the equation left-to-right.\n    3. The only functions you may use are +, *, or =.\n    4. The equation must use the minimum number of parentheses.\n    5. If no satisfying equation exists, return nil."
@@ -983,19 +995,6 @@ number of prime numbers."
 		   "(= (__ 3 4 5 6) nil)"
 		   "(= (__ 1 2 10 100 2001) '(= (+ 1 (* 2 10 100)) 2001)"
 		   "(= (__ 1 2 10 100 1300) '(= (* (+ 1 2 10) 100) 1300)"]})
-
-      
-      (insert! :problems
-           {:_id 86
-            :title "Power Set"
-            :times-solved 0
-            :description "A power set is the set of all subsets of a given set. Given a list, produce a set of sublists while preserving the order of elements."
-            :approved true
-            :tags ["hard" "seqs"]
-            :tests ["(= (__ '(1 :a)) '#{(1 :a) (:a) () (1)})"
-                    "(= (__ '()) '#{()})"
-                    "(= (__ '(1 2 3)) '#{() (1) (2) (3) (1 2) (1 3) (2 3) (1 2 3)})"
-                    "(= (count (__ (range 10))) 1024)"]})
       
       ))
 
