@@ -922,7 +922,7 @@ number of prime numbers."
             :restricted ["intersection"]
             :description "Write a function which returns the intersection of two sets.  The intersection is the sub-set of items that each set has in common."
             :approved true
-            :tags ["easy" "set theory"]
+            :tags ["easy" "set-theory"]
             :tests ["(= (__ #{0 1 2 3} #{2 3 4 5}) #{2 3})"
 		    "(= (__ #{0 1 2} #{3 4 5}) #{})"
 		    "(= (__ #{:a :b :c :d} #{:c :e :a :f :d}) #{:a :c :d})"]})
@@ -961,7 +961,7 @@ number of prime numbers."
             :times-solved 0
             :description "Write a function which generates the <a href=\"http://en.wikipedia.org/wiki/Transitive_closure\">transitive closure</a> of a binary relation.  The relation will be represented as a set of 2 item vectors."
             :approved true
-            :tags ["hard" "set theory"]
+            :tags ["hard" "set-theory"]
             :tests ["(let [divides #{[8 4] [9 3] [4 2] [27 9]}]\n  (= (__ divides) #{[4 2] [8 4] [8 2] [9 3] [27 9] [27 3]}))"
                     "(let [more-legs\n      #{[\"cat\" \"man\"] [\"man\" \"snake\"] [\"spider\" \"cat\"]}]\n  (= (__ more-legs)\n     #{[\"cat\" \"man\"] [\"cat\" \"snake\"] [\"man\" \"snake\"]\n       [\"spider\" \"cat\"] [\"spider\" \"man\"] [\"spider\" \"snake\"]}))"
                     "(let [progeny\n      #{[\"father\" \"son\"] [\"uncle\" \"cousin\"] [\"son\" \"grandson\"]}]\n  (= (__ progeny)\n     #{[\"father\" \"son\"] [\"father\" \"grandson\"]\n       [\"uncle\" \"cousin\"] [\"son\" \"grandson\"]}))"]})
