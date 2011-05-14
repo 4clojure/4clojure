@@ -22,7 +22,7 @@
                                  :where {:_id problem-num})
         filename (str user-name "-4clojure-solution" problem-num ".clj")
         text (str ";; " user-name "'s solution to " name "\n"
-                  ";; http://4clojure.com/problem/" problem-num
+                  ";; https://4clojure.com/problem/" problem-num
                   "\n\n"
                   solution)]
     (try
@@ -32,7 +32,7 @@
       (catch Throwable _ nil))))
 
 (defn tweet-solution [id gist-url & [link-text]]
-  (let [status-msg (str "Check out how I solved http://4clojure.com/problem/"
+  (let [status-msg (str "Check out how I solved https://4clojure.com/problem/"
                         id " - " gist-url " #clojure #4clojure")]
     (tweet-link status-msg link-text)))
 
