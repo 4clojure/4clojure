@@ -4,6 +4,9 @@
 (defn load-problems []
   (do
     (mongo! :db :mydb)
+
+    db.seq.insert({"_id":"problems", "seq":new NumberLong(86)});
+    
     (insert! :problems
              {:_id 1
               :title "Nothing but the Truth"

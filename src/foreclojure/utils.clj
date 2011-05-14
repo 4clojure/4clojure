@@ -9,7 +9,8 @@
   (:require [sandbar.stateful-session :as session]
             (ring.util [response :as response])
             [clojure.walk :as walk])
-  (:import java.net.URLEncoder))
+  (:import java.net.URLEncoder
+           org.apache.commons.mail.SimpleEmail))
 
 (def ^{:dynamic true} *url* nil)
 
@@ -48,6 +49,19 @@
      (html
       (link-to (login-url location)
                text))))
+
+;; Assuming that it will always need SSL. Will make it more flexible later.
+(defn send-email [{:keys [from to subject body]}]
+  (let [{:keys [host port user pass]} config
+        base (doto (SimpleEmail.)
+               (.setHostName host)
+               (.setSSL true)
+               (.setFrom from)
+               (.setSubject subject)
+               (.setMsg body)
+               (.setAuthentication user pass))]
+    (doseq [person to] (.addTo base person))
+    (.send base)))
 
 (defn flash-fn [type]
   (fn [msg url]
@@ -125,10 +139,10 @@
        [:div#content
         (when user
           [:div#account.header-option
-           (link-to "/login/update" "Account Settings")]
-          (when (approver? user)
-            [:div#manage-unapproved.header-option
-             (link-to "/problems/unapproved" "View Unapproved Problems")]))
+           (link-to "/login/update" "Account Settings")])
+        (when (approver? user)
+          [:div#manage-unapproved.header-option
+           (link-to "/problems/unapproved" "View Unapproved Problems")])
         [:br]
         [:div#menu
          [:a.menu {:href "/"} "Main Page"]

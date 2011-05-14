@@ -7,8 +7,7 @@
         [amalloy.utils :only [rand-in-range]]
         somnium.congomongo)
   (:require [sandbar.stateful-session :as session]
-            [ring.util.response :as response])
-  (:import org.apache.commons.mail.SimpleEmail))
+            [ring.util.response :as response]))
                         
 (def-page my-login-page [location]
   (when location
@@ -101,19 +100,6 @@
        [:button {:type "submit"} "Reset!"])]]])
 
 (def pw-chars "abcdefghijklmnopqrstuvxyzABCDEFGHIJKLMNOPQRSTUVWXY1234567890")
-
-;; Assuming that it will always need SSL. Will make it more flexible later.
-(defn send-email [{:keys [from to subject body]}]
-  (let [{:keys [host port user pass]} config
-        base (doto (SimpleEmail.)
-               (.setHostName host)
-               (.setSSL true)
-               (.setFrom from)
-               (.setSubject subject)
-               (.setMsg body)
-               (.setAuthentication user pass))]
-    (doseq [person to] (.addTo base person))
-    (.send base)))
 
 (defn do-reset-password! [email]
   (if-let [{id :_id, name :user} (fetch-one :users

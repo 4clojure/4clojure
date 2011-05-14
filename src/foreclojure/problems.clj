@@ -28,10 +28,6 @@
            :where criteria
            :sort {:_id 1}))))
 
-(defn get-next-id []
-  (from-mongo
-    (inc (count (fetch :problems)))))
-
 (defn next-unsolved-problem [solved-problems]
   (when-let [unsolved (->> (get-problem-list)
                            (remove (comp (set solved-problems) :_id))
@@ -312,7 +308,10 @@
       (do
         (mongo! :db :mydb)
         (insert! :problems
-                 {:_id (get-next-id)
+                 {:_id (:seq
+                        (fetch-and-modify :seqs
+                                          {:_id "problems"}
+                                          {:$inc {:seq 1}}))
                   :title title
                   :times-solved 0
                   :description description
@@ -334,13 +333,24 @@
                  (str "/problem/" id)))
     (flash-error "You don't have access to this page" "/problems")))
 
-(defn reject-problem [id]
+(defn reject-problem [id reason]
   "reject a user submitted problem by deleting it from the database"
   (if (approver? (session/session-get :user))
-    (do
+    (let [{:keys [user title description tags tests]} (get-problem id)
+          email (:email (get-user user))]
       (destroy! :problems
         {:_id id})
-      ;; TODO: email submitting user
+      (send-email
+       {:from "team@4clojure.com"
+        :to [email]
+        :subject "Problem rejected"
+        :body
+        (str "A problem you've submitted has been rejected, but don't get discouraged!  Check out the reason below, and try again.\n\n" 
+             "Title: " title "\n"
+             "Tags: " tags "\n"
+             "Description: " description "\n"
+             "Tests: " tests "\n"
+             "Rejection Reason: " reason)})
       (flash-msg (str "Problem " id " was rejected and deleted.") "/problems"))
     (flash-error "You do not have permission to access this page" "/problems")))
 
@@ -354,7 +364,7 @@
   (POST "/problem/approve" [id]
     (approve-problem (Integer. id)))
   (POST "/problem/reject" [id]
-    (reject-problem (Integer. id)))
+    (reject-problem (Integer. id) "We didn't like your problem."))
   (POST "/problem/:id" [id code]
     (run-code (Integer. id) code))
   (GET "/problems/rss" [] (create-feed
