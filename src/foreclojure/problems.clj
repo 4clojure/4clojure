@@ -206,7 +206,7 @@
       [:div.message
        [:span#message-text (session/flash-get :message)]]
       (render-golf-score)]
-     (form-to [:post *url*]
+     (form-to {:id "run-code"} [:post *url*]
               [:br]
               [:br]
        [:p#instruct "Code which fills in the blank: "]
