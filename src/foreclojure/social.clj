@@ -1,7 +1,8 @@
 (ns foreclojure.social
   (:use foreclojure.utils
         compojure.core
-        hiccup.page-helpers)
+        hiccup.page-helpers
+        somnium.congomongo)
   (:require [clj-github.gists :as gist]
             [sandbar.stateful-session :as session])
   (:import java.net.URLEncoder))
@@ -17,9 +18,11 @@
   return its url."
   [user-name problem-num solution]
   (let [user-name (or user-name "anonymous")
+        {name :title} (fetch-one :problems
+                                 :where {:_id problem-num})
         filename (str user-name "-4clojure-solution" problem-num ".clj")
-        text (str ";; " user-name
-                  "'s solution to http://4clojure.com/problem/" problem-num
+        text (str ";; " user-name "'s solution to " name "\n"
+                  ";; http://4clojure.com/problem/" problem-num
                   "\n\n"
                   solution)]
     (try
