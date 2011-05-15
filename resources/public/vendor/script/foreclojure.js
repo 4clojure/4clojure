@@ -17,6 +17,11 @@ $(document).ready(function() {
     }
   });
 
+  $("form#run-code button#edit-button").live("click", function(e) {
+    e.preventDefault();
+    $(this).parents("form").attr("action", "/problem/edit").submit();
+  });
+
 });
 
 

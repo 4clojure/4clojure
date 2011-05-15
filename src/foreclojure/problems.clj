@@ -11,7 +11,8 @@
         [amalloy.utils :only [defcomp]]
         compojure.core)
   (:require [sandbar.stateful-session :as session]
-            [clojure.string :as s]))
+            [clojure.string :as s]
+            (ring.util [response :as response])))
 
 (def total-solved (agent 0))
 
@@ -211,7 +212,7 @@
               [:br]
        [:p#instruct "Code which fills in the blank: "]
        (text-area {:id "code-box"
-                   :spellcheck "false"}
+`                   :spellcheck "false"}
                   :code (session/flash-get :code))
        [:div#golfgraph
         (render-golf-chart)]
@@ -220,8 +221,8 @@
        [:button.large {:id "run-button" :type "submit"} "Run"]
        (when-not approved
          [:span [:button.large {:id "reject-button"} "Reject"]
-                [:button.large {:id "approve-button"} "Approve"]]))
-     ]))
+                [:button.large {:id "edit-button"} "Edit"]
+                [:button.large {:id "approve-button"} "Approve"]]))]))
 
 (def-page problem-page []
   [:div.message (session/flash-get :message)]
@@ -285,44 +286,58 @@
 
 (def-page problem-submission-page []
   [:div.instructions
-    [:p "Thanks for choosing to submit a problem. Please make sure that you own the rights to the code you are submitting and that you wouldn't
-        mind having us use the code as a 4clojure problem."]]
+    [:p "Thanks for choosing to submit a problem. Please make sure that you own the rights to the code you are submitting and that you wouldn't mind having us use the code as a 4clojure problem."]]
   (form-to {:id "problem-submission"} [:post "/problems/submit"]
+           (hidden-field :author (session/flash-get :author))
+           (hidden-field :prob-id (session/flash-get :prob-id))
            (label :title "Problem Title")
-           (text-field :title)
+           (text-field :title  (session/flash-get :title))
            (label :tags "Tags (space separated)")
-           (text-field :tags)
+           (text-field :tags  (session/flash-get :tags))
            (label :description "Problem Description")
-           (text-area {:id "problem-description"} :description)
+           (text-area {:id "problem-description"} :description  (session/flash-get :description))
            [:br]
            (label :code-box "Problem test cases. Use two underscores (__) for user input. Multiple tests ought to be on one line each.")
            (text-area {:id "code-box" :spellcheck "false"}
-                         :code (session/flash-get :code))
+                         :code (session/flash-get :tests))
            [:p
-             [:button.large {:id "run-button" :type "submit"} "Submit"]])
-   )
+             [:button.large {:id "run-button" :type "submit"} "Submit"]]))
 
 (defn create-problem
   "create a user submitted problem"
-  [title tags description code]
+  [title tags description code id author]
   (let [user (session/session-get :user)]
     (if (can-submit? user)
       (do
-        (mongo! :db :mydb)
-        (insert! :problems
-                 {:_id (:seq
-                        (fetch-and-modify :seqs
-                                          {:_id "problems"}
-                                          {:$inc {:seq 1}}))
-                  :title title
-                  :times-solved 0
-                  :description description
-                  :tags (s/split tags #"\s+")
-                  :tests (s/split-lines code)
-                  :user user
-                  :approved false})
+        (let [prob-id
+              (if (nil? id)
+                (:seq (fetch-and-modify
+                       :seqs
+                       {:_id "problems"}
+                       {:$inc {:seq 1}}))
+                id)]
+          (update! :problems
+                   {:_id prob-id}
+                   {:_id prob-id
+                    :title title
+                    :times-solved 0
+                    :description description
+                    :tags (s/split tags #"\s+")
+                    :tests (s/split-lines code)
+                    :user (if (empty? author) user author)
+                    :approved false}))
         (flash-msg "Thank you for submitting a problem! Be sure to check back to see it posted." "/problems"))
       (flash-error "You are not authorized to submit a problem." "/problems"))))
+
+(defn edit-problem [id]
+  (let [{:keys [title user tags description tests]} (get-problem id)]
+    (session/flash-put! :prob-id id)
+    (session/flash-put! :author user)
+    (session/flash-put! :title title)
+    (session/flash-put! :tags (apply str (interpose " " tags)))
+    (session/flash-put! :description description)
+    (session/flash-put! :tests (apply str (interpose "\n" tests)))
+    (response/redirect "/problems/submit")))
 
 (defn approve-problem [id]
   "take a user submitted problem and approve it"
@@ -340,7 +355,6 @@
   (if (approver? (session/session-get :user))
     (let [{:keys [user title description tags tests]} (get-problem id)
           email (:email (get-user user))]
-      (println email)
       (destroy! :problems
         {:_id id})
       (send-email
@@ -361,9 +375,11 @@
   (GET "/problems" [] (problem-page))
   (GET "/problem/:id" [id] (code-box id))
   (GET "/problems/submit" [] (problem-submission-page))
-  (POST "/problems/submit" [title tags description code]
-    (create-problem title tags description code))
+  (POST "/problems/submit" [prob-id author title tags description code]
+        (create-problem title tags description code (when prob-id (Integer. prob-id)) author))
   (GET "/problems/unapproved" [] (unapproved-problems))
+  (POST "/problem/edit" [id]
+        (edit-problem (Integer. id)))
   (POST "/problem/approve" [id]
     (approve-problem (Integer. id)))
   (POST "/problem/reject" [id]
