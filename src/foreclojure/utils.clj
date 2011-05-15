@@ -135,14 +135,7 @@
       [:body
        [:div#top
         [:a {:href "/"} [:img#logo {:src "/images/logo.png"}]]]
-
        [:div#content
-        (when user
-          [:div#account.header-option
-           (link-to "/login/update" "Account Settings")])
-        (when (approver? user)
-          [:div#manage-unapproved.header-option
-           (link-to "/problems/unapproved" "View Unapproved Problems")])
         [:br]
         [:div#menu
          [:a.menu {:href "/"} "Main Page"]
@@ -151,8 +144,6 @@
          [:a.menu {:href "/directions"} "Getting Started"]
          [:a.menu {:href "http://try-clojure.org"} "REPL"]
          [:a.menu {:href "http://clojuredocs.org"} "Docs"]
-         (when (can-submit? user)
-           [:a.menu {:href "/problems/submit"} "Submit a Problem"])
          [:span#user-info
           (if user
             [:div
@@ -161,6 +152,15 @@
             [:div
              [:a#login {:href (login-url)} "Login"]
              [:a#register {:href "/register"} "Register"]])]]
+        (when user
+          [:div#lower-menu
+           [:span
+             (link-to "/login/update" "Account Settings")]
+           (when (approver? user)
+             [:span
+               (link-to "/problems/unapproved" "View Unapproved Problems")])
+           (when (can-submit? user)
+             [:span (link-to "/problems/submit" "Submit a Problem")])])
         [:div#content_body body]
         [:div#footer
          "The content on 4clojure.com is available under the EPL v 1.0 license."

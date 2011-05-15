@@ -83,6 +83,17 @@ h3 {
    color: #fff;
 }
 
+#lower-menu {
+  background-color: darkblue;
+  padding: 10px 5px 10px;
+  color: #7CFC00;
+}
+#lower-menu a:link {color: #fff;}
+#lower-menu a:visited {color: #fff;}
+#lower-menu a:active {color: #445599;}
+#lower-menu a:hover {color: #7CFC00;}
+#lower-menu a {text-decoration: none; font-size: 1.1em; font-weight:bold; padding: 0 20px;}
+
 a.novisited {color: #00e;}
 
 #menu a:link {color: #fff;}
