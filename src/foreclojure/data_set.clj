@@ -981,8 +981,20 @@ number of prime numbers."
                    "(= (__ #{1 2 3})\n   #{#{} #{1} #{2} #{3} #{1 2} #{1 3} #{2 3} #{1 2 3}})"
                    "(= (count (__ (into #{} (range 10)))) 1024)"]})
 
-      (insert! :problems
+(insert! :problems
           {:_id 86
+           :title "Happy numbers"
+           :times-solved 0
+           :description "Happy numbers are positive integers that follow a particular formula: take each individual digit, square it, and then sum the squares to get a new number. Repeat with the new number and eventually, you might get to a number whose squared sum is 1. This is a happy number. An unhappy number (or sad number) is one that loops endlessly. Write a function that determines if a number is happy or not."
+           :tags ["easy" "math"]
+           :approved true
+           :tests ["(= (__ 7) true)"
+                   "(= (__ 986543210) true)"
+                   "(= (__ 2) false)"
+                   "(= (__ 3) false)"]})
+
+      (insert! :problems
+          {:_id 87
            :title "Create an Equation"
            :times-solved 0
            :description "Write a function which takes three or more integers.  Using these integers, your function should generate clojure code representing an equation.  The following rules for the equation must be satisfied:\n\n    1. All integers must be used once and only once.\n    2. The order of the integers must be maintained when reading the equation left-to-right.\n    3. The only functions you may use are +, *, or =.\n    4. The equation must use the minimum number of parentheses.\n    5. If no satisfying equation exists, return nil."
@@ -1000,17 +1012,5 @@ number of prime numbers."
 		   "(= (__ 1 2 10 100 1300) '(= (* (+ 1 2 10) 100) 1300)"]})
       
       ))
-
-(insert! :problems
-          {:_id 87
-           :title "Happy numbers"
-           :times-solved 0
-           :description "Happy numbers are positive integers that follow a particular formula: take each individual digit, square it, and then sum the squares to get a new number. Repeat with the new number and eventually, you might get to 1 whose squared sum is 1. This is a happy number. An unhappy number (or sad number) is one that loops endlessly. Write a function that determines if a number is happy or not."
-           :tags ["math" "math" "recursion"]
-           :approved true
-           :tests ["(= (__ 7) true)"
-                   "(= (__ 986543210) true)"
-                   "(= (__ 2) false)"
-                   "(= (__ 3) false)"]})
 
 (load-problems)
