@@ -29,6 +29,7 @@ function configureDataTables(){
             null,
             null,
             null,
+            null,
             null
         ]
     } );

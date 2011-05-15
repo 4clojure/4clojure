@@ -232,12 +232,13 @@
     [:tr
      [:th "Title"]
      [:th "Tags"]
+     [:th "Submitted By"]
      [:th "Times Solved"]
      [:th "Solved?"]]]
    (let [solved (get-solved (session/session-get :user))
          problems (get-problem-list)]
      (map-indexed
-      (fn [x {:keys [title times-solved tags], id :_id}]
+      (fn [x {:keys [title times-solved tags user], id :_id}]
         [:tr (row-class x)
          [:td.titlelink
           [:a {:href (str "/problem/" id)}
@@ -245,6 +246,7 @@
          [:td.centered
           (s/join " " (map #(str "<span class='tag'>" % "</span>")
                            tags))]
+         [:td.centered user]
          [:td.centered (int times-solved)]
          [:td.centered
           [:img {:src (if (contains? solved id)
@@ -338,6 +340,7 @@
   (if (approver? (session/session-get :user))
     (let [{:keys [user title description tags tests]} (get-problem id)
           email (:email (get-user user))]
+      (println email)
       (destroy! :problems
         {:_id id})
       (send-email
