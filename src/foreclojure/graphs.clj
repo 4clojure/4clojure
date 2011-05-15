@@ -34,7 +34,9 @@
         chart (chart/histogram chart-data
                                :title (str "League scores: problem " id)
                                :x-label "Solution length"
-                               :y-label "How often")]
+                               :y-label "How often"
+                               :nbins (- (apply max (keys freqs))
+                                         (apply min (keys freqs))))]
     (when best
       (chart/add-pointer chart best (freqs best 0)
                          :text "best"
