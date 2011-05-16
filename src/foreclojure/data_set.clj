@@ -5,7 +5,9 @@
   (do
     (mongo! :db :mydb)
 
-    db.seq.insert({"_id":"problems", "seq":new NumberLong(86)});
+    (insert! :seqs
+             {:_id "problems"
+              :seq 87})
     
     (insert! :problems
              {:_id 1
