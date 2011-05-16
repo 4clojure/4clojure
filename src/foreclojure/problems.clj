@@ -376,7 +376,7 @@
   (GET "/problem/:id" [id] (code-box id))
   (GET "/problems/submit" [] (problem-submission-page))
   (POST "/problems/submit" [prob-id author title tags description code]
-        (create-problem title tags description code (when prob-id (Integer. prob-id)) author))
+        (create-problem title tags description code (when (not= "" prob-id) (Integer. prob-id)) author))
   (GET "/problems/unapproved" [] (unapproved-problems))
   (POST "/problem/edit" [id]
         (edit-problem (Integer. id)))
