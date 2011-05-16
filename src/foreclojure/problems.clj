@@ -321,8 +321,8 @@
                   :title title
                   :times-solved 0
                   :description description
-                  :tags (s/split tags #"\s+")
-                  :restricted (s/split restricted #"\s+")
+                  :tags (re-seq #"\S+" tags)
+                  :restricted (re-seq #"\S+" restricted)
                   :tests (s/split-lines code)
                   :user (if (empty? author) user author)
                   :approved false})
