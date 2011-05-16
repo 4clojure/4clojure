@@ -17,6 +17,11 @@ $(document).ready(function() {
     }
   });
 
+  $("form#run-code button#edit-button").live("click", function(e) {
+    e.preventDefault();
+    $(this).parents("form").attr("action", "/problem/edit").submit();
+  });
+
 });
 
 
@@ -26,6 +31,7 @@ function configureDataTables(){
         "iDisplayLength": 25,
         "aaSorting": [[ 3, "desc" ]],
         "aoColumns": [
+            null,
             null,
             null,
             null,
@@ -67,13 +73,17 @@ function configureCodeBox(){
        editor.setTheme("ace/theme/textmate");
 
        var ClojureMode = require("ace/mode/clojure").Mode;
-       editor.getSession().setMode(new ClojureMode());
+       var session = editor.getSession();
+       session.setMode(new ClojureMode());
+       session.setUseSoftTabs(true);
+       session.setTabSize(2);
+
        document.getElementById('editor').style.fontSize='13px';
        $("#run-button").click(function(){
          var text = editor.getSession().getValue(); 
          $('#code').val(text);
        });
-}
+    }
 }
 
 function configureGolf(){

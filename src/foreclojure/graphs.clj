@@ -34,15 +34,16 @@
         chart (chart/histogram chart-data
                                :title (str "League scores: problem " id)
                                :x-label "Solution length"
-                               :y-label "How often")]
+                               :y-label "How often"
+                               :nbins 25)]
     (when best
-      (chart/add-pointer chart best (freqs best 0)
-                         :text "best"
-                         :angle :se))
+      (chart/add-pointer chart best 0
+                         :text "your best"
+                         :angle :ne))
     (when (and curr (not= curr best))
-      (chart/add-pointer chart curr (freqs curr 0)
+      (chart/add-pointer chart curr 0
                          :text "this"
-                         :angle :se))
+                         :angle :ne))
     (when-not (> (count freqs) 1)
       (chart/add-text chart best (freqs best 0)
                       "Very little golfing data - chart may suck"))
