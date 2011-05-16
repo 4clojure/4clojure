@@ -3,14 +3,14 @@ body {
    font-size: 12px;
    font-family: Verdana, Arial, Helvetica, SunSans-Regular, Sans-Serif;
    color:#564b47;
-   margin: 20px 140px  20px 140px;
+   margin: 20px 0;
    text-align: center;
 }
 
 img {border:none}
 
 
-#account{
+#account.header-option {
    float:right;
    width: 100%;
    text-align: right;
@@ -19,11 +19,16 @@ img {border:none}
    font-weight: bold;
 }
 
-#account a:link {color: #445599;}
-#account a:visited {color: #445599;}
-#account a:active {color: #445599;}
-#account a:hover {color: #7CFC00;}
-#account a {text-decoration: none; font-size: 12px; font-weight:bold;}
+#manage-unapproved {
+  position: absolute;
+  right: 150px;
+}
+
+.header-option a:link {color: #445599;}
+.header-option a:visited {color: #445599;}
+.header-option a:active {color: #445599;}
+.header-option a:hover {color: #7CFC00;}
+.header-option a {text-decoration: none; font-size: 12px; font-weight:bold;}
 
 #wrapper {
    width: 100%;
@@ -37,14 +42,15 @@ img {border:none}
 }
 
 #content {
-   width: 95%;
-   margin: 15px;
+   width: 85%;
+   margin: 15px auto;
    padding: 15px 0px 15px 0px;
    text-align: left;
    background-color: #fff;
    overflow: auto;
    -moz-border-radius: 15px;
    border-radius: 15px;
+   position: relative;
 }
 
 #content_body {
@@ -58,8 +64,9 @@ img {border:none}
 }
 
 #top {
-   width: 95%;
+   width: 85%;
    padding: 15px 0px 15px 0px;
+   margin: 0 auto;
 }
 div#top a {
   border: 0;
@@ -75,6 +82,17 @@ h3 {
    padding: 20px 15px 15px 15px;
    color: #fff;
 }
+
+#lower-menu {
+  background-color: darkblue;
+  padding: 10px 5px 10px;
+  color: #7CFC00;
+}
+#lower-menu a:link {color: #fff;}
+#lower-menu a:visited {color: #fff;}
+#lower-menu a:active {color: #445599;}
+#lower-menu a:hover {color: #7CFC00;}
+#lower-menu a {text-decoration: none; font-size: 1.1em; font-weight:bold; padding: 0 20px;}
 
 a.novisited {color: #00e;}
 
@@ -142,7 +160,7 @@ a.novisited {color: #00e;}
    float: left;
 }
 
-#problem-table{
+#problem-table, table#unapproved-problems {
    float: left;
    width: 100%;
 }
@@ -169,8 +187,10 @@ span.error, div.error {
 
 div.message {
    color: red;
-   margin-bottom: 8px;
    font-size: 16px;
+   width: 75%;
+   float: left;
+   position: absolute;
 }
 
 span#prob-title {
@@ -334,11 +354,50 @@ button:active {
 }
 
 #golfgraph{ 
-  width: 90%
+  width: 90%;
 }
 
 #golfgraph img{
-  height: 300px;
   padding-top: 25px;
 }
+
+#golf-scores{
+  color: black;
+  font-size: 16px;
+  width: 25%;
+  float: right;
+  background-color:#bbddee;
+  overflow: auto;
+  -moz-border-radius: 15px;
+  border-radius: 15px;
+  text-align: center;
+}
+
+#instruct{
+  font-weight: bold;
+  width: 100%;
+  padding-top: 25px;
+}
+
+#golfheader{
+  font-weight: bold;
+  background-color:#445599;
+  color: #fff;
+  text-align: center;
+  width: 100%;
+}
+
+#graph-link{
+  width: 100%;
+  text-align: center;
+  float: right;
+  font-weight: bold;
+  font-size: 12px;
+  padding-bottom: 5px;
+  display: none;
+}
+
+a.graph-class :hover {color: #445599;}
+
+
 

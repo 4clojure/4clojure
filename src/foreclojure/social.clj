@@ -1,10 +1,30 @@
 (ns foreclojure.social
   (:use foreclojure.utils
         compojure.core
-        hiccup.page-helpers)
+        hiccup.page-helpers
+        somnium.congomongo)
   (:require [clj-github.gists :as gist]
             [sandbar.stateful-session :as session])
   (:import java.net.URLEncoder))
+
+(defn throttled
+  "Create a version of a function which 'refuses' to be called too
+  frequently. If it has successfully been called in the last N milliseconds,
+  calls to it will return nil; if no calls have succeeded in that period, args
+  will be passed along to the base function."
+  [f ms-period]
+  (let [tracker (atom {:last-sent 0})]
+    (fn [& args]
+      (when (:accepted (swap! tracker
+                              (fn [{:keys [last-sent]}]
+                                (let [now (System/currentTimeMillis)
+                                      ok (< ms-period (- now last-sent))]
+                                  {:accepted ok
+                                   :last-sent (if ok now last-sent)}))))
+        (apply f args)))))
+
+(def clojure-hashtag (throttled (constantly " #clojure")
+                                (* 1000 60 60))) ; hourly
 
 (defn tweet-link [status & [anchor-text]]
   (str "<a href=\"http://twitter.com/home?status="
@@ -17,9 +37,11 @@
   return its url."
   [user-name problem-num solution]
   (let [user-name (or user-name "anonymous")
+        {name :title} (fetch-one :problems
+                                 :where {:_id problem-num})
         filename (str user-name "-4clojure-solution" problem-num ".clj")
-        text (str ";; " user-name
-                  "'s solution to http://4clojure.com/problem/" problem-num
+        text (str ";; " user-name "'s solution to " name "\n"
+                  ";; https://4clojure.com/problem/" problem-num
                   "\n\n"
                   solution)]
     (try
@@ -29,8 +51,8 @@
       (catch Throwable _ nil))))
 
 (defn tweet-solution [id gist-url & [link-text]]
-  (let [status-msg (str "Check out how I solved http://4clojure.com/problem/"
-                        id " - " gist-url " #clojure #4clojure")]
+  (let [status-msg (str "Check out how I solved https://4clojure.com/problem/"
+                        id " - " gist-url " #4clojure" (clojure-hashtag))]
     (tweet-link status-msg link-text)))
 
 (def-page share-page []

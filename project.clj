@@ -1,4 +1,4 @@
-(defproject foreclojure "0.2.2.1"
+(defproject foreclojure "0.3.0"
   :description "4clojure - a website for lisp beginners"
   :dependencies [[org.clojure/clojure "1.2.1"]
                  [org.clojure/clojure-contrib "1.2.0"]
@@ -12,7 +12,8 @@
                  [clj-github "1.0.1"]
                  [ring "0.3.7"]
                  [clj-config "0.1.0"]
-                 [incanter/incanter-charts "1.2.1"]
+                 [incanter/incanter-core "1.2.3"]
+                 [incanter/incanter-charts "1.2.3"]
                  [org.apache.commons/commons-email "1.2"]]
   :dev-dependencies [[lein-ring "0.4.0"]
                      [swank-clojure "1.2.1"]]

@@ -4,6 +4,11 @@
 (defn load-problems []
   (do
     (mongo! :db :mydb)
+
+    (insert! :seqs
+             {:_id "problems"
+              :seq 87})
+    
     (insert! :problems
              {:_id 1
               :title "Nothing but the Truth"
@@ -189,7 +194,6 @@
               :title "Last Element"
               :times-solved 0
               :restricted ["last"]
-              :approved true
               :description "Write a function which returns the last element in a sequence."
               :tags ["easy" "seqs" "core-functions"]
               :approved true
@@ -832,6 +836,7 @@ number of prime numbers."
            :times-solved 0
            :description "A <a href=\"http://en.wikipedia.org/wiki/Tic-tac-toe\">tic-tac-toe</a> board is represented by a two dimensional vector. X is represented by :x, O is represented by :o, and empty is represented by :e.  A player wins by placing three Xs or three Os in a horizontal, vertical, or diagonal row.  Write a function which analyzes a tic-tac-toe board and returns :x if X has won, :o if O has won, and nil if neither player has won."
            :tags ["medium" "game"]
+	   :approved true
            :tests ["(= nil (__ [[:e :e :e]\n            [:e :e :e]\n            [:e :e :e]]))"
 		   "(= :x (__ [[:x :e :o]\n           [:x :e :e]\n           [:x :e :o]]))"
 		   "(= :o (__ [[:e :x :e]\n           [:o :o :o]\n           [:x :e :x]]))"
@@ -846,6 +851,7 @@ number of prime numbers."
            :times-solved 0
            :description "Given a string of comma separated integers, write a function which returns a new comma separated string that only contains the numbers which are perfect squares."
            :tags ["medium"]
+	   :approved true
            :tests ["(= (__ \"4,5,6,7,8,9\") \"4,9\")"
 		   "(= (__ \"15,16,25,36,37\") \"16,25,36\")"]}) 
 
@@ -855,6 +861,7 @@ number of prime numbers."
            :times-solved 0
            :description "Two numbers are coprime if their greatest common divisor equals 1.  Euler's totient function f(x) is defined as the number of positive integers less than x which are coprime to x.  The special case f(1) equals 1.  Write a function which calculates Euler's totient function."
            :tags ["medium"]
+	   :approved true
            :tests ["(= (__ 1) 1)"
 		   "(= (__ 10) (count '(1 3 7 9)) 4)"
 		   "(= (__ 40) 16)"
@@ -866,25 +873,18 @@ number of prime numbers."
            :times-solved 0
            :description "The trampoline function takes a function f and a variable number of parameters.  Trampoline calls f with any parameters that were supplied.  If f returns a function, trampoline calls that function with no arguments.  This is repeated, until the return value is not a function, and then trampoline returns that non-function value.  This is useful for implementing mutually recursive algorithms in a way that won't consume the stack."
            :tags ["medium", "recursion"]
+	   :approved true
            :tests ["(= __\n   (letfn\n     [(foo [x y] #(bar (conj x y) y))\n      (bar [x y] (if (> (last x) 10)\n                   x\n                   #(foo x (+ 2 y))))]\n     (trampoline foo [] 1)))"]})
 
       (insert! :problems
           {:_id 77
-           :title "Create an Equation"
+           :title "Anagram Finder"
            :times-solved 0
-           :description "Write a function which takes three or more integers.  Using these integers, your function should generate clojure code representing an equation.  The following rules for the equation must be satisfied:\n\n    1. All integers must be used once and only once.\n    2. The order of the integers must be maintained when reading the equation left-to-right.\n    3. The only functions you may use are +, *, or =.\n    4. The equation must use the minimum number of parentheses.\n    5. If no satisfying equation exists, return nil."
-           :tags ["hard", "code-generation"]
-           :tests ["(= (__ 3 4 7) '(= (+ 3 4) 7))"
-		   "(= (__ 3 4 12) '(= (* 3 4) 12))"
-		   "(= (__ 3 4 14) nil)"
-		   "(= (__ 3 4 5 35) '(= (* (+ 3 4) 5) 35))"
-		   "(= (__ 3 4 5 60) '(= (+ (* 3 4) 5) 60))"
-		   "(= (__ 3 4 5 23) '(= (+ 3 (* 4 5)) 23))"
-		   "(= (__ 3 4 5 27) '(= (* 3 (+ 4 5)) 27))"
-		   "(= (__ 3 4 5 6) nil)"
-		   "(= (__ 1 2 10 100 2001) '(= (+ 1 (* 2 10 100)) 2001)"
-		   "(= (__ 1 2 10 100 1300) '(= (* (+ 1 2 10) 100) 1300)"]})
-
+           :description "Write a function which finds all the anagrams in a vector of words.  A word x is an anagram of word y if all the letters in x can be rearranged in a different order to form y.  Your function should return a set of sets, where each sub-set is a group of words which are anagrams of each other.  Each sub-set should have at least two words.  Words without any anagrams should not be included in the result."
+           :tags ["medium"]
+	   :approved true
+           :tests ["(= (__ [\"meat\" \"mat\" \"team\" \"mate\" \"eat\"])\n   #{#{\"meat\" \"team\" \"mate\"}})"
+		   "(= (__ [\"veer\" \"lake\" \"item\" \"kale\" \"mite\" \"ever\"])\n   #{#{\"veer\" \"ever\"} #{\"lake\" \"kale\"} #{\"mite\" \"item\"}})"]})
       
       (insert! :problems
            {:_id 78
@@ -899,15 +899,119 @@ number of prime numbers."
 
       (insert! :problems
            {:_id 79
-            :title "Power Set"
+            :title "Triangle Minimal Path"
             :times-solved 0
-            :description "A power set is the set of all subsets of a given set. Given a list, produce a set of sublists while preserving the order of elements."
+            :description "Write a function which calculates the sum of the minimal path through a triangle.  The triangle is represented as a vector of vectors.  The path should start at the top of the triangle and move to an adjacent number on the next row until the bottom of the triangle is reached."
+            :approved true
+            :tags ["hard"]
+            :tests ["(= (__ [   [1]\n          [2 4]\n         [5 1 4]\n        [2 3 4 5]])\n   (+ 1 2 1 3)\n   7)"
+		    "(= (__ [     [3]\n            [2 4]\n           [1 9 3]\n          [9 9 2 4]\n         [4 6 6 7 8]\n        [5 7 3 5 1 4]])\n   (+ 3 4 3 2 7 1)\n   20)"]})
+
+      (insert! :problems
+           {:_id 80
+            :title "Perfect Numbers"
+            :times-solved 0
+            :description "A number is \"perfect\" if the sum of its divisors equal the number itself.  6 is a perfect number because 1+2+3=6.  Write a function which returns true for perfect numbers and false otherwise."
+            :approved true
+            :tags ["medium"]
+            :tests ["(= (__ 6) true)"
+		    "(= (__ 7) false)"
+		    "(= (__ 496) true)"
+		    "(= (__ 500) false)"
+		    "(= (__ 8128) true)"]})
+
+(insert! :problems
+           {:_id 81
+            :title "Set Intersection"
+            :times-solved 0
+            :restricted ["intersection"]
+            :description "Write a function which returns the intersection of two sets.  The intersection is the sub-set of items that each set has in common."
+            :approved true
+            :tags ["easy" "set-theory"]
+            :tests ["(= (__ #{0 1 2 3} #{2 3 4 5}) #{2 3})"
+		    "(= (__ #{0 1 2} #{3 4 5}) #{})"
+		    "(= (__ #{:a :b :c :d} #{:c :e :a :f :d}) #{:a :c :d})"]})
+
+(insert! :problems
+           {:_id 82
+            :title "Word Chains"
+            :times-solved 0
+            :description "A word chain consists of a set of words ordered so that each word differs by only one letter from the words directly before and after it.  The one letter difference can be either an insertion, a deletion, or a substitution.  Here is an example word chain:<br/><br/>cat -> cot -> coat -> oat -> hat -> hot -> hog -> dog<br/><br/>Write a function which takes a sequence of words, and returns true if they can be arranged into one continous word chain, and false if they cannot."
             :approved true
             :tags ["hard" "seqs"]
-            :tests ["(= (__ '(1 :a)) '#{(1 :a) (:a) () (1)})"
-                    "(= (__ '()) '#{()})"
-                    "(= (__ '(1 2 3)) '#{() (1) (2) (3) (1 2) (1 3) (2 3) (1 2 3)})"
-                    "(= (count (__ (range 10))) 1024)"]})
+            :tests ["(= true (__ #{\"hat\" \"coat\" \"dog\" \"cat\" \"oat\" \"cot\" \"hot\" \"hog\"}))"
+                    "(= false (__ #{\"cot\" \"hot\" \"bat\" \"fat\"}))"
+                    "(= false (__ #{\"to\" \"top\" \"stop\" \"tops\" \"toss\"}))"
+                    "(= true (__ #{\"spout\" \"do\" \"pot\" \"pout\" \"spot\" \"dot\"}))"
+                    "(= true (__ #{\"share\" \"hares\" \"shares\" \"hare\" \"are\"}))"
+                    "(= false (__ #{\"share\" \"hares\" \"hare\" \"are\"}))"]})
+
+(insert! :problems
+           {:_id 83
+            :title "A Half-Truth"
+            :times-solved 0
+            :description "Write a function which takes a variable number of booleans.  Your function should return true if some of the parameters are true, but not all of the parameters are true.  Otherwise your function should return false."
+            :approved true
+            :tags ["easy"]
+            :tests ["(= false (__ false false))"
+                    "(= true (__ true false))"
+                    "(= false (__ true))"
+                    "(= true (__ false true false))"
+                    "(= false (__ true true true))"
+                    "(= true (__ true true true false))"]})
+
+(insert! :problems
+           {:_id 84
+            :title "Transitive Closure"
+            :times-solved 0
+            :description "Write a function which generates the <a href=\"http://en.wikipedia.org/wiki/Transitive_closure\">transitive closure</a> of a <a href=\"http://en.wikipedia.org/wiki/Binary_relation\">binary relation</a>.  The relation will be represented as a set of 2 item vectors."
+            :approved true
+            :tags ["hard" "set-theory"]
+            :tests ["(let [divides #{[8 4] [9 3] [4 2] [27 9]}]\n  (= (__ divides) #{[4 2] [8 4] [8 2] [9 3] [27 9] [27 3]}))"
+                    "(let [more-legs\n      #{[\"cat\" \"man\"] [\"man\" \"snake\"] [\"spider\" \"cat\"]}]\n  (= (__ more-legs)\n     #{[\"cat\" \"man\"] [\"cat\" \"snake\"] [\"man\" \"snake\"]\n       [\"spider\" \"cat\"] [\"spider\" \"man\"] [\"spider\" \"snake\"]}))"
+                    "(let [progeny\n      #{[\"father\" \"son\"] [\"uncle\" \"cousin\"] [\"son\" \"grandson\"]}]\n  (= (__ progeny)\n     #{[\"father\" \"son\"] [\"father\" \"grandson\"]\n       [\"uncle\" \"cousin\"] [\"son\" \"grandson\"]}))"]})
+
+(insert! :problems
+          {:_id 85
+           :title "Power Set"
+           :times-solved 0
+           :description "Write a function which generates the <a href=\"http://en.wikipedia.org/wiki/Power_set\">power set</a> of a given set.  The power set of a set x is the set of all subsets of x, including the empty set and x itself."
+           :approved true
+           :tags ["hard" "set-theory"]
+           :tests ["(= (__ #{1 :a}) #{#{1 :a} #{:a} #{} #{1}})"
+                   "(= (__ #{}) #{#{}})"
+                   "(= (__ #{1 2 3})\n   #{#{} #{1} #{2} #{3} #{1 2} #{1 3} #{2 3} #{1 2 3}})"
+                   "(= (count (__ (into #{} (range 10)))) 1024)"]})
+
+(insert! :problems
+          {:_id 86
+           :title "Happy numbers"
+           :times-solved 0
+           :description "Happy numbers are positive integers that follow a particular formula: take each individual digit, square it, and then sum the squares to get a new number. Repeat with the new number and eventually, you might get to a number whose squared sum is 1. This is a happy number. An unhappy number (or sad number) is one that loops endlessly. Write a function that determines if a number is happy or not."
+           :tags ["easy" "math"]
+           :approved true
+           :tests ["(= (__ 7) true)"
+                   "(= (__ 986543210) true)"
+                   "(= (__ 2) false)"
+                   "(= (__ 3) false)"]})
+
+      (insert! :problems
+          {:_id 87
+           :title "Create an Equation"
+           :times-solved 0
+           :description "Write a function which takes three or more integers.  Using these integers, your function should generate clojure code representing an equation.  The following rules for the equation must be satisfied:\n\n    1. All integers must be used once and only once.\n    2. The order of the integers must be maintained when reading the equation left-to-right.\n    3. The only functions you may use are +, *, or =.\n    4. The equation must use the minimum number of parentheses.\n    5. If no satisfying equation exists, return nil."
+           :tags ["hard", "code-generation"]
+	   :approved true
+           :tests ["(= (__ 3 4 7) '(= (+ 3 4) 7))"
+		   "(= (__ 3 4 12) '(= (* 3 4) 12))"
+		   "(= (__ 3 4 14) nil)"
+		   "(= (__ 3 4 5 35) '(= (* (+ 3 4) 5) 35))"
+		   "(= (__ 3 4 5 60) '(= (+ (* 3 4) 5) 60))"
+		   "(= (__ 3 4 5 23) '(= (+ 3 (* 4 5)) 23))"
+		   "(= (__ 3 4 5 27) '(= (* 3 (+ 4 5)) 27))"
+		   "(= (__ 3 4 5 6) nil)"
+		   "(= (__ 1 2 10 100 2001) '(= (+ 1 (* 2 10 100)) 2001)"
+		   "(= (__ 1 2 10 100 1300) '(= (* (+ 1 2 10) 100) 1300)"]})
       
       ))
 
