@@ -212,7 +212,7 @@
               [:br]
        [:p#instruct "Code which fills in the blank: "]
        (text-area {:id "code-box"
-`                   :spellcheck "false"}
+                   :spellcheck "false"}
                   :code (session/flash-get :code))
        [:div#golfgraph
         (render-golf-chart)]
@@ -283,7 +283,6 @@
       (unapproved-problem-page)
       (flash-error "You cannot access this page" "/problems"))))
 
-
 (def-page problem-submission-page []
   [:div.instructions
     [:p "Thanks for choosing to submit a problem. Please make sure that you own the rights to the code you are submitting and that you wouldn't mind having us use the code as a 4clojure problem."]]
@@ -308,35 +307,34 @@
   [title tags description code id author]
   (let [user (session/session-get :user)]
     (if (can-submit? user)
-      (do
-        (let [prob-id
-              (if (nil? id)
-                (:seq (fetch-and-modify
-                       :seqs
-                       {:_id "problems"}
-                       {:$inc {:seq 1}}))
-                id)]
-          (update! :problems
-                   {:_id prob-id}
-                   {:_id prob-id
-                    :title title
-                    :times-solved 0
-                    :description description
-                    :tags (s/split tags #"\s+")
-                    :tests (s/split-lines code)
-                    :user (if (empty? author) user author)
-                    :approved false}))
+      (let [prob-id (or id
+                        (:seq (fetch-and-modify
+                               :seqs
+                               {:_id "problems"}
+                               {:$inc {:seq 1}})))]
+
+        (update! :problems
+                 {:_id prob-id}
+                 {:_id prob-id
+                  :title title
+                  :times-solved 0
+                  :description description
+                  :tags (s/split tags #"\s+")
+                  :tests (s/split-lines code)
+                  :user (if (empty? author) user author)
+                  :approved false})
         (flash-msg "Thank you for submitting a problem! Be sure to check back to see it posted." "/problems"))
       (flash-error "You are not authorized to submit a problem." "/problems"))))
 
 (defn edit-problem [id]
   (let [{:keys [title user tags description tests]} (get-problem id)]
-    (session/flash-put! :prob-id id)
-    (session/flash-put! :author user)
-    (session/flash-put! :title title)
-    (session/flash-put! :tags (apply str (interpose " " tags)))
-    (session/flash-put! :description description)
-    (session/flash-put! :tests (apply str (interpose "\n" tests)))
+    (doseq [[k v] {:prob-id id
+                   :author user
+                   :title title
+                   :tags (s/join " " tags)
+                   :description description
+                   :tests (s/join "\n" tests)}]
+      (session/flash-put! k v))
     (response/redirect "/problems/submit")))
 
 (defn approve-problem [id]
