@@ -293,6 +293,8 @@
     (text-field :title  (session/flash-get :title))
     (label :tags "Tags (space separated)")
     (text-field :tags  (session/flash-get :tags))
+    (label :restricted "Restricted Functions (space separated)")
+    (text-field :restricted  (session/flash-get :restricted))
     (label :description "Problem Description")
     (text-area {:id "problem-description"} :description  (session/flash-get :description))
     [:br]
@@ -304,7 +306,7 @@
 
 (defn create-problem
   "create a user submitted problem"
-  [title tags description code id author]
+  [title tags restricted description code id author]
   (let [user (session/session-get :user)]
     (if (can-submit? user)
       (let [prob-id (or id
@@ -320,6 +322,7 @@
                   :times-solved 0
                   :description description
                   :tags (s/split tags #"\s+")
+                  :restricted (s/split restricted #"\s+")
                   :tests (s/split-lines code)
                   :user (if (empty? author) user author)
                   :approved false})
@@ -327,11 +330,12 @@
       (flash-error "You are not authorized to submit a problem." "/problems"))))
 
 (defn edit-problem [id]
-  (let [{:keys [title user tags description tests]} (get-problem id)]
+  (let [{:keys [title user tags restricted description tests]} (get-problem id)]
     (doseq [[k v] {:prob-id id
                    :author user
                    :title title
                    :tags (s/join " " tags)
+                   :restricted (s/join " " restricted)
                    :description description
                    :tests (s/join "\n" tests)}]
       (session/flash-put! k v))
@@ -373,8 +377,8 @@
   (GET "/problems" [] (problem-page))
   (GET "/problem/:id" [id] (code-box id))
   (GET "/problems/submit" [] (problem-submission-page))
-  (POST "/problems/submit" [prob-id author title tags description code]
-    (create-problem title tags description code (when (not= "" prob-id) (Integer. prob-id)) author))
+  (POST "/problems/submit" [prob-id author title tags restricted description code]
+    (create-problem title tags restricted description code (when (not= "" prob-id) (Integer. prob-id)) author))
   (GET "/problems/unapproved" [] (unapproved-problems))
   (POST "/problem/edit" [id]
     (edit-problem (Integer. id)))
