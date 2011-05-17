@@ -285,7 +285,7 @@
 
 (def-page problem-submission-page []
   [:div.instructions
-   [:p "Thanks for choosing to submit a problem. Please make sure that you own the rights to the code you are submitting and that you wouldn't mind having us use the code as a 4clojure problem."]]
+   [:p "Thanks for choosing to submit a problem. Please make sure that you own the rights to the code you are submitting and that you wouldn't mind having us use the code as a 4clojure problem.  Once you've submitted your problem, it won't appear on the site until someone from the 4clojure team has had a chance to review it."]]
   (form-to {:id "problem-submission"} [:post "/problems/submit"]
     (hidden-field :author (session/flash-get :author))
     (hidden-field :prob-id (session/flash-get :prob-id))
@@ -298,7 +298,7 @@
     (label :description "Problem Description")
     (text-area {:id "problem-description"} :description  (session/flash-get :description))
     [:br]
-    (label :code-box "Problem test cases. Use two underscores (__) for user input. Multiple tests ought to be on one line each.")
+    (label :code-box "Problem test cases. Use two underscores (__) for user input. Individual tests can span multiple lines, but each test should be separated by a totally blank line.")
     (text-area {:id "code-box" :spellcheck "false"}
                :code (session/flash-get :tests))
     [:p
@@ -323,7 +323,7 @@
                   :description description
                   :tags (re-seq #"\S+" tags)
                   :restricted (re-seq #"\S+" restricted)
-                  :tests (s/split-lines code)
+                  :tests (s/split code #"\r\n\r\n")
                   :user (if (empty? author) user author)
                   :approved false})
         (flash-msg "Thank you for submitting a problem! Be sure to check back to see it posted." "/problems"))
@@ -337,7 +337,7 @@
                    :tags (s/join " " tags)
                    :restricted (s/join " " restricted)
                    :description description
-                   :tests (s/join "\n" tests)}]
+                   :tests (s/join "\r\n\r\n" tests)}]
       (session/flash-put! k v))
     (response/redirect "/problems/submit")))
 
