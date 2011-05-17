@@ -285,7 +285,7 @@
 
 (def-page problem-submission-page []
   [:div.instructions
-   [:p "Thanks for choosing to submit a problem. Please make sure that you own the rights to the code you are submitting and that you wouldn't mind having us use the code as a 4clojure problem."]]
+   [:p "Thanks for choosing to submit a problem. Please make sure that you own the rights to the code you are submitting and that you wouldn't mind having us use the code as a 4clojure problem.  Once you've submitted your problem, it won't appear on the site until someone from the 4clojure team has had a chance to review it."]]
   (form-to {:id "problem-submission"} [:post "/problems/submit"]
     (hidden-field :author (session/flash-get :author))
     (hidden-field :prob-id (session/flash-get :prob-id))
@@ -293,10 +293,12 @@
     (text-field :title  (session/flash-get :title))
     (label :tags "Tags (space separated)")
     (text-field :tags  (session/flash-get :tags))
+    (label :restricted "Restricted Functions (space separated)")
+    (text-field :restricted  (session/flash-get :restricted))
     (label :description "Problem Description")
     (text-area {:id "problem-description"} :description  (session/flash-get :description))
     [:br]
-    (label :code-box "Problem test cases. Use two underscores (__) for user input. Multiple tests ought to be on one line each.")
+    (label :code-box "Problem test cases. Use two underscores (__) for user input. Individual tests can span multiple lines, but each test should be separated by a totally blank line.")
     (text-area {:id "code-box" :spellcheck "false"}
                :code (session/flash-get :tests))
     [:p
@@ -304,7 +306,7 @@
 
 (defn create-problem
   "create a user submitted problem"
-  [title tags description code id author]
+  [title tags restricted description code id author]
   (let [user (session/session-get :user)]
     (if (can-submit? user)
       (let [prob-id (or id
@@ -319,21 +321,23 @@
                   :title title
                   :times-solved 0
                   :description description
-                  :tags (s/split tags #"\s+")
-                  :tests (s/split-lines code)
+                  :tags (re-seq #"\S+" tags)
+                  :restricted (re-seq #"\S+" restricted)
+                  :tests (s/split code #"\r\n\r\n")
                   :user (if (empty? author) user author)
                   :approved false})
         (flash-msg "Thank you for submitting a problem! Be sure to check back to see it posted." "/problems"))
       (flash-error "You are not authorized to submit a problem." "/problems"))))
 
 (defn edit-problem [id]
-  (let [{:keys [title user tags description tests]} (get-problem id)]
+  (let [{:keys [title user tags restricted description tests]} (get-problem id)]
     (doseq [[k v] {:prob-id id
                    :author user
                    :title title
                    :tags (s/join " " tags)
+                   :restricted (s/join " " restricted)
                    :description description
-                   :tests (s/join "\n" tests)}]
+                   :tests (s/join "\r\n\r\n" tests)}]
       (session/flash-put! k v))
     (response/redirect "/problems/submit")))
 
@@ -373,8 +377,8 @@
   (GET "/problems" [] (problem-page))
   (GET "/problem/:id" [id] (code-box id))
   (GET "/problems/submit" [] (problem-submission-page))
-  (POST "/problems/submit" [prob-id author title tags description code]
-    (create-problem title tags description code (when (not= "" prob-id) (Integer. prob-id)) author))
+  (POST "/problems/submit" [prob-id author title tags restricted description code]
+    (create-problem title tags restricted description code (when (not= "" prob-id) (Integer. prob-id)) author))
   (GET "/problems/unapproved" [] (unapproved-problems))
   (POST "/problem/edit" [id]
     (edit-problem (Integer. id)))
