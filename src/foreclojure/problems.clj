@@ -341,16 +341,18 @@
       (flash-error "You are not authorized to submit a problem." "/problems"))))
 
 (defn edit-problem [id]
-  (let [{:keys [title user tags restricted description tests]} (get-problem id)]
-    (doseq [[k v] {:prob-id id
-                   :author user
-                   :title title
-                   :tags (s/join " " tags)
-                   :restricted (s/join " " restricted)
-                   :description description
-                   :tests (s/join "\r\n\r\n" tests)}]
-      (session/flash-put! k v))
-    (response/redirect "/problems/submit")))
+  (if (approver? (session/session-get :user))
+    (let [{:keys [title user tags restricted description tests]} (get-problem id)]
+      (doseq [[k v] {:prob-id id
+                     :author user
+                     :title title
+                     :tags (s/join " " tags)
+                     :restricted (s/join " " restricted)
+                     :description description
+                     :tests (s/join "\r\n\r\n" tests)}]
+        (session/flash-put! k v))
+      (response/redirect "/problems/submit"))
+  (flash-error "You don't have access to this page" "/problems")))
 
 (defn approve-problem [id]
   "take a user submitted problem and approve it"
