@@ -2,7 +2,8 @@
   (:use (foreclojure utils config
                      [social :only [tweet-link gist!]]
                      [feeds :only [create-feed]]
-                     [users :only [golfer?]])
+                     [users :only [golfer? get-user-id]]
+                     [solutions :only [save-solution get-solution]])
         (clojail [core :exclude [safe-read]] testers)
         somnium.congomongo
         (hiccup form-helpers page-helpers core)
@@ -62,7 +63,7 @@
   (count (remove #(Character/isWhitespace %)
                  code)))
 
-(defn record-golf-score! [user-name problem-id score]
+(defn record-golf-score! [user-id problem-id score]
   (let [user-score-key (keyword (str "scores." problem-id))
         problem-score-key (keyword (str "scores." score))
         [problem-scores-key user-subkey] (map mongo-key-from-number
@@ -70,7 +71,7 @@
     (when-let [{:keys [_id scores] :as user}
                (from-mongo
                 (fetch-one :users
-                           :where {:user user-name}))]
+                           :where {:_id user-id}))]
       (let [old-score-real (get scores user-subkey)
             old-score-test (or old-score-real 1e6)
             old-score-key (keyword (str "scores." old-score-real))]
@@ -91,6 +92,17 @@
                    {:_id _id}
                    {:$set {user-score-key score}}))))))
 
+(defn store-completed-state! [username problem-id code]
+  (let [{user-id :_id} (fetch-one :users
+                                  :where {:user username}
+                                  :only [:_id])]
+    (when (not-any? #{problem-id} (get-solved username))
+      (update! :users {:_id user-id} {:$addToSet {:solved problem-id}})
+      (update! :problems {:_id problem-id} {:$inc {:times-solved 1}})
+      (send total-solved inc))
+    (record-golf-score! user-id problem-id (code-length code))
+    (save-solution (? user-id) (? problem-id) (? code))))
+
 (defn mark-completed [problem code & [user]]
   (let [user (or user (session/session-get :user))
         {:keys [_id approved]} problem
@@ -101,11 +113,7 @@
         (cond
          (not approved) (str "You've solved the unapproved problem. Now you can approve it!")
          user (do
-                (when (not-any? #{_id} (get-solved user))
-                  (update! :users {:user user} {:$addToSet {:solved _id}})
-                  (update! :problems {:_id _id} {:$inc {:times-solved 1}})
-                  (send total-solved inc))
-                (record-golf-score! user _id (code-length code))
+                (store-completed-state! user _id code)
                 (str "Congratulations, you've solved the problem!"
                      "<br />" (next-problem-link _id)))
          :else (str "You've solved the problem! If you "
@@ -182,7 +190,7 @@
         [:span#graph-link "View Chart"]]])))
 
 (def-page code-box [id]
-  (let [{:keys [title tags description restricted tests approved user]}
+  (let [{:keys [_id title tags description restricted tests approved user]}
         (get-problem (Integer. id))]
     [:div
      [:span#prob-title
@@ -213,7 +221,10 @@
        [:p#instruct "Code which fills in the blank: "]
        (text-area {:id "code-box"
                    :spellcheck "false"}
-                  :code (session/flash-get :code))
+                  :code (or (session/flash-get :code)
+                            (-> (session/session-get :user)
+                                (get-user-id)
+                                (get-solution ,,, _id))))
        [:div#golfgraph
         (render-golf-chart)]
        (hidden-field :id id)

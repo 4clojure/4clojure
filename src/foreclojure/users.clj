@@ -8,6 +8,12 @@
                        (when (:golfing-active config)
                          [:golfer])))
 
+(defn get-user-id [name]
+  (:_id
+   (fetch-one :users
+              :where {:user name}
+              :only [:_id])))
+
 (defn get-users []
   (let [users (from-mongo
                (fetch :users
