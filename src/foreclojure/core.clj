@@ -1,7 +1,7 @@
 (ns foreclojure.core
   (:use compojure.core
         [foreclojure static problems login register golf
-         users config social version graphs db-utils utils]
+         users config social version graphs mongo utils]
         ring.adapter.jetty
         somnium.congomongo
         (ring.middleware (reload :only [wrap-reload])
@@ -10,20 +10,7 @@
             [sandbar.stateful-session :as session]
             [ring.util.response :as response]))
 
-(mongo!
- :host (if-let [host (:db-host config)]
-         host
-         "localhost")
- :db "mydb")
-
-(if-let [db-user (:db-user config)]
-  (if-let [db-pwd (:db-pwd config)]
-    (authenticate db-user db-pwd)))
-
-(add-index! :users [:user] :unique true)
-(add-index! :users [[:solved -1]])
-
-(reconcile-solved-count)
+(prepare-mongo)
 
 (defroutes main-routes
   (GET "/" [] (welcome-page))
