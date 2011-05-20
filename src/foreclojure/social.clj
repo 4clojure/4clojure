@@ -26,9 +26,13 @@
 (def clojure-hashtag (throttled (constantly " #clojure")
                                 (* 1000 60 60))) ; hourly
 
-(defn tweet-link [status & [anchor-text]]
-  (str "<a href=\"http://twitter.com/home?status="
-       (URLEncoder/encode status) "\">"
+(defn tweet-link [id status & [anchor-text]]
+  (str "<a href=\"http://twitter.com/share?"
+       "text=" (URLEncoder/encode status)
+       "&url=" (URLEncoder/encode
+	        (str "https://4clojure.com/problem/" id))
+       "&related=4clojure" 
+       "\">"
        (or anchor-text "Twitter")
        "</a>"))
 
@@ -51,9 +55,9 @@
       (catch Throwable _ nil))))
 
 (defn tweet-solution [id gist-url & [link-text]]
-  (let [status-msg (str "Check out how I solved https://4clojure.com/problem/"
-                        id " - " gist-url " #4clojure" (clojure-hashtag))]
-    (tweet-link status-msg link-text)))
+  (let [status-msg (str "Check out how I solved problem #"
+                        id " on #4clojure " (clojure-hashtag) " " gist-url)]
+    (tweet-link id status-msg link-text)))
 
 (def-page share-page []
   (if-let [[id code] (session/session-get :code)]
