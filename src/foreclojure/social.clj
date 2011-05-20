@@ -23,7 +23,7 @@
                                    :last-sent (if ok now last-sent)}))))
         (apply f args)))))
 
-(def clojure-hashtag (throttled (constantly " #clojure")
+(def clojure-hashtag (throttled (constantly "#clojure ")
                                 (* 1000 60 60))) ; hourly
 
 (defn tweet-link [id status & [anchor-text]]
@@ -56,7 +56,7 @@
 
 (defn tweet-solution [id gist-url & [link-text]]
   (let [status-msg (str "Check out how I solved problem #"
-                        id " on #4clojure " (clojure-hashtag) " " gist-url)]
+                        id " on #4clojure " (clojure-hashtag) gist-url)]
     (tweet-link id status-msg link-text)))
 
 (def-page share-page []
