@@ -36,6 +36,12 @@
        (or anchor-text "Twitter")
        "</a>"))
 
+(defn get-problem-title [id]
+  (:title
+   (fetch-one :problems
+	      :only [:title]
+	      :where {:_id id})))
+
 (defn gist!
   "Create a new gist containing a user's solution to a problem and
   return its url."
@@ -43,9 +49,7 @@
   (let [[user-name possessive] (if user-name
                                  [user-name "'s"]
                                  ["anonymous" nil])
-
-        {name :title} (fetch-one :problems
-                                 :where {:_id problem-num})
+	name (get-problem-title problem-num)
         filename (str user-name "-4clojure-solution" problem-num ".clj")
         text (str ";; " user-name possessive " solution to " name "\n"
                   ";; https://4clojure.com/problem/" problem-num
@@ -58,8 +62,12 @@
       (catch Throwable _))))
 
 (defn tweet-solution [id gist-url & [link-text]]
-  (let [status-msg (str "Check out how I solved problem #"
-                        id " on #4clojure " (clojure-hashtag) gist-url)]
+  (let [status-msg (str "Check out how I solved "
+                        (let [title (get-problem-title id)]
+			  (if (> (count title) 35)
+			    (str "problem " id)
+			    (str "\"" title "\"")))
+			" on #4clojure " (clojure-hashtag) gist-url)]
     (tweet-link id status-msg link-text)))
 
 (def-page share-page []
