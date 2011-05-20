@@ -40,11 +40,14 @@
   "Create a new gist containing a user's solution to a problem and
   return its url."
   [user-name problem-num solution]
-  (let [user-name (or user-name "anonymous")
+  (let [[user-name possessive] (if user-name
+                                 [user-name "'s"]
+                                 ["anonymous" nil])
+
         {name :title} (fetch-one :problems
                                  :where {:_id problem-num})
         filename (str user-name "-4clojure-solution" problem-num ".clj")
-        text (str ";; " user-name "'s solution to " name "\n"
+        text (str ";; " user-name possessive " solution to " name "\n"
                   ";; https://4clojure.com/problem/" problem-num
                   "\n\n"
                   solution)]
