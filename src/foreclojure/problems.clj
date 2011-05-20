@@ -101,7 +101,7 @@
       (update! :problems {:_id problem-id} {:$inc {:times-solved 1}})
       (send total-solved inc))
     (record-golf-score! user-id problem-id (code-length code))
-    (save-solution (? user-id) (? problem-id) (? code))))
+    (save-solution user-id problem-id code)))
 
 (defn mark-completed [problem code & [user]]
   (let [user (or user (session/session-get :user))
