@@ -156,7 +156,10 @@
         (when user
           [:div#lower-menu
            [:span
-             (link-to "/login/update" "Account Settings")]
+            (link-to "/login/update" "Account Settings")]
+           (when (:golfing-active config)
+             [:span ; deserves its own page, but just make it discoverable for now
+              (link-to "/login/update" "Leagues")])
            (when (approver? user)
              [:span
                (link-to "/problems/unapproved" "View Unapproved Problems")])
