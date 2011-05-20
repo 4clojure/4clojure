@@ -23,24 +23,35 @@
                                    :last-sent (if ok now last-sent)}))))
         (apply f args)))))
 
-(def clojure-hashtag (throttled (constantly " #clojure")
+(def clojure-hashtag (throttled (constantly "#clojure ")
                                 (* 1000 60 60))) ; hourly
 
-(defn tweet-link [status & [anchor-text]]
-  (str "<a href=\"http://twitter.com/home?status="
-       (URLEncoder/encode status) "\">"
+(defn tweet-link [id status & [anchor-text]]
+  (str "<a href=\"http://twitter.com/share?"
+       "text=" (URLEncoder/encode status)
+       "&url=" (URLEncoder/encode
+	        (str "https://4clojure.com/problem/" id))
+       "&related=4clojure"
+       "\">"
        (or anchor-text "Twitter")
        "</a>"))
+
+(defn get-problem-title [id]
+  (:title
+   (fetch-one :problems
+	      :only [:title]
+	      :where {:_id id})))
 
 (defn gist!
   "Create a new gist containing a user's solution to a problem and
   return its url."
   [user-name problem-num solution]
-  (let [user-name (or user-name "anonymous")
-        {name :title} (fetch-one :problems
-                                 :where {:_id problem-num})
+  (let [[user-name possessive] (if user-name
+                                 [user-name "'s"]
+                                 ["anonymous" nil])
+	name (get-problem-title problem-num)
         filename (str user-name "-4clojure-solution" problem-num ".clj")
-        text (str ";; " user-name "'s solution to " name "\n"
+        text (str ";; " user-name possessive " solution to " name "\n"
                   ";; https://4clojure.com/problem/" problem-num
                   "\n\n"
                   solution)]
@@ -48,12 +59,16 @@
       (->> (gist/new-gist {} filename text)
            :repo
            (str "https://gist.github.com/"))
-      (catch Throwable _ nil))))
+      (catch Throwable _))))
 
 (defn tweet-solution [id gist-url & [link-text]]
-  (let [status-msg (str "Check out how I solved https://4clojure.com/problem/"
-                        id " - " gist-url " #4clojure" (clojure-hashtag))]
-    (tweet-link status-msg link-text)))
+  (let [status-msg (str "Check out how I solved "
+                        (let [title (get-problem-title id)]
+			  (if (> (count title) 35)
+			    (str "problem " id)
+			    (str "\"" title "\"")))
+			" on #4clojure " (clojure-hashtag) gist-url)]
+    (tweet-link id status-msg link-text)))
 
 (def-page share-page []
   (if-let [[id code] (session/session-get :code)]
