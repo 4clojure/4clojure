@@ -6,4 +6,5 @@
  :user "team@4clojure.com"
  :problem-submission false
  :advanced-user-count 50
- :pass ""}
+ :pass ""
+ :golfing-active true}
