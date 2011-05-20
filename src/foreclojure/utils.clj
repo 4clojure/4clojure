@@ -134,16 +134,17 @@
       [:script {:type "text/javascript"} "SyntaxHighlighter.all()"]
       [:body
        [:div#top
-        [:a {:href "/"} [:img#logo {:src "/images/logo.png"}]]]
+        (link-to "/" [:img#logo {:src "/images/logo.png"}])]
        [:div#content
         [:br]
         [:div#menu
-         [:a.menu {:href "/"} "Main Page"]
-         [:a.menu {:href "/problems"} "Problem List"]
-         [:a.menu {:href "/users"} "Top Users"]
-         [:a.menu {:href "/directions"} "Getting Started"]
-         [:a.menu {:href "http://try-clojure.org"} "REPL"]
-         [:a.menu {:href "http://clojuredocs.org"} "Docs"]
+         (for [[link text] [["/" "Main Page"]
+                            ["/problems" "Problem List"]
+                            ["/users" "Top Users"]
+                            ["/directions" "Getting Started"]
+                            ["http://try-clojure.org" "REPL"]
+                            ["http://clojuredocs.org" "Docs"]]]
+           [:a.menu {:href link} text])
          [:span#user-info
           (if user
             [:div
@@ -155,7 +156,10 @@
         (when user
           [:div#lower-menu
            [:span
-             (link-to "/login/update" "Account Settings")]
+            (link-to "/login/update" "Account Settings")]
+           (when (:golfing-active config)
+             [:span ; deserves its own page, but just make it discoverable for now
+              (link-to "/login/update" "Leagues")])
            (when (approver? user)
              [:span
                (link-to "/problems/unapproved" "View Unapproved Problems")])

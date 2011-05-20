@@ -3,12 +3,9 @@
 
 (defn load-problems []
   (do
-    (mongo! :db :mydb)
-
     (insert! :seqs
              {:_id "problems"
               :seq 87})
-    
     (insert! :problems
              {:_id 1
               :title "Nothing but the Truth"
@@ -1014,5 +1011,3 @@ number of prime numbers."
 		   "(= (__ 1 2 10 100 1300) '(= (* (+ 1 2 10) 100) 1300)"]})
       
       ))
-
-(load-problems)
