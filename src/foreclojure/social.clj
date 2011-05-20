@@ -31,7 +31,7 @@
        "text=" (URLEncoder/encode status)
        "&url=" (URLEncoder/encode
 	        (str "https://4clojure.com/problem/" id))
-       "&related=4clojure" 
+       "&related=4clojure"
        "\">"
        (or anchor-text "Twitter")
        "</a>"))
@@ -52,7 +52,7 @@
       (->> (gist/new-gist {} filename text)
            :repo
            (str "https://gist.github.com/"))
-      (catch Throwable _ nil))))
+      (catch Throwable _))))
 
 (defn tweet-solution [id gist-url & [link-text]]
   (let [status-msg (str "Check out how I solved problem #"
