@@ -138,13 +138,16 @@
        [:div#content
         [:br]
         [:div#menu
-         (for [[link text] [["/" "Main Page"]
-                            ["/problems" "Problem List"]
-                            ["/users" "Top Users"]
-                            ["/directions" "Getting Started"]
-                            ["http://try-clojure.org" "REPL"]
-                            ["http://clojuredocs.org" "Docs"]]]
-           [:a.menu {:href link} text])
+         (for [[link text & [tabbed]]
+               [["/" "Main Page"]
+                ["/problems" "Problem List"]
+                ["/users" "Top Users"]
+                ["/directions" "Getting Started"]
+                ["http://try-clojure.org" "REPL" true]
+                ["http://clojuredocs.org" "Docs" true]]]
+           [:a.menu (assoc (when tabbed {:target "_blank"})
+                      :href link)
+            text])
          [:span#user-info
           (if user
             [:div
@@ -162,7 +165,7 @@
               (link-to "/login/update" "Leagues")])
            (when (approver? user)
              [:span
-               (link-to "/problems/unapproved" "View Unapproved Problems")])
+              (link-to "/problems/unapproved" "View Unapproved Problems")])
            (when (can-submit? user)
              [:span (link-to "/problems/submit" "Submit a Problem")])])
         [:div#content_body body]
