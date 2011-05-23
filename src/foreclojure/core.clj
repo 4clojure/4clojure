@@ -10,8 +10,6 @@
             [sandbar.stateful-session :as session]
             [ring.util.response :as response]))
 
-(prepare-mongo)
-
 (defroutes main-routes
   (GET "/" [] (welcome-page))
   login-routes
@@ -35,6 +33,7 @@
              wrap-uri-binding))
 
 (defn run []
+  (prepare-mongo)
   (run-jetty (var app) {:join? false :port 8080}))
 
 (defn -main [& args]
