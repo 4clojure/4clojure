@@ -21,10 +21,10 @@
 (defn prepare-seqs []
   (update! :seqs
            {:_id "problems"}
-           {:$set {:seq (inc (apply max
-                                    (map :_id
-                                         (fetch :problems
-                                                :only [:_id]))))}}))
+           {:$set {:seq (->> (fetch :problems :only [:_id])
+                             (map :_id)
+                             (apply max)
+                             (inc))}}))
 
 ;; make it easier to get off the ground by marking contributors automatically
 ;; useful since some "in-development" features aren't enabled for all users
