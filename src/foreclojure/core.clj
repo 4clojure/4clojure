@@ -23,7 +23,7 @@
   golf-routes
   (-> (resources "/*")
       (wrap-url-as-file)
-      (wrap-file-info)) ; probably good for a few minutes at least
+      (wrap-file-info))
   (route/not-found "Page not found"))
 
 (def app (-> #'main-routes
