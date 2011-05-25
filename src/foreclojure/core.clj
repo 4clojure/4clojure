@@ -10,6 +10,11 @@
             [sandbar.stateful-session :as session]
             [ring.util.response :as response]))
 
+(defn wrap-expiry [handler seconds]
+  (fn [request]
+    (when-let [resp (handler request)]
+      (assoc-in resp [:headers "Cache-control"] (str "max-age=" seconds)))))
+
 (defroutes main-routes
   (GET "/" [] (welcome-page))
   login-routes
@@ -21,7 +26,7 @@
   version-routes
   graph-routes
   golf-routes
-  (route/resources "/")
+  (wrap-expiry (route/resources "/") 120) ; probably good for a couple hours
   (route/not-found "Page not found"))
 
 (def app (-> #'main-routes
