@@ -326,6 +326,16 @@
                                {:_id "problems"}
                                {:$inc {:seq 1}})))]
 
+        (when (empty? author) ; newly submitted, not a moderator tweak
+          (send-email
+           {:from "team@4clojure.com"
+            :to ["team@4clojure.com"]
+            :subject (str "User submission: " title)
+            :body (html [:h3 (link-to (str "https://4clojure.com/problem/edit/"
+                                           id)
+                                      title)]
+                        [:div description])}))
+
         (update! :problems
                  {:_id prob-id}
                  {:_id prob-id
