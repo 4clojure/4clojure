@@ -6,7 +6,8 @@
         somnium.congomongo
         (ring.middleware (reload :only [wrap-reload])
                          (stacktrace :only [wrap-stacktrace])
-                         [file-info :only [wrap-file-info]]))
+                         [file-info :only [wrap-file-info]]
+                         [gzip :only [wrap-gzip]]))
   (:require [compojure [route :as route] [handler :as handler]]
             [sandbar.stateful-session :as session]))
 
@@ -32,7 +33,8 @@
                 identity))
              session/wrap-stateful-session
              handler/site
-             wrap-uri-binding))
+             wrap-uri-binding
+             wrap-gzip))
 
 (defn run []
   (prepare-mongo)
