@@ -125,7 +125,7 @@
        [:link {:rel "alternate" :type "application/atom+xml" :title "Atom" :href "http://4clojure.com/problems/rss"}]
        [:link {:rel "shortcut icon" :href "/favicon.ico"}]
        (include-js "/vendor/script/jquery-1.5.2.min.js" "/vendor/script/jquery.dataTables.min.js")
-       (include-js "/vendor/script/foreclojure.js")
+       (include-js "/script/foreclojure.js")
        (include-js "/vendor/script/xregexp.js" "/vendor/script/shCore.js" "/vendor/script/shBrushClojure.js")
        (include-js "/vendor/script/ace/ace.js" "/vendor/script/ace/mode-clojure.js")
        (include-css "/css/style.css" "/css/demo_table.css" "/css/shCore.css" "/css/shThemeDefault.css")
@@ -138,13 +138,16 @@
        [:div#content
         [:br]
         [:div#menu
-         (for [[link text] [["/" "Main Page"]
-                            ["/problems" "Problem List"]
-                            ["/users" "Top Users"]
-                            ["/directions" "Getting Started"]
-                            ["http://try-clojure.org" "REPL"]
-                            ["http://clojuredocs.org" "Docs"]]]
-           [:a.menu {:href link} text])
+         (for [[link text & [tabbed]]
+               [["/" "Main Page"]
+                ["/problems" "Problem List"]
+                ["/users" "Top Users"]
+                ["/directions" "Getting Started"]
+                ["http://try-clojure.org" "REPL" true]
+                ["http://clojuredocs.org" "Docs" true]]]
+           [:a.menu (assoc (when tabbed {:target "_blank"})
+                      :href link)
+            text])
          [:span#user-info
           (if user
             [:div
@@ -156,10 +159,13 @@
         (when user
           [:div#lower-menu
            [:span
-             (link-to "/login/update" "Account Settings")]
+            (link-to "/login/update" "Account Settings")]
+           (when (:golfing-active config)
+             [:span ; deserves its own page, but just make it discoverable for now
+              (link-to "/league" "Leagues")])
            (when (approver? user)
              [:span
-               (link-to "/problems/unapproved" "View Unapproved Problems")])
+              (link-to "/problems/unapproved" "View Unapproved Problems")])
            (when (can-submit? user)
              [:span (link-to "/problems/submit" "Submit a Problem")])])
         [:div#content_body body]

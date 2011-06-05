@@ -103,7 +103,7 @@
       (update! :users {:_id problem-id} {:$set {:last-solved-date current-time}})
       (send total-solved inc))
     (record-golf-score! user-id problem-id (code-length code))
-    (save-solution (? user-id) (? problem-id) (? code))))
+    (save-solution user-id problem-id code)))
 
 (defn mark-completed [problem code & [user]]
   (let [user (or user (session/session-get :user))
@@ -327,6 +327,16 @@
                                :seqs
                                {:_id "problems"}
                                {:$inc {:seq 1}})))]
+
+        (when (empty? author) ; newly submitted, not a moderator tweak
+          (send-email
+           {:from "team@4clojure.com"
+            :to ["team@4clojure.com"]
+            :subject (str "User submission: " title)
+            :body (html [:h3 (link-to (str "https://4clojure.com/problem/edit/"
+                                           id)
+                                      title)]
+                        [:div description])}))
 
         (update! :problems
                  {:_id prob-id}

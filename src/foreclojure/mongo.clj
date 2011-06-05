@@ -21,10 +21,10 @@
 (defn prepare-seqs []
   (update! :seqs
            {:_id "problems"}
-           {:$set {:seq (apply max
-                               (map :_id
-                                    (fetch :problems
-                                           :only [:_id])))}}))
+           {:$set {:seq (->> (fetch :problems :only [:_id])
+                             (map :_id)
+                             (apply max)
+                             (inc))}}))
 
 ;; make it easier to get off the ground by marking contributors automatically
 ;; useful since some "in-development" features aren't enabled for all users
@@ -44,21 +44,16 @@
 (defn reconcile-solved-count
   "Overwrites the times-solved field in the problems collection based on data from the users collection. Should only be called on server startup since it isn't a safe operation. Also updates the total-solved agent."
   []
-  (send
-   total-solved +
-   (let [problems (get-problem-list)]
-     (reduce
-      #(do
-         (update! :problems
-                  {:_id (first %2)}
-                  {:$set {:times-solved (last %2)}})
-         (+ %1 (last %2)))
-      0
-      (reduce #(update-in %1 [%2] inc)
-              (reduce #(conj %1 [%2 0])
-                      {}
-                      (map :_id problems))
-              (mapcat :solved (get-users)))))))
+  (let [total (->> (get-users)
+                   (mapcat :solved)
+                   (frequencies)
+                   (reduce (fn [sum [id solved]]
+                             (update! :problems
+                                      {:_id id}
+                                      {:$set {:times-solved solved}})
+                             (+ sum solved))
+                           0))]
+    (send total-solved (constantly total))))
 
 (defn prepare-mongo []
   (connect-to-db)
