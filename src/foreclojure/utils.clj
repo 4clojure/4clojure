@@ -90,10 +90,10 @@
        ~@body)
      [:span.error "You must " (login-link) " to do this."]))
 
-(defn form-row [[type name info]]
+(defn form-row [[type name info value]]
   [:tr
    [:td (label name info)]
-   [:td (type name)]])
+   [:td (type name value)]])
 
 (defn row-class [x]
   {:class (if (even? x)
