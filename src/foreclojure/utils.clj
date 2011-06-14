@@ -90,10 +90,10 @@
        ~@body)
      [:span.error "You must " (login-link) " to do this."]))
 
-(defn form-row [[type name info]]
+(defn form-row [[type name info value]]
   [:tr
    [:td (label name info)]
-   [:td (type name)]])
+   [:td (type name value)]])
 
 (defn row-class [x]
   {:class (if (even? x)
@@ -125,7 +125,7 @@
        [:link {:rel "alternate" :type "application/atom+xml" :title "Atom" :href "http://4clojure.com/problems/rss"}]
        [:link {:rel "shortcut icon" :href "/favicon.ico"}]
        (include-js "/vendor/script/jquery-1.5.2.min.js" "/vendor/script/jquery.dataTables.min.js")
-       (include-js "/vendor/script/foreclojure.js")
+       (include-js "/script/foreclojure.js")
        (include-js "/vendor/script/xregexp.js" "/vendor/script/shCore.js" "/vendor/script/shBrushClojure.js")
        (include-js "/vendor/script/ace/ace.js" "/vendor/script/ace/mode-clojure.js")
        (include-css "/css/style.css" "/css/demo_table.css" "/css/shCore.css" "/css/shThemeDefault.css")
@@ -162,7 +162,7 @@
             (link-to "/login/update" "Account Settings")]
            (when (:golfing-active config)
              [:span ; deserves its own page, but just make it discoverable for now
-              (link-to "/login/update" "Leagues")])
+              (link-to "/league" "Leagues")])
            (when (approver? user)
              [:span
               (link-to "/problems/unapproved" "View Unapproved Problems")])

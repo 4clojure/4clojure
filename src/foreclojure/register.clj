@@ -12,10 +12,10 @@
   (form-to [:post "/register"]
     [:table
      (map form-row
-          [[text-field :user "Username (4-13 chars.)"]
+          [[text-field :user "Username (4-13 chars.)" (session/flash-get :user)]
            [password-field :pwd "Password (7+ chars.)"]
            [password-field :repeat-pwd "Repeat Password"]
-           [text-field :email "Email"]])
+           [text-field :email "Email" (session/flash-get :email)]])
      [:tr
       [:td [:button {:type "submit"} "Register"]]]]))
 
@@ -41,7 +41,10 @@
                   :email email})
         (session/session-put! :user lower-user)
         (response/redirect "/"))
-      (flash-error why "/register"))))
+      (do
+        (session/flash-put! :user user)
+        (session/flash-put! :email email)
+        (flash-error why "/register")))))
 
 (defroutes register-routes
   (GET  "/register" [] (register-page))
