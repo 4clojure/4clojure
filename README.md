@@ -32,9 +32,9 @@ vaguely like this:
 * For the first time use, you will need to load the problem data. Run the script `load-data.sh`:
 
         ./load-data.sh
-* Run `lein ring server` and the browser should open for you.
+* Run `lein run` and then open the brower to http://localhost:8080/
 
-        lein ring server
+        lein run
 
 ## Contributors
 
