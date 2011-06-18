@@ -14,6 +14,11 @@
               :where {:user name}
               :only [:_id])))
 
+(def sort-by-solved-and-date (juxt (comp count :solved) :last-login))
+
+(defn users-sort [users]
+  (reverse (sort-by sort-by-solved-and-date users)))
+
 (defn get-users []
   (let [users (from-mongo
                (fetch :users

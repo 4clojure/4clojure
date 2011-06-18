@@ -95,10 +95,12 @@
 (defn store-completed-state! [username problem-id code]
   (let [{user-id :_id} (fetch-one :users
                                   :where {:user username}
-                                  :only [:_id])]
+                                  :only [:_id])
+        current-time (java.util.Date.)]
     (when (not-any? #{problem-id} (get-solved username))
       (update! :users {:_id user-id} {:$addToSet {:solved problem-id}})
       (update! :problems {:_id problem-id} {:$inc {:times-solved 1}})
+      (update! :users {:_id problem-id} {:$set {:last-solved-date current-time}})
       (send total-solved inc))
     (record-golf-score! user-id problem-id (code-length code))
     (save-solution user-id problem-id code)))
