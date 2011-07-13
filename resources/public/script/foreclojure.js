@@ -74,13 +74,73 @@ function configureCodeBox(){
 
        var ClojureMode = require("ace/mode/clojure").Mode;
        var session = editor.getSession();
+
+       var clickHandler = function() {
+         var text = session.getValue(),
+           id = $('#id').attr("value"),
+           images = $(".testcases").find("img"),
+           cont = true,
+           high = false,
+           time = 800,
+
+           beforeSendCallback = function(data) {
+             $("#message-text").text("Executing unit tests...");
+             var anim = function() {
+               if(cont) {
+                 images.animate({
+                   opacity: high ? 1.0 : 0.1,
+                 }, time);
+                 high = !high;
+                 setTimeout(anim,time);
+               }
+             };
+             anim();
+           },
+           successCallback = function(data) {
+             var failingTest = data.failingTest;
+             cont = false;
+
+             images.stop(true);
+             images.css({ opacity: 1.0, });
+             images.each( function(index,element) {
+               var color = "blue";
+               if (index < failingTest) {
+                 color = "green";
+               } else if (index === failingTest) {
+                 color = "red";
+               }
+               element.src = "/images/"+color+"light.png";
+             });
+
+             $("#message-text").html(data.message);
+             $("#golfgraph").html(data.golfChart);
+             $("#golfscore").html(data.golfScore);
+             configureGolf();
+           };
+
+         $.ajax({type: "POST",
+           url: "/rest/problem/"+id,
+           dataType: "json",
+           data: { id: id, code: text, },
+           timout: 20000, // default clojail timeout is 10000
+           beforeSend: beforeSendCallback,
+           success: successCallback,
+           error: function(data, str, error) {
+             $("#message-text").text("An Error occured: "+error);
+           },
+         });
+         return false;
+       };
+
+       $("#run-button").click(clickHandler);
+
        session.setMode(new ClojureMode());
        session.setUseSoftTabs(true);
        session.setTabSize(2);
 
        document.getElementById('editor').style.fontSize='13px';
        $("#run-button").click(function(){
-         var text = editor.getSession().getValue(); 
+         var text = editor.getSession().getValue();
          $('#code').val(text);
        });
     }
@@ -99,10 +159,10 @@ function configureGolf(){
     var text = $('#graph-link').html();
     if (text && text == 'View Chart'){
        $('#graph-link').html("View Code");
-    }else{
+    } else {
        $('#graph-link').html("View Chart");
     }
-    
+
 
 });
 

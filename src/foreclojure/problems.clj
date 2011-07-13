@@ -10,7 +10,8 @@
         (amalloy.utils [debug :only [?]]
                        [reorder :only [reorder]])
         [amalloy.utils :only [defcomp]]
-        compojure.core)
+        compojure.core
+        [clojure.contrib.json :only [json-str]])
   (:require [sandbar.stateful-session :as session]
             [clojure.string :as s]
             (ring.util [response :as response])))
@@ -119,9 +120,9 @@
                 (str "Congratulations, you've solved the problem!"
                      "<br />" (next-problem-link _id)))
          :else (str "You've solved the problem! If you "
-                    (login-link "log in") " we can track your progress."))]
+                    (login-link "log in" (str "/problem/" _id)) " we can track your progress."))]
     (session/session-put! :code [_id code])
-    (flash-msg (str message " " gist-link) (str "/problem/" _id))))
+    [(str message " " gist-link) (str "/problem/" _id)] ))
 
 (def restricted-list '[use require in-ns future agent send send-off pmap pcalls])
 
@@ -145,7 +146,7 @@
     (try
       (let [user-forms (s/join " " (map pr-str (read-string-safely code)))]
         (if (empty? user-forms)
-          (flash-msg "Empty input is not allowed" *url*)
+          ["Empty input is not allowed" *url*]
           (loop [[test & more] tests
                  i 0]
             (session/flash-put! :failing-test i)
@@ -154,9 +155,13 @@
               (let [testcase (s/replace test "__" user-forms)]
                 (if (sb sb-tester (first (read-string-safely testcase)))
                   (recur more (inc i))
-                  (flash-msg "You failed the unit tests." *url*)))))))
+                  ["You failed the unit tests." *url*]
+                  ))))))
       (catch Exception e
-        (flash-msg (.getMessage e) *url*)))))
+        [(.getMessage e) *url*]))))
+
+(defn static-run-code [id raw-code]
+  (apply flash-msg (run-code id raw-code)))
 
 (defn render-test-cases [tests]
   [:table {:class "testcases"}
@@ -191,6 +196,13 @@
                         :onclick "return false"}
         [:span#graph-link "View Chart"]]])))
 
+(defn rest-run-code [id raw-code]
+  (let [[message url] (run-code id raw-code)]
+    (json-str {:failingTest (session/flash-get :failing-test)
+               :message message
+               :golfScore (html (render-golf-score))
+               :golfChart (html (render-golf-chart))})))
+
 (def-page code-box [id]
   (let [{:keys [_id title tags description restricted tests approved user]}
         (get-problem (Integer. id))]
@@ -216,7 +228,8 @@
      [:div
       [:div.message
        [:span#message-text (session/flash-get :message)]]
-      (render-golf-score)]
+      [:div#golfscore
+       (render-golf-score)]]
      (form-to {:id "run-code"} [:post *url*]
        [:br]
        [:br]
@@ -412,7 +425,10 @@
   (POST "/problem/reject" [id]
     (reject-problem (Integer. id) "We didn't like your problem."))
   (POST "/problem/:id" [id code]
-    (run-code (Integer. id) code))
+    (static-run-code (Integer. id) code))
+  (POST "/rest/problem/:id" [id code]
+     {:headers {"Content-Type" "application/json"}}
+     (rest-run-code (Integer. id) code))
   (GET "/problems/rss" [] (create-feed
                            "4Clojure: Recent Problems"
                            "http://4clojure.com/problems"
