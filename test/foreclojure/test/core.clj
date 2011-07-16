@@ -2,7 +2,10 @@
   (:use [foreclojure.core]
         [clojure.test]
         [foreclojure.users]
-        [foreclojure.problems]))
+        [foreclojure.problems]
+        [foreclojure.mongo]))
+
+(prepare-mongo)
 
 (defn users-solved []
   (reduce #(if-let [v (%1 %2)]
