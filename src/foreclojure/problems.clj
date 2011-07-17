@@ -45,7 +45,7 @@
                         (first not-yet-tried)]))))
 
 (letfn [(problem-link [{id :_id title :title}]
-          (str "<a href='/problem/" id "'>" title "</a>"))]
+          (str "<a href='/problem/" id "#prob-title'>" title "</a>"))]
   (defn suggest-problems
     ([] "You've solved them all! Come back later for more!")
     ([problem]
@@ -177,7 +177,8 @@
         [(.getMessage e) *url*]))))
 
 (defn static-run-code [id raw-code]
-  (apply flash-msg (run-code id raw-code)))
+  (binding [*url* (str *url* "#prob-desc")]
+    (apply flash-msg (run-code id raw-code))))
 
 (defn render-test-cases [tests]
   [:table {:class "testcases"}
