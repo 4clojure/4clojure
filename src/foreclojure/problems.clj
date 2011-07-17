@@ -31,17 +31,37 @@
              :where criteria
              :sort {:_id 1}))))
 
-(defn next-unsolved-problem [solved-problems]
-  (when-let [unsolved (->> (get-problem-list)
-                           (remove (comp (set solved-problems) :_id))
-                           (seq))]
-    (apply min-key :_id unsolved)))
+(defn next-unsolved-problem [solved-problems just-solved-id]
+  (when-let [unsolved (seq
+                       (from-mongo
+                        (fetch :problems
+                               :only [:_id :title]
+                               :where {:_id {:$nin solved-problems}}
+                               :sort {:_id 1})))]
+    (let [[skipped not-yet-tried] (split-with #(< (:_id %) just-solved-id)
+                                              unsolved)]
+      (filter identity [(rand-nth (or (seq skipped)
+                                      [nil])) ; rand-nth barfs on empty seq
+                        (first not-yet-tried)]))))
+
+(letfn [(problem-link [{id :_id title :title}]
+          (str "<a href='/problem/" id "'>" title "</a>"))]
+  (defmulti suggest-problems count)
+
+  (defmethod suggest-problems 0 [_]
+    "You've solved them all! Come back later for more!")
+
+  (defmethod suggest-problems 1 [[problem]]
+    (str "Now try " (problem-link problem) "!"))
+
+  (defmethod suggest-problems 2 [[skipped not-tried]]
+    (str "Now move on to " (problem-link not-tried)
+         ", or go back and try " (problem-link skipped) " again!")))
 
 (defn next-problem-link [completed-problem-id]
   (when-let [{:keys [solved]} (get-user (session/session-get :user))]
-    (if-let [{:keys [_id title]} (next-unsolved-problem solved)]
-      (str "Now try <a href='/problem/" _id "'>" title "</a>!")
-      "You've solved them all! Come back later for more!")))
+    (suggest-problems
+     (next-unsolved-problem solved completed-problem-id))))
 
 (defn get-recent-problems [n]
   (map get-problem (map :_id (take-last n (get-problem-list)))))
