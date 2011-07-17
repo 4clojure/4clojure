@@ -46,22 +46,18 @@
 
 (letfn [(problem-link [{id :_id title :title}]
           (str "<a href='/problem/" id "'>" title "</a>"))]
-  (defmulti suggest-problems count)
-
-  (defmethod suggest-problems 0 [_]
-    "You've solved them all! Come back later for more!")
-
-  (defmethod suggest-problems 1 [[problem]]
-    (str "Now try " (problem-link problem) "!"))
-
-  (defmethod suggest-problems 2 [[skipped not-tried]]
-    (str "Now move on to " (problem-link not-tried)
-         ", or go back and try " (problem-link skipped) " again!")))
+  (defn suggest-problems
+    ([] "You've solved them all! Come back later for more!")
+    ([problem]
+       (str "Now try " (problem-link problem) "!"))
+    ([skipped not-tried]
+      (str "Now move on to " (problem-link not-tried)
+           ", or go back and try " (problem-link skipped) " again!"))))
 
 (defn next-problem-link [completed-problem-id]
   (when-let [{:keys [solved]} (get-user (session/session-get :user))]
-    (suggest-problems
-     (next-unsolved-problem solved completed-problem-id))))
+    (apply suggest-problems
+           (next-unsolved-problem solved completed-problem-id))))
 
 (defn get-recent-problems [n]
   (map get-problem (map :_id (take-last n (get-problem-list)))))
