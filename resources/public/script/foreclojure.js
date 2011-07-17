@@ -126,14 +126,16 @@ function configureCodeBox(){
                      $("#golfgraph").html(data.golfChart);
                      $("#golfscore").html(data.golfScore);
                      configureGolf();
+                 }
+                 stopAnimation = function() {
+                     cont = false;
+                     images.stop(true);
+                     images.css({ opacity: 1.0, });
                  };
 
-             cont = false;
-             images.stop(true);
-             images.css({ opacity: 1.0, });
+             setTimeout(stopAnimation, waitTime);
              images.filter( testWasExecuted ).
                  each(setColor);
-
              setTimeout (setMessages, waitTime);
            };
 
