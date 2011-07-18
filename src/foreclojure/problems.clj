@@ -138,7 +138,7 @@
          :else (str "You've solved the problem! If you "
                     (login-link "log in" (str "/problem/" _id)) " we can track your progress."))]
     (session/session-put! :code [_id code])
-    [(str message " " gist-link) (str "/problem/" _id)] ))
+    {:message (str message " " gist-link), :url (str "/problem/" _id)}))
 
 (def restricted-list '[use require in-ns future agent send send-off pmap pcalls])
 
@@ -154,31 +154,42 @@
         (doall (take-while (complement #{end})
                            (repeatedly #(read *in* false end))))))))
 
-(defn run-code [id raw-code]
-  (let [code (.trim raw-code)
-        {:keys [tests restricted] :as problem} (get-problem id)
-        sb-tester (get-tester restricted)]
-    (session/flash-put! :code code)
-    (try
-      (let [user-forms (s/join " " (map pr-str (read-string-safely code)))]
-        (if (empty? user-forms)
-          ["Empty input is not allowed" *url*]
-          (loop [[test & more] tests
-                 i 0]
-            (session/flash-put! :failing-test i)
-            (if-not test
-              (mark-completed problem code)
-              (let [testcase (s/replace test "__" user-forms)]
-                (if (sb sb-tester (first (read-string-safely testcase)))
-                  (recur more (inc i))
-                  ["You failed the unit tests." *url*]
-                  ))))))
-      (catch Exception e
-        [(.getMessage e) *url*]))))
+(defn run-code
+  "Run the specified code-string against the test cases for the problem with the
+specified id.
+
+Return a map, {:message, :url, :num-tests-passed}."
+  [id raw-code]
+  (try
+    (let [code (.trim raw-code)
+          {:keys [tests restricted] :as problem} (get-problem id)
+          sb-tester (get-tester restricted)
+          user-forms (s/join " " (map pr-str (read-string-safely code)))
+          results (if (empty? user-forms)
+                    ["Empty input is not allowed."]
+                    (for [test tests]
+                      (try
+                        (when-not (->> user-forms
+                                       (s/replace test "__")
+                                       read-string-safely
+                                       first
+                                       (sb sb-tester))
+                          "You failed the unit tests")
+                        (catch Throwable t (.getMessage t)))))
+          [passed [fail-msg]] (split-with nil? results)]
+      (assoc (if fail-msg
+               {:message fail-msg :url *url*}
+               (mark-completed problem code))
+        :num-tests-passed (count passed)))
+    (catch Throwable t {:message (.getMessage t), :url *url*
+                        :num-tests-passed 0})))
 
 (defn static-run-code [id raw-code]
-  (binding [*url* (str *url* "#prob-desc")]
-    (apply flash-msg (run-code id raw-code))))
+  (let [{:keys [message url num-tests-passed]}
+        (binding [*url* (str *url* "#prob-desc")]
+          (run-code id raw-code))]
+    (session/flash-put! :failing-test num-tests-passed)
+    (flash-msg message url)))
 
 (defn render-test-cases [tests]
   [:table {:class "testcases"}
@@ -214,8 +225,8 @@
         [:span#graph-link "View Chart"]]])))
 
 (defn rest-run-code [id raw-code]
-  (let [[message url] (run-code id raw-code)]
-    (json-str {:failingTest (session/flash-get :failing-test)
+  (let [{:keys [message url num-tests-passed]} (run-code id raw-code)]
+    (json-str {:failingTest num-tests-passed
                :message message
                :golfScore (html (render-golf-score))
                :golfChart (html (render-golf-chart))})))
