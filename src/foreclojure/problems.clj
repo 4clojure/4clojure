@@ -138,7 +138,7 @@
          :else (str "You've solved the problem! If you "
                     (login-link "log in" (str "/problem/" _id)) " we can track your progress."))]
     (session/session-put! :code [_id code])
-    [(str message " " gist-link) (str "/problem/" _id)]))
+    {:message (str message " " gist-link), :url (str "/problem/" _id)}))
 
 (def restricted-list '[use require in-ns future agent send send-off pmap pcalls])
 
@@ -158,7 +158,7 @@
   "Run the specified code-string against the test cases for the problem with the
 specified id.
 
-Return a vector of [message-to-display url-to-display-at num-tests-passed]."
+Return a map, {:message, :url, :num-tests-passed}."
   [id raw-code]
   (try
     (let [code (.trim raw-code)
@@ -177,16 +177,18 @@ Return a vector of [message-to-display url-to-display-at num-tests-passed]."
                           "You failed the unit tests")
                         (catch Throwable t (.getMessage t)))))
           [passed [fail-msg]] (split-with nil? results)]
-      (conj (if fail-msg
-              [fail-msg *url*]
-              (mark-completed problem code))
-            (count passed)))
-    (catch Throwable t [(.getMessage t), *url*, 0])))
+      (assoc (if fail-msg
+               {:message fail-msg :url *url*}
+               (mark-completed problem code))
+        :num-tests-passed (count passed)))
+    (catch Throwable t {:message (.getMessage t), :url *url*
+                        :num-tests-passed 0})))
 
 (defn static-run-code [id raw-code]
-  (let [[message url failure-index] (binding [*url* (str *url* "#prob-desc")]
-                                      (run-code id raw-code))]
-    (session/flash-put! :failing-test failure-index)
+  (let [{:keys [message url num-tests-passed]}
+        (binding [*url* (str *url* "#prob-desc")]
+          (run-code id raw-code))]
+    (session/flash-put! :failing-test num-tests-passed)
     (flash-msg message url)))
 
 (defn render-test-cases [tests]
@@ -223,8 +225,8 @@ Return a vector of [message-to-display url-to-display-at num-tests-passed]."
         [:span#graph-link "View Chart"]]])))
 
 (defn rest-run-code [id raw-code]
-  (let [[message url failure-index] (run-code id raw-code)]
-    (json-str {:failingTest failure-index
+  (let [{:keys [message url num-tests-passed]} (run-code id raw-code)]
+    (json-str {:failingTest num-tests-passed
                :message message
                :golfScore (html (render-golf-score))
                :golfChart (html (render-golf-chart))})))
