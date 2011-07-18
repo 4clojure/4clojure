@@ -46,6 +46,7 @@ vaguely like this:
 * [David Davis](https://github.com/daviddavis) (daviddavis)
 * [Devin Walters](https://github.com/devn) (devn)
 * [Michael Kohl](https://github.com/citizen428) (citizen428)
+* [Martin Sander](https://github.com/marvinthepa) (0x89)
 
 
 Problem sources:
