@@ -138,7 +138,7 @@
          :else (str "You've solved the problem! If you "
                     (login-link "log in" (str "/problem/" _id)) " we can track your progress."))]
     (session/session-put! :code [_id code])
-    [(str message " " gist-link) (str "/problem/" _id)] ))
+    [(str message " " gist-link) (str "/problem/" _id)]))
 
 (def restricted-list '[use require in-ns future agent send send-off pmap pcalls])
 
