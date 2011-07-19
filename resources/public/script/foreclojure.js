@@ -60,6 +60,13 @@ function configureDataTables(){
     } );
 }
 
+function setIconColor(element, color, timeOut) {
+  timeOut = (typeof timeOut == "undefined") ? 0 : timeOut
+  setTimeout (function() {
+      element.src = "/images/"+color+"light.png";
+  }, timeOut);
+}
+
 function configureCodeBox(){
     //For no javascript version we have the code-box text area
     //If we have javascript on then we remove it and replace it with
@@ -74,13 +81,87 @@ function configureCodeBox(){
 
        var ClojureMode = require("ace/mode/clojure").Mode;
        var session = editor.getSession();
+
+       var clickHandler = function() {
+         var text = session.getValue(),
+           id = $('#id').attr("value"),
+           images = $(".testcases").find("img"),
+           cont = true,
+           high = false,
+           animationTime = 800,
+           waitTimePerItem = 500,
+           waitTime = waitTimePerItem,
+
+           beforeSendCallback = function(data) {
+             $("#message-text").text("Executing unit tests...");
+             images.each( function(index, element) {
+               setIconColor(element, "blue");
+             });
+             var anim = function() {
+               if(cont) {
+                 images.animate({
+                   opacity: high ? 1.0 : 0.1,
+                 }, animationTime);
+                 high = !high;
+                 setTimeout(anim,animationTime);
+               }
+             };
+             anim();
+           },
+           successCallback = function(data) {
+             var failingTest = data.failingTest
+                 getColorFor = function(index) {
+                     return index === failingTest ? "red" : "green";
+                 },
+                 testWasExecuted = function(index) {
+                     return index <= failingTest;
+                 },
+                 setColor = function(index,element) {
+                     var color = getColorFor(index);
+                     waitTime = waitTimePerItem * (index+1);
+                     setIconColor(element, color, waitTime);
+                 },
+                 setMessages = function() {
+                     $("#message-text").html(data.message);
+                     $("#golfgraph").html(data.golfChart);
+                     $("#golfscore").html(data.golfScore);
+                     configureGolf();
+                 }
+                 stopAnimation = function() {
+                     cont = false;
+                     images.stop(true);
+                     images.css({ opacity: 1.0, });
+                 };
+
+             setTimeout(stopAnimation, waitTime);
+             images.filter( testWasExecuted ).
+                 each(setColor);
+             setTimeout (setMessages, waitTime);
+           };
+
+         $.ajax({type: "POST",
+           url: "/rest/problem/"+id,
+           dataType: "json",
+           data: { id: id, code: text, },
+           timout: 20000, // default clojail timeout is 10000
+           beforeSend: beforeSendCallback,
+           success: successCallback,
+           error: function(data, str, error) {
+             $("#message-text").text("An Error occured: "+error);
+           },
+         });
+         return false;
+       };
+
+       $("#run-button").click(clickHandler);
+
        session.setMode(new ClojureMode());
        session.setUseSoftTabs(true);
        session.setTabSize(2);
 
        document.getElementById('editor').style.fontSize='13px';
        $("#run-button").click(function(){
-         var text = editor.getSession().getValue(); 
+         var text = editor.getSession().getValue();
          $('#code').val(text);
        });
     }
@@ -99,10 +180,10 @@ function configureGolf(){
     var text = $('#graph-link').html();
     if (text && text == 'View Chart'){
        $('#graph-link').html("View Code");
-    }else{
+    } else {
        $('#graph-link').html("View Chart");
     }
-    
+
 
 });
 

@@ -10,7 +10,8 @@
         (amalloy.utils [debug :only [?]]
                        [reorder :only [reorder]])
         [amalloy.utils :only [defcomp]]
-        compojure.core)
+        compojure.core
+        [clojure.contrib.json :only [json-str]])
   (:require [sandbar.stateful-session :as session]
             [clojure.string :as s]
             (ring.util [response :as response])))
@@ -30,17 +31,33 @@
              :where criteria
              :sort {:_id 1}))))
 
-(defn next-unsolved-problem [solved-problems]
-  (when-let [unsolved (->> (get-problem-list)
-                           (remove (comp (set solved-problems) :_id))
-                           (seq))]
-    (apply min-key :_id unsolved)))
+(defn next-unsolved-problem [solved-problems just-solved-id]
+  (when-let [unsolved (seq
+                       (from-mongo
+                        (fetch :problems
+                               :only [:_id :title]
+                               :where {:_id {:$nin solved-problems}}
+                               :sort {:_id 1})))]
+    (let [[skipped not-yet-tried] (split-with #(< (:_id %) just-solved-id)
+                                              unsolved)]
+      (filter identity [(rand-nth (or (seq skipped)
+                                      [nil])) ; rand-nth barfs on empty seq
+                        (first not-yet-tried)]))))
+
+(letfn [(problem-link [{id :_id title :title}]
+          (str "<a href='/problem/" id "#prob-title'>" title "</a>"))]
+  (defn suggest-problems
+    ([] "You've solved them all! Come back later for more!")
+    ([problem]
+       (str "Now try " (problem-link problem) "!"))
+    ([skipped not-tried]
+      (str "Now move on to " (problem-link not-tried)
+           ", or go back and try " (problem-link skipped) " again!"))))
 
 (defn next-problem-link [completed-problem-id]
   (when-let [{:keys [solved]} (get-user (session/session-get :user))]
-    (if-let [{:keys [_id title]} (next-unsolved-problem solved)]
-      (str "Now try <a href='/problem/" _id "'>" title "</a>!")
-      "You've solved them all! Come back later for more!")))
+    (apply suggest-problems
+           (next-unsolved-problem solved completed-problem-id))))
 
 (defn get-recent-problems [n]
   (map get-problem (map :_id (take-last n (get-problem-list)))))
@@ -95,10 +112,12 @@
 (defn store-completed-state! [username problem-id code]
   (let [{user-id :_id} (fetch-one :users
                                   :where {:user username}
-                                  :only [:_id])]
+                                  :only [:_id])
+        current-time (java.util.Date.)]
     (when (not-any? #{problem-id} (get-solved username))
       (update! :users {:_id user-id} {:$addToSet {:solved problem-id}})
       (update! :problems {:_id problem-id} {:$inc {:times-solved 1}})
+      (update! :users {:_id problem-id} {:$set {:last-solved-date current-time}})
       (send total-solved inc))
     (record-golf-score! user-id problem-id (code-length code))
     (save-solution user-id problem-id code)))
@@ -117,9 +136,9 @@
                 (str "Congratulations, you've solved the problem!"
                      "<br />" (next-problem-link _id)))
          :else (str "You've solved the problem! If you "
-                    (login-link "log in") " we can track your progress."))]
+                    (login-link "log in" (str "/problem/" _id)) " we can track your progress."))]
     (session/session-put! :code [_id code])
-    (flash-msg (str message " " gist-link) (str "/problem/" _id))))
+    {:message (str message " " gist-link), :url (str "/problem/" _id)}))
 
 (def restricted-list '[use require in-ns future agent send send-off pmap pcalls])
 
@@ -135,26 +154,42 @@
         (doall (take-while (complement #{end})
                            (repeatedly #(read *in* false end))))))))
 
-(defn run-code [id raw-code]
-  (let [code (.trim raw-code)
-        {:keys [tests restricted] :as problem} (get-problem id)
-        sb-tester (get-tester restricted)]
-    (session/flash-put! :code code)
-    (try
-      (let [user-forms (s/join " " (map pr-str (read-string-safely code)))]
-        (if (empty? user-forms)
-          (flash-msg "Empty input is not allowed" *url*)
-          (loop [[test & more] tests
-                 i 0]
-            (session/flash-put! :failing-test i)
-            (if-not test
-              (mark-completed problem code)
-              (let [testcase (s/replace test "__" user-forms)]
-                (if (sb sb-tester (first (read-string-safely testcase)))
-                  (recur more (inc i))
-                  (flash-msg "You failed the unit tests." *url*)))))))
-      (catch Exception e
-        (flash-msg (.getMessage e) *url*)))))
+(defn run-code
+  "Run the specified code-string against the test cases for the problem with the
+specified id.
+
+Return a map, {:message, :url, :num-tests-passed}."
+  [id raw-code]
+  (try
+    (let [code (.trim raw-code)
+          {:keys [tests restricted] :as problem} (get-problem id)
+          sb-tester (get-tester restricted)
+          user-forms (s/join " " (map pr-str (read-string-safely code)))
+          results (if (empty? user-forms)
+                    ["Empty input is not allowed."]
+                    (for [test tests]
+                      (try
+                        (when-not (->> user-forms
+                                       (s/replace test "__")
+                                       read-string-safely
+                                       first
+                                       (sb sb-tester))
+                          "You failed the unit tests")
+                        (catch Throwable t (.getMessage t)))))
+          [passed [fail-msg]] (split-with nil? results)]
+      (assoc (if fail-msg
+               {:message fail-msg :url *url*}
+               (mark-completed problem code))
+        :num-tests-passed (count passed)))
+    (catch Throwable t {:message (.getMessage t), :url *url*
+                        :num-tests-passed 0})))
+
+(defn static-run-code [id raw-code]
+  (let [{:keys [message url num-tests-passed]}
+        (binding [*url* (str *url* "#prob-desc")]
+          (run-code id raw-code))]
+    (session/flash-put! :failing-test num-tests-passed)
+    (flash-msg message url)))
 
 (defn render-test-cases [tests]
   [:table {:class "testcases"}
@@ -189,6 +224,13 @@
                         :onclick "return false"}
         [:span#graph-link "View Chart"]]])))
 
+(defn rest-run-code [id raw-code]
+  (let [{:keys [message url num-tests-passed]} (run-code id raw-code)]
+    (json-str {:failingTest num-tests-passed
+               :message message
+               :golfScore (html (render-golf-score))
+               :golfChart (html (render-golf-chart))})))
+
 (def-page code-box [id]
   (let [{:keys [_id title tags description restricted tests approved user]}
         (get-problem (Integer. id))]
@@ -214,7 +256,8 @@
      [:div
       [:div.message
        [:span#message-text (session/flash-get :message)]]
-      (render-golf-score)]
+      [:div#golfscore
+       (render-golf-score)]]
      (form-to {:id "run-code"} [:post *url*]
        [:br]
        [:br]
@@ -410,7 +453,10 @@
   (POST "/problem/reject" [id]
     (reject-problem (Integer. id) "We didn't like your problem."))
   (POST "/problem/:id" [id code]
-    (run-code (Integer. id) code))
+    (static-run-code (Integer. id) code))
+  (POST "/rest/problem/:id" [id code]
+     {:headers {"Content-Type" "application/json"}}
+     (rest-run-code (Integer. id) code))
   (GET "/problems/rss" [] (create-feed
                            "4Clojure: Recent Problems"
                            "http://4clojure.com/problems"
