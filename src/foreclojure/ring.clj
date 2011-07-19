@@ -26,4 +26,4 @@
 
 (defn wrap-strip-trailing-slash [handler]
   (fn [request]
-    (handler (update-in request [:uri] s/replace #"/$" ""))))
+    (handler (update-in request [:uri] s/replace #"(?<=.)/$" ""))))
