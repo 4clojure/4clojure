@@ -117,10 +117,10 @@
 
 (defn html-doc [& body]
   (let [user (session/session-get :user)]
-    (html 
+    (html
      (doctype :html5)
-     [:html 
-      [:head 
+     [:html
+      [:head
        [:title "4Clojure"]
        [:link {:rel "alternate" :type "application/atom+xml" :title "Atom" :href "http://4clojure.com/problems/rss"}]
        [:link {:rel "shortcut icon" :href "/favicon.ico"}]
@@ -171,7 +171,10 @@
         [:div#content_body body]
         [:div#footer
          "The content on 4clojure.com is available under the EPL v 1.0 license."
-         [:a#contact {:href "mailto:team@4clojure.com"} "Contact us!"]]
+         (let [email "team@4clojure.com"]
+           [:span
+            [:a#contact {:href (str "mailto:" email)} "Contact us"]
+            (str `(~email))])]
         (javascript-tag
          " var _gaq = _gaq || [];
         _gaq.push(['_setAccount', 'UA-22844856-1']);

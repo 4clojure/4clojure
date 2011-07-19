@@ -34,6 +34,7 @@
              session/wrap-stateful-session
              handler/site
              wrap-uri-binding
+             wrap-strip-trailing-slash
              wrap-gzip))
 
 (defn run []

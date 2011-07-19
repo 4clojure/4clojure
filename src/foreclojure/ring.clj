@@ -1,7 +1,8 @@
 (ns foreclojure.ring
   (:use [compojure.core :only [GET]]
         [ring.util.response :only [response]])
-  (:require [clojure.java.io :as io])
+  (:require [clojure.java.io :as io]
+            [clojure.string :as s])
   (:import (java.net URL)))
 
 ;; copied from compojure.route, modified to use File instead of Stream
@@ -22,3 +23,7 @@
                (= "file" (.getProtocol ^URL body)))
         (update-in resp [:body] io/as-file)
         resp))))
+
+(defn wrap-strip-trailing-slash [handler]
+  (fn [request]
+    (handler (update-in request [:uri] s/replace #"(?<=.)/$" ""))))

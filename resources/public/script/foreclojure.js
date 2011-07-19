@@ -60,6 +60,13 @@ function configureDataTables(){
     } );
 }
 
+function setIconColor(element, color, timeOut) {
+  timeOut = (typeof timeOut == "undefined") ? 0 : timeOut
+  setTimeout (function() {
+      element.src = "/images/"+color+"light.png";
+  }, timeOut);
+}
+
 function configureCodeBox(){
     //For no javascript version we have the code-box text area
     //If we have javascript on then we remove it and replace it with
@@ -81,41 +88,55 @@ function configureCodeBox(){
            images = $(".testcases").find("img"),
            cont = true,
            high = false,
-           time = 800,
+           animationTime = 800,
+           waitTimePerItem = 500,
+           waitTime = waitTimePerItem,
 
            beforeSendCallback = function(data) {
              $("#message-text").text("Executing unit tests...");
+             images.each( function(index, element) {
+               setIconColor(element, "blue");
+             });
              var anim = function() {
                if(cont) {
                  images.animate({
                    opacity: high ? 1.0 : 0.1,
-                 }, time);
+                 }, animationTime);
                  high = !high;
-                 setTimeout(anim,time);
+                 setTimeout(anim,animationTime);
                }
              };
              anim();
            },
            successCallback = function(data) {
-             var failingTest = data.failingTest;
-             cont = false;
+             var failingTest = data.failingTest
+                 getColorFor = function(index) {
+                     return index === failingTest ? "red" : "green";
+                 },
+                 testWasExecuted = function(index) {
+                     return index <= failingTest;
+                 },
+                 setColor = function(index,element) {
+                     var color = getColorFor(index);
+                     waitTime = waitTimePerItem * (index+1);
+                     setIconColor(element, color, waitTime);
+                 },
+                 setMessages = function() {
+                     $("#message-text").html(data.message);
+                     $("#golfgraph").html(data.golfChart);
+                     $("#golfscore").html(data.golfScore);
+                     configureGolf();
+                 }
+                 stopAnimation = function() {
+                     cont = false;
+                     images.stop(true);
+                     images.css({ opacity: 1.0, });
+                 };
 
-             images.stop(true);
-             images.css({ opacity: 1.0, });
-             images.each( function(index,element) {
-               var color = "blue";
-               if (index < failingTest) {
-                 color = "green";
-               } else if (index === failingTest) {
-                 color = "red";
-               }
-               element.src = "/images/"+color+"light.png";
-             });
-
-             $("#message-text").html(data.message);
-             $("#golfgraph").html(data.golfChart);
-             $("#golfscore").html(data.golfScore);
-             configureGolf();
+             setTimeout(stopAnimation, waitTime);
+             images.filter( testWasExecuted ).
+                 each(setColor);
+             setTimeout (setMessages, waitTime);
            };
 
          $.ajax({type: "POST",
