@@ -22,9 +22,9 @@
   (from-mongo
    (fetch-one :problems :where {:_id x})))
 
-(defn get-problem-list 
+(defn get-problem-list
   ([] (get-problem-list {:approved true}))
-  ([criteria] 
+  ([criteria]
      (from-mongo
       (fetch :problems
              :only [:_id :title :tags :times-solved :user]
@@ -430,7 +430,7 @@ Return a map, {:message, :url, :num-tests-passed}."
         :to [email]
         :subject "Problem rejected"
         :body
-        (str "A problem you've submitted has been rejected, but don't get discouraged!  Check out the reason below, and try again.\n\n" 
+        (str "A problem you've submitted has been rejected, but don't get discouraged!  Check out the reason below, and try again.\n\n"
              "Title: " title "\n"
              "Tags: " tags "\n"
              "Description: " description "\n"
