@@ -4,7 +4,9 @@
         hiccup.page-helpers
         [foreclojure utils config users]
         compojure.core
-        [amalloy.utils :only [rand-in-range]]
+        [amalloy.utils :only [rand-in-range keywordize]]
+        [clojail.core :only [thunk-timeout]]
+        clojure.stacktrace
         somnium.congomongo)
   (:require [sandbar.stateful-session :as session]
             [ring.util.response :as response]))
@@ -87,30 +89,52 @@
        (text-field :email)
        [:button {:type "submit"} "Reset!"])]]])
 
-(def pw-chars "abcdefghijklmnopqrstuvxyzABCDEFGHIJKLMNOPQRSTUVWXY1234567890")
+(let [pw-chars "abcdefghijklmnopqrstuvxyzABCDEFGHIJKLMNOPQRSTUVWXY1234567890"]
+  (defn random-pwd []
+    (let [pw (apply str
+                    (repeatedly 10 #(rand-nth pw-chars)))
+          hash (.encryptPassword (StrongPasswordEncryptor.) pw)]
+      (keywordize [pw hash]))))
+
+(defn try-to-email [email name id]
+  (let [{:keys [pw hash]} (random-pwd)]
+    (try
+      (thunk-timeout
+       (fn []
+         (update! :users
+                  {:_id id}
+                  {:$set {:pwd hash}})
+         (send-email
+          {:from "team@4clojure.com"
+           :to [email]
+           :subject "Password reset"
+           :body
+           (str "The password for your 4clojure.com account "
+                name " has been reset to " pw ". Make sure to change it"
+                " soon at https://4clojure.com/login/update - pick"
+                " something you'll remember!")})
+         {:success true})
+       10 :sec)
+      (catch Throwable t
+        {:success false, :exception t,
+         :message (.getMessage t),
+         :trace (with-out-str
+                  (binding [*err* *out*]
+                    (print-cause-trace t)))
+         :pw pw, :hash hash}))))
 
 (defn do-reset-password! [email]
   (if-let [{id :_id, name :user} (fetch-one :users
                                             :where {:email email}
                                             :only [:_id :user])]
-    (let [pw (apply str
-                    (repeatedly 10 #(rand-nth pw-chars)))
-          pw-hash (.encryptPassword (StrongPasswordEncryptor.) pw)]
-      (update! :users
-               {:_id id}
-               {:$set {:pwd pw-hash}})
-      (send-email
-       {:from "team@4clojure.com"
-        :to [email]
-        :subject "Password reset"
-        :body
-        (str "The password for your 4clojure.com account "
-             name " has been reset to " pw ". Make sure to change it"
-             " soon at https://4clojure.com/login/update - pick"
-             " something you'll remember!")})
-      (session/session-put! :login-to "/login/update")
-      (flash-msg "Your password has been reset! You should receive an email soon"
-                 (login-url "/login/update")))
+    (let [{:keys [success] :as diagnostics} (? (try-to-email email name id))]
+      (if success
+        (do (session/session-put! :login-to "/login/update")
+            (flash-msg "Your password has been reset! You should receive an email soon."
+                       (login-url "/login/update")))
+        (do (spit (? (str name ".pwd")) (? diagnostics))
+            (flash-error (str "Something went wrong emailing your new password! Please contact <a href='mailto:team@4clojure.com?subject=Password Reset: " name "'>team@4clojure.com</a> - we'll reset it manually and look into the problem. When you do, please mention your username.")
+                         "/login/reset"))))
     (flash-error "We don't know anyone with that email address!"
                  "/login/reset")))
 
