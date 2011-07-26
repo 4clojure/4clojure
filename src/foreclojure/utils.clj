@@ -174,7 +174,7 @@
          (let [email "team@4clojure.com"]
            [:span
             [:a#contact {:href (str "mailto:" email)} "Contact us"]
-            (str `(~email))])]
+            (str " (" email ")")])]
         (javascript-tag
          " var _gaq = _gaq || [];
         _gaq.push(['_setAccount', 'UA-22844856-1']);
