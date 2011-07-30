@@ -67,6 +67,12 @@ function setIconColor(element, color, timeOut) {
   }, timeOut);
 }
 
+function changeToCodeView() {
+  $('#code-div').show('fast');
+  $('#golfgraph').hide('fast');
+  $('#graph-link').html("View Chart");
+}
+
 function configureCodeBox(){
     //For no javascript version we have the code-box text area
     //If we have javascript on then we remove it and replace it with
@@ -93,10 +99,6 @@ function configureCodeBox(){
            waitTime = waitTimePerItem,
 
            beforeSendCallback = function(data) {
-             $("#message-text").text("Executing unit tests...");
-             images.each( function(index, element) {
-               setIconColor(element, "blue");
-             });
              var anim = function() {
                if(cont) {
                  images.animate({
@@ -106,10 +108,16 @@ function configureCodeBox(){
                  setTimeout(anim,animationTime);
                }
              };
-             anim();
+
+             $("#message-text").text("Executing unit tests...");
+             images.each( function(index, element) {
+               setIconColor(element, "blue");
+             });
+             setTimeout(changeToCodeView,0);
+             setTimeout(anim,0);
            },
            successCallback = function(data) {
-             var failingTest = data.failingTest
+             var failingTest = data.failingTest,
                  getColorFor = function(index) {
                      return index === failingTest ? "red" : "green";
                  },
@@ -126,7 +134,7 @@ function configureCodeBox(){
                      $("#golfgraph").html(data.golfChart);
                      $("#golfscore").html(data.golfScore);
                      configureGolf();
-                 }
+                 },
                  stopAnimation = function() {
                      cont = false;
                      images.stop(true);
@@ -183,8 +191,6 @@ function configureGolf(){
     } else {
        $('#graph-link').html("View Chart");
     }
-
-
-});
+  });
 
 }
