@@ -35,7 +35,7 @@ function configureDataTables(){
             null,
             null,
             null,
-            null
+            { "sType": "string" }
         ]
     } );
 
