@@ -11,10 +11,10 @@
   keys:
     :root - the root prefix to get the resources from. Defaults to 'public'."
   [path & [options]]
-  (-> (GET path {{resource-path :*} :route-params}
-        (let [root (:root options "public")]
-          (when-let [res (io/resource (str root "/" resource-path))]
-            (response (io/as-file res)))))))
+  (GET path {{resource-path :*} :route-params}
+    (let [root (:root options "public")]
+      (when-let [res (io/resource (str root "/" resource-path))]
+        (response (io/as-file res))))))
 
 (defn wrap-url-as-file [handler]
   (fn [request]
