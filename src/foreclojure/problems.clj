@@ -359,7 +359,7 @@ Return a map, {:message, :url, :num-tests-passed}."
     (text-area {:id "code-box" :spellcheck "false"}
                :code (session/flash-get :tests))
     [:p
-     [:button.large {:id "run-button" :type "submit"} "Submit"]]))
+     [:button.large {:id "submission-button" :type "submit"} "Submit"]]))
 
 (defn create-problem
   "create a user submitted problem"

@@ -81,7 +81,7 @@ function configureCodeBox(){
     var hiddenCodeInput = "<input type=\"hidden\" value=\"blank\" name=\"code\" id=\"code\">";
     oldBox.replaceWith("<div id=\"code-div\"> <pre id=\"editor\">" + oldBox.val() + "</pre></div>"+hiddenCodeInput);
 
-    if ($("#run-button").length){
+    if ($("#run-button").length || $("#submission-button").length){
        var editor = ace.edit("editor");
        editor.setTheme("ace/theme/textmate");
 
@@ -169,6 +169,11 @@ function configureCodeBox(){
 
        document.getElementById('editor').style.fontSize='13px';
        $("#run-button").click(function(){
+         var text = editor.getSession().getValue();
+         $('#code').val(text);
+       });
+
+       $("#submission-button").click(function(){
          var text = editor.getSession().getValue();
          $('#code').val(text);
        });
