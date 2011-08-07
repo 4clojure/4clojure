@@ -127,12 +127,12 @@
   (if-let [{id :_id, name :user} (fetch-one :users
                                             :where {:email email}
                                             :only [:_id :user])]
-    (let [{:keys [success] :as diagnostics} (? (try-to-email email name id))]
+    (let [{:keys [success] :as diagnostics} (try-to-email email name id)]
       (if success
         (do (session/session-put! :login-to "/login/update")
             (flash-msg "Your password has been reset! You should receive an email soon."
                        (login-url "/login/update")))
-        (do (spit (? (str name ".pwd")) (? diagnostics))
+        (do (spit (str name ".pwd") diagnostics)
             (flash-error (str "Something went wrong emailing your new password! Please contact <a href='mailto:team@4clojure.com?subject=Password Reset: " name "'>team@4clojure.com</a> - we'll reset it manually and look into the problem. When you do, please mention your username.")
                          "/login/reset"))))
     (flash-error "We don't know anyone with that email address!"

@@ -35,7 +35,7 @@ function configureDataTables(){
             null,
             null,
             null,
-            null
+            { "sType": "string" }
         ]
     } );
 
@@ -67,6 +67,12 @@ function setIconColor(element, color, timeOut) {
   }, timeOut);
 }
 
+function changeToCodeView() {
+  $('#code-div').show('fast');
+  $('#golfgraph').hide('fast');
+  $('#graph-link').html("View Chart");
+}
+
 function configureCodeBox(){
     //For no javascript version we have the code-box text area
     //If we have javascript on then we remove it and replace it with
@@ -75,7 +81,7 @@ function configureCodeBox(){
     var hiddenCodeInput = "<input type=\"hidden\" value=\"blank\" name=\"code\" id=\"code\">";
     oldBox.replaceWith("<div id=\"code-div\"> <pre id=\"editor\">" + oldBox.val() + "</pre></div>"+hiddenCodeInput);
 
-    if ($("#run-button").length){
+    if ($("#run-button").length || $("#submission-button").length){
        var editor = ace.edit("editor");
        editor.setTheme("ace/theme/textmate");
 
@@ -93,10 +99,6 @@ function configureCodeBox(){
            waitTime = waitTimePerItem,
 
            beforeSendCallback = function(data) {
-             $("#message-text").text("Executing unit tests...");
-             images.each( function(index, element) {
-               setIconColor(element, "blue");
-             });
              var anim = function() {
                if(cont) {
                  images.animate({
@@ -106,10 +108,16 @@ function configureCodeBox(){
                  setTimeout(anim,animationTime);
                }
              };
-             anim();
+
+             $("#message-text").text("Executing unit tests...");
+             images.each( function(index, element) {
+               setIconColor(element, "blue");
+             });
+             setTimeout(changeToCodeView,0);
+             setTimeout(anim,0);
            },
            successCallback = function(data) {
-             var failingTest = data.failingTest
+             var failingTest = data.failingTest,
                  getColorFor = function(index) {
                      return index === failingTest ? "red" : "green";
                  },
@@ -126,7 +134,7 @@ function configureCodeBox(){
                      $("#golfgraph").html(data.golfChart);
                      $("#golfscore").html(data.golfScore);
                      configureGolf();
-                 }
+                 },
                  stopAnimation = function() {
                      cont = false;
                      images.stop(true);
@@ -164,6 +172,11 @@ function configureCodeBox(){
          var text = editor.getSession().getValue();
          $('#code').val(text);
        });
+
+       $("#submission-button").click(function(){
+         var text = editor.getSession().getValue();
+         $('#code').val(text);
+       });
     }
 }
 
@@ -183,8 +196,6 @@ function configureGolf(){
     } else {
        $('#graph-link').html("View Chart");
     }
-
-
-});
+  });
 
 }

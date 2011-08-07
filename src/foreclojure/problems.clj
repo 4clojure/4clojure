@@ -22,9 +22,9 @@
   (from-mongo
    (fetch-one :problems :where {:_id x})))
 
-(defn get-problem-list 
+(defn get-problem-list
   ([] (get-problem-list {:approved true}))
-  ([criteria] 
+  ([criteria]
      (from-mongo
       (fetch :problems
              :only [:_id :title :tags :times-solved :user]
@@ -75,6 +75,9 @@
   "Turn an integer into a key suitable for fetching from mongodb."
   [id]
   keyword str int)
+
+(defn trim-code [code]
+  (when code (.trim code)))
 
 (defn code-length [code]
   (count (remove #(Character/isWhitespace %)
@@ -159,10 +162,9 @@
 specified id.
 
 Return a map, {:message, :url, :num-tests-passed}."
-  [id raw-code]
+  [id code]
   (try
-    (let [code (.trim raw-code)
-          {:keys [tests restricted] :as problem} (get-problem id)
+    (let [{:keys [tests restricted] :as problem} (get-problem id)
           sb-tester (get-tester restricted)
           user-forms (s/join " " (map pr-str (read-string-safely code)))
           results (if (empty? user-forms)
@@ -184,10 +186,11 @@ Return a map, {:message, :url, :num-tests-passed}."
     (catch Throwable t {:message (.getMessage t), :url *url*
                         :num-tests-passed 0})))
 
-(defn static-run-code [id raw-code]
+(defn static-run-code [id code]
+  (session/flash-put! :code code)
   (let [{:keys [message url num-tests-passed]}
         (binding [*url* (str *url* "#prob-desc")]
-          (run-code id raw-code))]
+          (run-code id code))]
     (session/flash-put! :failing-test num-tests-passed)
     (flash-msg message url)))
 
@@ -356,7 +359,7 @@ Return a map, {:message, :url, :num-tests-passed}."
     (text-area {:id "code-box" :spellcheck "false"}
                :code (session/flash-get :tests))
     [:p
-     [:button.large {:id "run-button" :type "submit"} "Submit"]]))
+     [:button.large {:id "submission-button" :type "submit"} "Submit"]]))
 
 (defn create-problem
   "create a user submitted problem"
@@ -430,7 +433,7 @@ Return a map, {:message, :url, :num-tests-passed}."
         :to [email]
         :subject "Problem rejected"
         :body
-        (str "A problem you've submitted has been rejected, but don't get discouraged!  Check out the reason below, and try again.\n\n" 
+        (str "A problem you've submitted has been rejected, but don't get discouraged!  Check out the reason below, and try again.\n\n"
              "Title: " title "\n"
              "Tags: " tags "\n"
              "Description: " description "\n"
@@ -453,10 +456,10 @@ Return a map, {:message, :url, :num-tests-passed}."
   (POST "/problem/reject" [id]
     (reject-problem (Integer. id) "We didn't like your problem."))
   (POST "/problem/:id" [id code]
-    (static-run-code (Integer. id) code))
+    (static-run-code (Integer. id) (trim-code code)))
   (POST "/rest/problem/:id" [id code]
      {:headers {"Content-Type" "application/json"}}
-     (rest-run-code (Integer. id) code))
+     (rest-run-code (Integer. id) (trim-code code)))
   (GET "/problems/rss" [] (create-feed
                            "4Clojure: Recent Problems"
                            "http://4clojure.com/problems"
