@@ -141,7 +141,7 @@
          :else (str "You've solved the problem! If you "
                     (login-link "log in" (str "/problem/" _id)) " we can track your progress."))]
     (session/session-put! :code [_id code])
-    {:message (str message " " gist-link), :url (str "/problem/" _id)}))
+    {:message (str message " " gist-link), :error "",  :url (str "/problem/" _id)}))
 
 (def restricted-list '[use require in-ns future agent send send-off pmap pcalls])
 
@@ -161,7 +161,7 @@
   "Run the specified code-string against the test cases for the problem with the
 specified id.
 
-Return a map, {:message, :url, :num-tests-passed}."
+Return a map, {:message, :error, :url, :num-tests-passed}."
   [id code]
   (try
     (let [{:keys [tests restricted] :as problem} (get-problem id)
@@ -180,19 +180,20 @@ Return a map, {:message, :url, :num-tests-passed}."
                         (catch Throwable t (.getMessage t)))))
           [passed [fail-msg]] (split-with nil? results)]
       (assoc (if fail-msg
-               {:message fail-msg :url *url*}
+               {:message "", :error fail-msg, :url *url*}
                (mark-completed problem code))
         :num-tests-passed (count passed)))
-    (catch Throwable t {:message (.getMessage t), :url *url*
+    (catch Throwable t {:error (.getMessage t), :url *url*
                         :num-tests-passed 0})))
 
 (defn static-run-code [id code]
   (session/flash-put! :code code)
-  (let [{:keys [message url num-tests-passed]}
+  (let [{:keys [message error url num-tests-passed]}
         (binding [*url* (str *url* "#prob-desc")]
           (run-code id code))]
     (session/flash-put! :failing-test num-tests-passed)
-    (flash-msg message url)))
+    (flash-msg message url)
+    (flash-error error url)))
 
 (defn render-test-cases [tests]
   [:table {:class "testcases"}
@@ -228,9 +229,10 @@ Return a map, {:message, :url, :num-tests-passed}."
         [:span#graph-link "View Chart"]]])))
 
 (defn rest-run-code [id raw-code]
-  (let [{:keys [message url num-tests-passed]} (run-code id raw-code)]
+  (let [{:keys [message error url num-tests-passed]} (run-code id raw-code)]
     (json-str {:failingTest num-tests-passed
                :message message
+               :error error
                :golfScore (html (render-golf-score))
                :golfChart (html (render-golf-chart))})))
 
@@ -258,7 +260,8 @@ Return a map, {:message, :url, :num-tests-passed}."
          (map (partial vector :li) restricted)])]
      [:div
       [:div.message
-       [:span#message-text (session/flash-get :message)]]
+       [:span#message-text (session/flash-get :message)]
+       [:span#error-message-text.error (session/flash-get :error)]]
       [:div#golfscore
        (render-golf-score)]]
      (form-to {:id "run-code"} [:post *url*]
