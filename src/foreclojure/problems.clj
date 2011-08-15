@@ -183,7 +183,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
                {:message "", :error fail-msg, :url *url*}
                (mark-completed problem code))
         :num-tests-passed (count passed)))
-    (catch Throwable t {:error (.getMessage t), :url *url*
+    (catch Throwable t {:message "" :error (.getMessage t), :url *url*
                         :num-tests-passed 0})))
 
 (defn static-run-code [id code]
