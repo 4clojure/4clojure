@@ -47,7 +47,7 @@
           (response/redirect (or location "/problems")))
       (flash-error "Error logging in." "/login"))))
 
-(def-page update-password-page []
+(def-page update-credentials-page []
   (with-user [{:keys [user] :as user-obj}]
     [:div#account-settings
      [:div#update-pwd
@@ -56,26 +56,39 @@
       [:table
        (form-to [:post "/login/update"]
                 (map form-row
-                     [[password-field :old-pwd "Current password"]
-                      [password-field :pwd "New password"]
-                      [password-field :repeat-pwd "Repeat password"]])
+                      [[text-field :new-username "Username" user]
+                       [password-field :old-pwd "Current password"]
+                       [password-field :pwd "New password"]
+                       [password-field :repeat-pwd "Repeat password"]])
                 [:tr
                  [:td [:button {:type "submit"} "Reset now"]]])]]]))
 
-(defn do-update-password! [old-pwd new-pwd repeat-pwd]
+(defn do-update-credentials! [new-username old-pwd new-pwd repeat-pwd]
   (with-user [{:keys [user pwd]}]
-    (let [encryptor (StrongPasswordEncryptor.)]
-      (assuming [(= new-pwd repeat-pwd)
+    (let [encryptor (StrongPasswordEncryptor.)
+          new-pwd-hash (.encryptPassword encryptor new-pwd)
+          new-lower-user (.toLowerCase new-username)]
+      (assuming [(or (= new-lower-user user) (nil? (fetch-one :users :where {:user new-lower-user})))
+                 "User already exists",
+                 (< 3 (.length new-lower-user) 14)
+                 "Username must be 4-13 characters long",
+                 (= new-lower-user
+                    (first (re-seq #"[A-Za-z0-9_]+" new-lower-user)))
+                 "Username must be alphanumeric"
+                 (or (empty? new-pwd) (< 6 (.length new-pwd)))
+                 "New password must be at least seven characters long",
+                 (= new-pwd repeat-pwd)
                  "New password was not entered identically twice"
                  (.checkPassword encryptor old-pwd pwd)
                  "Old password incorrect"]
-        (let [new-pwd-hash (.encryptPassword encryptor new-pwd)]
-          (update! :users {:user user}
-                   {:$set {:pwd new-pwd-hash}}
-                   :upsert false)
-          (flash-msg (str "Password for " user " updated successfully")
-                     "/problems"))
-        (flash-error why "/login/update")))))
+          (do
+            (update! :users {:user user}
+                     {:$set {:pwd (if (not-empty new-pwd) new-pwd-hash pwd) :user new-lower-user}}
+                     :upsert false)
+            (session/session-put! :user new-lower-user)
+            (flash-msg (str "Password for " new-username " updated successfully")
+                       "/problems"))
+          (flash-error why "/login/update")))))
 
 (def-page reset-password-page []
   [:div
@@ -143,9 +156,9 @@
   (POST "/login" {{:strs [user pwd]} :form-params}
     (do-login user pwd))
 
-  (GET  "/login/update" [] (update-password-page))
-  (POST "/login/update" {{:strs [old-pwd pwd repeat-pwd]} :form-params}
-    (do-update-password! old-pwd pwd repeat-pwd))
+  (GET  "/login/update" [] (update-credentials-page))
+  (POST "/login/update" {{:strs [new-username old-pwd pwd repeat-pwd]} :form-params}
+    (do-update-credentials! new-username old-pwd pwd repeat-pwd))
 
   (GET  "/login/reset" [] (reset-password-page))
   (POST "/login/reset" [email]
