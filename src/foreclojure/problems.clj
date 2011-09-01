@@ -438,8 +438,9 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
        {:from "team@4clojure.com"
         :to [email]
         :subject "Problem rejected"
-        :body
-        (str "A problem you've submitted has been rejected, but don't get discouraged!  Check out the reason below, and try again.\n\n"
+        :text
+        (str "A problem you've submitted has been rejected, but don't get discouraged!\n"
+             "Check out the reason below, and try again.\n\n"
              "Title: " title "\n"
              "Tags: " tags "\n"
              "Description: " description "\n"
