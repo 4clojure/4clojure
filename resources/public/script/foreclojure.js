@@ -29,8 +29,9 @@ function configureDataTables(){
 
     $('#problem-table').dataTable( {
         "iDisplayLength": 25,
-        "aaSorting": [[ 3, "desc" ]],
+        "aaSorting": [[ 4, "desc" ]],
         "aoColumns": [
+            null,
             null,
             null,
             null,
@@ -41,8 +42,9 @@ function configureDataTables(){
 
     $('#unapproved-problems').dataTable( {
         "iDisplayLength": 25,
-        "aaSorting": [[ 2, "desc" ]],
+        "aaSorting": [[ 3, "desc" ]],
         "aoColumns": [
+            null,
             null,
             null,
             null
