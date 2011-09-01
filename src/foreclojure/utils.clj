@@ -173,7 +173,9 @@
              [:span
               (link-to "/problems/unapproved" "View Unapproved Problems")])
            (when (can-submit? user)
-             [:span (link-to "/problems/submit" "Submit a Problem")])])
+             [:span (link-to "/problems/submit" "Submit a Problem")])
+           [:span (link-to "http://groups.google.com/group/4clojure"
+                           "Google Group")]])
         [:div#content_body body]
         [:div#footer
          "The content on 4clojure.com is available under the EPL v 1.0 license."
