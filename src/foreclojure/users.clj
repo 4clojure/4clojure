@@ -29,6 +29,13 @@
 (defn golfer? [user]
   (some user golfer-tags))
 
+(defn email-address [username]
+  (:email (fetch-one :users :where {:user username})))
+
+(defn mailto [username]
+  (link-to (str "mailto:" (email-address username))
+           username))
+
 (def-page users-page []
   [:div
    [:span.contributor "*"] " "

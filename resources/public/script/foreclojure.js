@@ -110,6 +110,7 @@ function configureCodeBox(){
              };
 
              $("#message-text").text("Executing unit tests...");
+             $("#error-message-text").text("");
              images.each( function(index, element) {
                setIconColor(element, "blue");
              });
@@ -131,6 +132,7 @@ function configureCodeBox(){
                  },
                  setMessages = function() {
                      $("#message-text").html(data.message);
+                     $("#error-message-text").html(data.error);
                      $("#golfgraph").html(data.golfChart);
                      $("#golfscore").html(data.golfScore);
                      configureGolf();
