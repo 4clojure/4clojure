@@ -168,6 +168,7 @@ a.novisited {color: #00e;}
 .rss {
    width: 24px;
    float: left;
+   clear: left;
    background-image: url('../images/feed.png');
    background-repeat: no-repeat;
    background-position: top right;
@@ -189,7 +190,6 @@ div.message {
    font-size: 16px;
    width: 75%;
    float: left;
-   position: absolute;
 }
 
 span#prob-title {

@@ -86,7 +86,7 @@
                      {:$set {:pwd (if (not-empty new-pwd) new-pwd-hash pwd) :user new-lower-user}}
                      :upsert false)
             (session/session-put! :user new-lower-user)
-            (flash-msg (str "Password for " new-username " updated successfully")
+            (flash-msg (str "Account for " new-lower-user " updated successfully")
                        "/problems"))
           (flash-error why "/login/update")))))
 
