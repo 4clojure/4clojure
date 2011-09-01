@@ -2,7 +2,7 @@
   (:use (foreclojure utils config
                      [social :only [tweet-link gist!]]
                      [feeds :only [create-feed]]
-                     [users :only [golfer? get-user-id]]
+                     [users :only [golfer? get-user-id] :as users]
                      [solutions :only [save-solution get-solution]])
         (clojail [core :exclude [safe-read]] testers)
         somnium.congomongo
@@ -249,7 +249,8 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
       (s/join " " tags)]
      [:br]
      (when-not approved
-       [:div#submitter "Submitted by: " user])
+       [:div#submitter "Submitted by: "
+        (users/mailto user)])
      [:br]
      [:div#prob-desc
       description[:br]
@@ -379,6 +380,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
           (send-email
            {:from "team@4clojure.com"
             :to ["team@4clojure.com"]
+            :reply-to [(users/email-address user)]
             :subject (str "User submission: " title)
             :body (html [:h3 (link-to (str "https://4clojure.com/problem/edit/"
                                            id)
