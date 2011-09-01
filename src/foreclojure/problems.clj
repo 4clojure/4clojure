@@ -27,7 +27,7 @@
   ([criteria]
      (from-mongo
       (fetch :problems
-             :only [:_id :title :tags :times-solved :user]
+             :only [:_id :title :difficulty :tags :times-solved :user]
              :where criteria
              :sort {:_id 1}))))
 
@@ -237,7 +237,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
                :golfChart (html (render-golf-chart))})))
 
 (def-page code-box [id]
-  (let [{:keys [_id title tags description restricted tests approved user]}
+  (let [{:keys [_id title difficulty tags description restricted tests approved user]}
         (get-problem (Integer. id))]
     [:div
      [:span#prob-title
@@ -245,8 +245,9 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
         "Unapproved: ")
       title]
      [:hr]
-     [:div#tags "Tags: "
-      (s/join " " tags)]
+     [:table#tags
+      [:tr [:td "Difficulty:"] [:td (or difficulty "N/A")]]
+      [:tr [:td "Topics:"]     [:td (s/join " " tags)]]]
      [:br]
      (when-not approved
        [:div#submitter "Submitted by: " user])
@@ -292,18 +293,20 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
    [:thead
     [:tr
      [:th "Title"]
-     [:th "Tags"]
+     [:th "Difficulty"]
+     [:th "Topics"]
      [:th "Submitted By"]
      [:th "Times Solved"]
      [:th "Solved?"]]]
    (let [solved (get-solved (session/session-get :user))
          problems (get-problem-list)]
      (map-indexed
-      (fn [x {:keys [title times-solved tags user], id :_id}]
+      (fn [x {:keys [title difficulty times-solved tags user], id :_id}]
         [:tr (row-class x)
          [:td.titlelink
           [:a {:href (str "/problem/" id)}
            title]]
+         [:td.centered difficulty]
          [:td.centered
           (s/join " " (map #(str "<span class='tag'>" % "</span>")
                            tags))]
@@ -322,15 +325,17 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
    [:thead
     [:tr
      [:th "Title"]
-     [:th "Tags"]
+     [:th "Difficulty"]
+     [:th "Topics"]
      [:th "Submitted By"]]]
    (let [problems (get-problem-list {:approved false})]
      (map-indexed
-      (fn [x {:keys [title tags user], id :_id}]
+      (fn [x {:keys [title difficulty tags user], id :_id}]
         [:tr (row-class x)
          [:td.titlelink
           [:a {:href (str "/problem/" id)}
            title]]
+         [:td.centered difficulty]
          [:td.centered
           (s/join " " (map #(str "<span class='tag'>" % "</span>")
                            tags))]
@@ -351,7 +356,9 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
     (hidden-field :prob-id (session/flash-get :prob-id))
     (label :title "Problem Title")
     (text-field :title  (session/flash-get :title))
-    (label :tags "Tags (space separated)")
+    (label :diffulty "Difficulty")
+    (drop-down :difficulty ["Elementary" "Easy" "Medium" "Hard"] (session/flash-get :difficulty))
+    (label :tags "Topics (space separated)")
     (text-field :tags  (session/flash-get :tags))
     (label :restricted "Restricted Functions (space separated)")
     (text-field :restricted  (session/flash-get :restricted))
@@ -366,7 +373,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
 
 (defn create-problem
   "create a user submitted problem"
-  [title tags restricted description code id author]
+  [title difficulty tags restricted description code id author]
   (let [user (session/session-get :user)]
     (if (can-submit? user)
       (let [prob-id (or id
@@ -389,6 +396,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
                  {:_id prob-id}
                  {:_id prob-id
                   :title title
+                  :difficulty difficulty
                   :times-solved 0
                   :description description
                   :tags (re-seq #"\S+" tags)
@@ -401,10 +409,11 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
 
 (defn edit-problem [id]
   (if (approver? (session/session-get :user))
-    (let [{:keys [title user tags restricted description tests]} (get-problem id)]
+    (let [{:keys [title user difficulty tags restricted description tests]} (get-problem id)]
       (doseq [[k v] {:prob-id id
                      :author user
                      :title title
+                     :difficulty difficulty
                      :tags (s/join " " tags)
                      :restricted (s/join " " restricted)
                      :description description
@@ -449,8 +458,8 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
   (GET "/problems" [] (problem-page))
   (GET "/problem/:id" [id] (code-box id))
   (GET "/problems/submit" [] (problem-submission-page))
-  (POST "/problems/submit" [prob-id author title tags restricted description code]
-    (create-problem title tags restricted description code (when (not= "" prob-id) (Integer. prob-id)) author))
+  (POST "/problems/submit" [prob-id author title difficulty tags restricted description code]
+    (create-problem title difficulty tags restricted description code (when (not= "" prob-id) (Integer. prob-id)) author))
   (GET "/problems/unapproved" [] (unapproved-problems))
   (POST "/problem/edit" [id]
     (edit-problem (Integer. id)))
