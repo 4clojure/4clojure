@@ -370,11 +370,13 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
   [title tags restricted description code id author]
   (let [user (session/session-get :user)]
     (if (can-submit? user)
-      (let [prob-id (or id
-                        (:seq (fetch-and-modify
-                               :seqs
-                               {:_id "problems"}
-                               {:$inc {:seq 1}})))]
+      (let [id (or id
+                   (:seq (fetch-and-modify
+                          :seqs
+                          {:_id "problems"}
+                          {:$inc {:seq 1}})))
+            edit-url (str "https://4clojure.com/problem/"
+                     id)]
 
         (when (empty? author) ; newly submitted, not a moderator tweak
           (send-email
@@ -382,14 +384,13 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
             :to ["team@4clojure.com"]
             :reply-to [(users/email-address user)]
             :subject (str "User submission: " title)
-            :body (html [:h3 (link-to (str "https://4clojure.com/problem/edit/"
-                                           id)
-                                      title)]
-                        [:div description])}))
+            :html (html [:h3 (link-to edit-url title)]
+                        [:div description])
+            :text (str title ": " edit-url "\n" description)}))
 
         (update! :problems
-                 {:_id prob-id}
-                 {:_id prob-id
+                 {:_id id}
+                 {:_id id
                   :title title
                   :times-solved 0
                   :description description

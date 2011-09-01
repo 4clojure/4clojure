@@ -10,7 +10,7 @@
             (ring.util [response :as response])
             [clojure.walk :as walk])
   (:import java.net.URLEncoder
-           org.apache.commons.mail.SimpleEmail))
+           org.apache.commons.mail.HtmlEmail))
 
 (def ^{:dynamic true} *url* nil)
 
@@ -51,16 +51,22 @@
                text))))
 
 ;; Assuming that it will always need SSL. Will make it more flexible later.
-(defn send-email [{:keys [from to subject body]}]
+(defn send-email [{:keys [from to subject html text reply-to]}]
   (let [{:keys [host port user pass]} config
-        base (doto (SimpleEmail.)
+        base (doto (HtmlEmail.)
                (.setHostName host)
                (.setSSL true)
                (.setFrom from)
                (.setSubject subject)
-               (.setMsg body)
                (.setAuthentication user pass))]
-    (doseq [person to] (.addTo base person))
+    (when html
+      (.setHtmlMsg base html))
+    (when text
+      (.setTextMsg base text))
+    (doseq [person to]
+      (.addTo base person))
+    (doseq [person reply-to]
+      (.addReplyTo base person))
     (.send base)))
 
 (defn flash-fn [type]

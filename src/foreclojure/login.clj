@@ -108,7 +108,7 @@
           {:from "team@4clojure.com"
            :to [email]
            :subject "Password reset"
-           :body
+           :text
            (str "The password for your 4clojure.com account "
                 name " has been reset to " pw ". Make sure to change it"
                 " soon at https://4clojure.com/login/update - pick"
