@@ -11,6 +11,8 @@
   (:require [compojure [route :as route] [handler :as handler]]
             [sandbar.stateful-session :as session]))
 
+(def *block-server* false)
+
 (defroutes main-routes
   (GET "/" [] (welcome-page))
   login-routes
@@ -39,7 +41,8 @@
 
 (defn run []
   (prepare-mongo)
-  (run-jetty (var app) {:join? false :port 8080}))
+  (run-jetty (var app) {:join? *block-server* :port 8080}))
 
 (defn -main [& args]
-  (run))
+  (binding [*block-server* true]
+    (run)))
