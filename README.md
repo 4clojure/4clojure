@@ -47,6 +47,7 @@ vaguely like this:
 * [Devin Walters](https://github.com/devn) (devn)
 * [Michael Kohl](https://github.com/citizen428) (citizen428)
 * [Martin Sander](https://github.com/marvinthepa) (0x89)
+* [Alex McNamara](https://github.com/amcnamara) (amcnamara)
 
 
 Problem sources:
