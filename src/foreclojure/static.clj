@@ -15,7 +15,7 @@
     (.format df (deref total-solved)) " problems solved and counting!"]
    [:div
     [:h3 "What is 4Clojure?"]
-    [:p "4Clojure is a resource to help fledgling clojurians learn the language through interactive problems.  The first few problems are easy enough that even someone with no prior experience should find the learning curve forgiving.  See 'Getting Started' for more information."]]
+    [:p "4Clojure is a resource to help fledgling clojurians learn the language through interactive problems.  The first few problems are easy enough that even someone with no prior experience should find the learning curve forgiving.  See 'Help' for more information."]]
 
    [:div
     [:h3 "Is this site written in Clojure?"]
@@ -27,8 +27,11 @@
     [:p "At this time, 4clojure.com does not provide information regarding the sale of foreclosed homes, and has no plans of doing so in the future."]]
    [:img {:src "/images/PoweredMongoDBbeige50.png"}]])
 
-(def-page getting-started-page []
-  [:div
+(def-page help-page []
+  [:div#help-content
+   [:div#getting-started
+    [:h2 "Getting Started"]
+    [:div
    "4Clojure challenges users to solve "
    [:a {:href "http://en.wikipedia.org/wiki/K%C5%8Dan"} "koan-style"]
    " problems.  This is a fancy way of saying you'll be asked to fill in the blanks.  The \"blanks\" that you will be filling in are indicated by a double underscore: '__'.  This is "
@@ -63,10 +66,14 @@
    [:li "4Clojure won't save any of your code for later use"]
    [:br]
    "Check out the official Clojure "
-   [:a {:href "http://clojure.org/getting_started"} "getting started"]
-   " page for help with installation."
+   [:a {:href "http://clojure.org/help"} "help"]
+   " page for instructions on installation and getting started."
    [:br][:br]
-   "You should now be ready to start solving problems.  Happy coding!"])
+     "You should now be ready to start solving problems.  Happy coding!"]]
+   [:h2 "Need help with a problem?"]
+   [:p "Do you need some hints or help in solving a problem?  Visit the "
+    [:a {:href "http://groups.google.com/group/4clojure"} "4Clojure Google Group"]
+    "."]])
 
 (defroutes static-routes
-  (GET "/directions" [] (getting-started-page)))
+  (GET "/directions" [] (help-page)))
