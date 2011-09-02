@@ -148,7 +148,7 @@
                [["/" "Main Page"]
                 ["/problems" "Problem List"]
                 ["/users" "Top Users"]
-                ["/directions" "Getting Started"]
+                ["/directions" "Help"]
                 ["http://try-clojure.org" "REPL" true]
                 ["http://clojuredocs.org" "Docs" true]]]
            [:a.menu (assoc (when tabbed {:target "_blank"})
@@ -173,9 +173,7 @@
              [:span
               (link-to "/problems/unapproved" "View Unapproved Problems")])
            (when (can-submit? user)
-             [:span (link-to "/problems/submit" "Submit a Problem")])
-           [:span (link-to "http://groups.google.com/group/4clojure"
-                           "Google Group")]])
+             [:span (link-to "/problems/submit" "Submit a Problem")])])
         [:div#content_body body]
         [:div#footer
          "The content on 4clojure.com is available under the EPL v 1.0 license."
