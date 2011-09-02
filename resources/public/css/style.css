@@ -398,5 +398,9 @@ button:active {
 
 a.graph-class :hover {color: #445599;}
 
+#help-content{
+  width: 90%;
+}
+
 
 
