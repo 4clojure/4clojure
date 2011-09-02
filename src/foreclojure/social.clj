@@ -1,11 +1,11 @@
 (ns foreclojure.social
-  (:use foreclojure.utils
-        compojure.core
-        hiccup.page-helpers
-        somnium.congomongo)
-  (:require [clj-github.gists :as gist]
-            [sandbar.stateful-session :as session])
-  (:import java.net.URLEncoder))
+  (:require [clj-github.gists         :as   gist]
+            [sandbar.stateful-session :as   session])
+  (:import  [java.net                 URLEncoder])
+  (:use     [foreclojure.utils        :only (def-page)]
+            [compojure.core           :only (defroutes GET)]
+            [hiccup.page-helpers      :only (link-to)]
+            [somnium.congomongo       :only (fetch-one)]))
 
 (defn throttled
   "Create a version of a function which 'refuses' to be called too

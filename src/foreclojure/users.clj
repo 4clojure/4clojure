@@ -1,7 +1,8 @@
 (ns foreclojure.users
-  (:use [foreclojure utils config]
-        somnium.congomongo
-        compojure.core
+  (:use [foreclojure.utils   :only (from-mongo def-page row-class)]
+        [foreclojure.config  :only (config)]
+        [somnium.congomongo  :only (fetch-one fetch)]
+        [compojure.core      :only (defroutes GET)]
         [hiccup.page-helpers :only (link-to)]))
 
 (def golfer-tags (into [:contributor]

@@ -1,6 +1,7 @@
 (ns foreclojure.static
-  (:use compojure.core
-        [foreclojure problems utils]))
+  (:use [compojure.core       :only (defroutes GET)]
+        [foreclojure.problems :only (total-solved)]
+        [foreclojure.utils    :only (def-page)]))
 
 (def df
   (let [df (java.text.DecimalFormat.)

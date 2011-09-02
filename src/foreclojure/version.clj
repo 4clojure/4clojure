@@ -1,7 +1,7 @@
 (ns foreclojure.version
-  (:use foreclojure.utils
-        compojure.core
-        [clojure.java.shell :only [sh]]))
+  (:use [foreclojure.utils  :only (def-page)]
+        [compojure.core     :only (defroutes GET)]
+        [clojure.java.shell :only (sh)]))
 
 ;; fetch this at load time rather than on demand, so that it's accurate even
 ;; if someone checks out a different revision to poke at without restarting

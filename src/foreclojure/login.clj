@@ -1,15 +1,14 @@
 (ns foreclojure.login
-  (:import org.jasypt.util.password.StrongPasswordEncryptor)
-  (:use hiccup.form-helpers
-        hiccup.page-helpers
-        [foreclojure utils config users]
-        compojure.core
-        [amalloy.utils :only [rand-in-range keywordize]]
-        [clojail.core :only [thunk-timeout]]
-        clojure.stacktrace
-        somnium.congomongo)
-  (:require [sandbar.stateful-session :as session]
-            [ring.util.response :as response]))
+  (:require [sandbar.stateful-session :as   session]
+            [ring.util.response       :as   response])
+  (:import  [org.jasypt.util.password StrongPasswordEncryptor])
+  (:use     [hiccup.form-helpers      :only (form-to label text-field password-field)]
+            [foreclojure.utils        :only (def-page from-mongo flash-error flash-msg with-user form-row assuming send-email login-url)]
+            [compojure.core           :only (defroutes GET POST)]
+            [amalloy.utils            :only (rand-in-range keywordize)]
+            [clojail.core             :only (thunk-timeout)]
+            [clojure.stacktrace       :only (print-cause-trace)]
+            [somnium.congomongo       :only (update! fetch-one)]))
                         
 (def-page my-login-page [location]
   (when location

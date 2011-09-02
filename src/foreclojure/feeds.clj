@@ -1,5 +1,5 @@
 (ns foreclojure.feeds
-  (:use [clojure.contrib.prxml :only [prxml]]))
+  (:use [clojure.contrib.prxml :only (prxml)]))
 
 (defn escape [x]
   (str "<![CDATA[" x "]>"))
