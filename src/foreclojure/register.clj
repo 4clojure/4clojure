@@ -1,11 +1,11 @@
 (ns foreclojure.register
-  (:import [org.jasypt.util.password StrongPasswordEncryptor])
-  (:use hiccup.form-helpers
-        compojure.core
-        foreclojure.utils
-        somnium.congomongo)
-  (:require [sandbar.stateful-session :as session]
-            [ring.util.response :as response]))
+  (:require [sandbar.stateful-session :as   session]
+            [ring.util.response       :as   response])
+  (:import  [org.jasypt.util.password StrongPasswordEncryptor])
+  (:use     [hiccup.form-helpers      :only [form-to text-field password-field]]
+            [compojure.core           :only [defroutes GET POST]]
+            [foreclojure.utils        :only [def-page form-row assuming flash-error]]
+            [somnium.congomongo       :only [insert! fetch-one]]))
 
 (def-page register-page []
   [:div.error (session/flash-get :error)]

@@ -1,9 +1,9 @@
 (ns foreclojure.mongo
   (:use somnium.congomongo
         [foreclojure.data-set :only [load-problems]]
-        [foreclojure.config :only [config]]
+        [foreclojure.config   :only [config]]
         [foreclojure.problems :only [total-solved get-problem-list]]
-        [foreclojure.users :only [get-users]]))
+        [foreclojure.users    :only [get-users]]))
 
 (defn connect-to-db []
   (let [{:keys [db-user db-pwd db-host]} config]

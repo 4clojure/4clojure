@@ -1,20 +1,24 @@
 (ns foreclojure.problems
-  (:use (foreclojure utils config
-                     [social :only [tweet-link gist!]]
-                     [feeds :only [create-feed]]
-                     [users :only [golfer? get-user-id] :as users]
-                     [solutions :only [save-solution get-solution]])
-        (clojail [core :exclude [safe-read]] testers)
-        somnium.congomongo
-        (hiccup form-helpers page-helpers core)
-        (amalloy.utils [debug :only [?]]
-                       [reorder :only [reorder]])
-        [amalloy.utils :only [defcomp]]
-        compojure.core
-        [clojure.contrib.json :only [json-str]])
-  (:require [sandbar.stateful-session :as session]
-            [clojure.string :as s]
-            (ring.util [response :as response])))
+  (:require [foreclojure.users        :as      users]
+            [sandbar.stateful-session :as      session]
+            [clojure.string           :as      s]
+            [ring.util.response       :as      response])
+  (:use     [foreclojure.utils        :only    [from-mongo get-user get-solved login-link *url* flash-msg flash-error def-page row-class approver? can-submit? send-email]]
+            [foreclojure.social       :only    [tweet-link gist!]]
+            [foreclojure.feeds        :only    [create-feed]]
+            [foreclojure.users        :only    [golfer? get-user-id]]
+            [foreclojure.solutions    :only    [save-solution get-solution]]
+            [clojail.core             :exclude [safe-read]]
+            [clojail.testers          :only    [secure-tester]]
+            [somnium.congomongo       :only    [update! fetch-one fetch fetch-and-modify destroy!]]
+            [hiccup.form-helpers      :only    [form-to text-area hidden-field label text-field drop-down]]
+            [hiccup.page-helpers      :only    [link-to]]
+            [hiccup.core              :only    [html]]
+            [amalloy.utils.debug      :only    [?]]
+            [amalloy.utils.reorder    :only    [reorder]]
+            [amalloy.utils            :only    [defcomp]]
+            [compojure.core           :only    [defroutes GET POST]]
+            [clojure.contrib.json     :only    [json-str]]))
 
 (def total-solved (agent 0))
 
