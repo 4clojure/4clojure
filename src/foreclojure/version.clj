@@ -1,5 +1,6 @@
 (ns foreclojure.version
   (:use [foreclojure.utils  :only [def-page]]
+        [foreclojure.config :only [repo-url]]
         [compojure.core     :only [defroutes GET]]
         [clojure.java.shell :only [sh]]))
 
@@ -11,7 +12,7 @@
 (def-page version []
   (if sha
     [:p "SHA: "
-     [:a {:href (str "http://github.com/dbyrne/4clojure/commit/" sha)} sha]]
+     [:a {:href (str repo-url "/commit/" sha)} sha]]
     [:p "No git repository found"]))
 
 (defroutes version-routes

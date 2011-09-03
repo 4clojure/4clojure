@@ -1,6 +1,7 @@
 (ns foreclojure.static
   (:use [compojure.core       :only [defroutes GET]]
         [foreclojure.problems :only [total-solved]]
+        [foreclojure.config   :only [repo-url]]
         [foreclojure.utils    :only [def-page]]))
 
 (def df
@@ -21,7 +22,7 @@
    [:div
     [:h3 "Is this site written in Clojure?"]
     "Absolutely!  This site was created using a variety of open source Clojure (and Java) libraries.  In fact, the "
-    [:a {:href "https://github.com/dbyrne/4clojure"} "code for this site"]
+    [:a {:href repo-url} "code for this site"]
     " is itself open source.  Once you've mastered the language, feel free to contribute something back to the community."]
    [:div
     [:h3 "So wait, I can't buy cheap real estate here?"]

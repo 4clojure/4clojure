@@ -40,7 +40,7 @@
 (def-page users-page []
   [:div
    [:span.contributor "*"] " "
-   (link-to "https://github.com/dbyrne/4clojure" "4clojure contributor")]
+   (link-to (:repo-url config) "4clojure contributor")]
   [:br]
   [:table#user-table.my-table
    [:thead

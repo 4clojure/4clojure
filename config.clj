@@ -7,4 +7,5 @@
  :problem-submission true
  :advanced-user-count 50
  :pass ""
+ :repo-url "https://github.com/4clojure/4clojure"
  :golfing-active true}
