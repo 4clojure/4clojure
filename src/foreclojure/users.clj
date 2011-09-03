@@ -1,6 +1,7 @@
 (ns foreclojure.users
   (:use [foreclojure.utils   :only [from-mongo def-page row-class]]
         [foreclojure.config  :only [config repo-url]]
+        [foreclojure.utils   :only [get-user]]
         [somnium.congomongo  :only [fetch-one fetch]]
         [compojure.core      :only [defroutes GET]]
         [hiccup.page-helpers :only [link-to]]))
@@ -53,9 +54,15 @@
                        [:td
                         (when (:contributor %2)
                           [:span.contributor "* "])
-                        (:user %2)]
+                        [:a#user-profile-link {:href (str "/user/" (:user %2))} (:user %2)]]
                        [:td {:class "centered"} (count (:solved %2))]])
                 (get-users))])
 
+(def-page user-profile [username]
+  [:h3 "User: " username]
+  [:hr]
+  [:p "Problems solved: " (apply str (interpose ", " (:solved (get-user username))))])
+
 (defroutes users-routes
-  (GET "/users" [] (users-page)))
+  (GET "/users" [] (users-page))
+  (GET "/user/:username" [username] (user-profile username)))
