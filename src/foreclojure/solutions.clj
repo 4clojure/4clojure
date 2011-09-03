@@ -1,8 +1,7 @@
 (ns foreclojure.solutions
-  (:use foreclojure.utils
-        somnium.congomongo
-        (amalloy.utils [debug :only [?]]))
-  (:require [clojure.string :as s]))
+  (:require [clojure.string      :as   s])
+  (:use     [somnium.congomongo  :only [fetch-one update!]]
+            [amalloy.utils.debug :only [?]]))
 
 (defn get-solution [user-id problem-id]
   (:code (fetch-one :solutions

@@ -1,14 +1,14 @@
 (ns foreclojure.graphs
-  (:use compojure.core
-        (foreclojure utils)
-        somnium.congomongo
-        (amalloy.utils [transform :only [with-adjustments]]
-                       [reorder :only [reorder]]))
-  (:require (incanter [charts :as chart]
-                      [core :as incanter]
-                      [stats :as stats]))
-  (:import (java.io ByteArrayInputStream
-                    ByteArrayOutputStream)))
+  (:require [incanter.charts         :as   chart]
+            [incanter.core           :as   incanter]
+            [incanter.stats          :as   stats])
+  (:import  [java.io                 ByteArrayInputStream
+                                     ByteArrayOutputStream])
+  (:use     [compojure.core          :only [defroutes GET]]
+            [foreclojure.utils       :only [from-mongo]]
+            [somnium.congomongo      :only [fetch-one]]
+            [amalloy.utils.transform :only [with-adjustments]]
+            [amalloy.utils.reorder   :only [reorder]]))
 
 (defn un-group
   "Turn a compact set of [data-point num-repetitions] pairs into a
