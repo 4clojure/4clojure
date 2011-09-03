@@ -58,12 +58,15 @@
                 (get-users))])
 
 ;; TODO: this is snagged from problems.clj but can't be imported do to cyclic dependancy, must refactor this out.
-(defn get-problems []
-  (from-mongo
-   (fetch :problems
-          :only  [:_id :difficulty]
-          :where {:approved true}
-          :sort  {:_id 1})))
+(defn get-problems
+  ([]
+     (from-mongo
+      (fetch :problems
+             :only  [:_id :difficulty]
+             :where {:approved true}
+             :sort  {:_id 1})))
+  ([difficulty]
+     (get (group-by :difficulty (get-problems)) difficulty [{}])))
 
 (defn get-solved
   ([username]
@@ -77,11 +80,11 @@
     [:h3 "User: " username]
     [:hr]
     [:table
-     [:tr [:td.count-label "Elementary"] [:td.count-value (count (get-solved username "Elementary"))]]
-     [:tr [:td.count-label "Easy"      ] [:td.count-value (count (get-solved username "Easy"))]]
-     [:tr [:td.count-label "Medium"    ] [:td.count-value (count (get-solved username "Medium"))]]
-     [:tr [:td.count-label "Hard"      ] [:td.count-value (count (get-solved username "Hard"))]]
-     [:tr [:td.count-total "TOTAL:"    ] [:td.count-total-value (count (get-solved username))]]])
+     [:tr [:td.count-label "Elementary"] [:td.count-value       (count (get-solved username "Elementary")) "/" (count (get-problems "Elementary"))]]
+     [:tr [:td.count-label "Easy"      ] [:td.count-value       (count (get-solved username "Easy"))       "/" (count (get-problems "Easy"))]]
+     [:tr [:td.count-label "Medium"    ] [:td.count-value       (count (get-solved username "Medium"))     "/" (count (get-problems "Medium"))]]
+     [:tr [:td.count-label "Hard"      ] [:td.count-value       (count (get-solved username "Hard"))       "/" (count (get-problems "Hard"))]]
+     [:tr [:td.count-total "TOTAL:"    ] [:td.count-total-value (count (get-solved username))              "/" (count (get-problems))]]])
 
 (defroutes users-routes
   (GET "/users" [] (users-page))

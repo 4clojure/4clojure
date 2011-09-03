@@ -308,12 +308,12 @@ td.count-total {
 td.count-total-value {
     font-weight: bold;
     text-align: right;
-    width: 30px;
+    width: 45px;
 }
 
 td.count-value {
     text-align: right;
-    width: 30px;
+    width: 45px;
 }
 
 table.my-table th {
