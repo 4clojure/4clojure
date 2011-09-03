@@ -301,6 +301,21 @@ td.title-link {
    font-size: 16px;
 }
 
+td.count-total {
+    font-weight: bold;
+}
+
+td.count-total-value {
+    font-weight: bold;
+    text-align: right;
+    width: 30px;
+}
+
+td.count-value {
+    text-align: right;
+    width: 30px;
+}
+
 table.my-table th {
    padding: 10px 0px 0px 0px;
    font-size: 14px;

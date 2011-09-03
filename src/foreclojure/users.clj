@@ -1,7 +1,6 @@
 (ns foreclojure.users
-  (:use [foreclojure.utils   :only [from-mongo def-page row-class]]
+  (:use [foreclojure.utils   :only [from-mongo get-user def-page row-class]]
         [foreclojure.config  :only [config repo-url]]
-        [foreclojure.utils   :only [get-user]]
         [somnium.congomongo  :only [fetch-one fetch]]
         [compojure.core      :only [defroutes GET]]
         [hiccup.page-helpers :only [link-to]]))
@@ -58,10 +57,31 @@
                        [:td {:class "centered"} (count (:solved %2))]])
                 (get-users))])
 
+;; TODO: this is snagged from problems.clj but can't be imported do to cyclic dependancy, must refactor this out.
+(defn get-problems []
+  (from-mongo
+   (fetch :problems
+          :only  [:_id :difficulty]
+          :where {:approved true}
+          :sort  {:_id 1})))
+
+(defn get-solved
+  ([username]
+     (:solved (get-user username)))
+  ([username difficulty]
+     (let [problem-groups   (group-by :difficulty (get-problems))
+           difficulty-group (flatten (vector (:_id (apply merge-with vector (get problem-groups difficulty [{}])))))]
+       (filter (set (get-solved username)) difficulty-group))))
+
 (def-page user-profile [username]
-  [:h3 "User: " username]
-  [:hr]
-  [:p "Problems solved: " (apply str (interpose ", " (:solved (get-user username))))])
+    [:h3 "User: " username]
+    [:hr]
+    [:table
+     [:tr [:td.count-label "Elementary"] [:td.count-value (count (get-solved username "Elementary"))]]
+     [:tr [:td.count-label "Easy"      ] [:td.count-value (count (get-solved username "Easy"))]]
+     [:tr [:td.count-label "Medium"    ] [:td.count-value (count (get-solved username "Medium"))]]
+     [:tr [:td.count-label "Hard"      ] [:td.count-value (count (get-solved username "Hard"))]]
+     [:tr [:td.count-total "TOTAL:"    ] [:td.count-total-value (count (get-solved username))]]])
 
 (defroutes users-routes
   (GET "/users" [] (users-page))
