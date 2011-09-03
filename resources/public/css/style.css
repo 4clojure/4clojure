@@ -1,3 +1,14 @@
+#github-banner {
+    float: right;
+    display: block;
+    border: 0px;
+    width: 149px;
+    height: 149px;
+    margin-top: -20px;
+    background-image: url(/images/banner.png);
+    background-repeat: no-repeat;
+}
+
 body {
    background-color: #bbddee;
    font-size: 12px;
