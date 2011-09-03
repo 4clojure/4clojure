@@ -1,12 +1,12 @@
 (ns foreclojure.golf
   (:require [ring.util.response       :as   response]
             [sandbar.stateful-session :as   session])
-  (:use     [hiccup.form-helpers      :only (form-to check-box)]
-            [hiccup.page-helpers      :only (link-to)]
-            [foreclojure.utils        :only (def-page with-user)]
-            [foreclojure.users        :only (golfer?)]
-            [compojure.core           :only (defroutes POST GET)]
-            [somnium.congomongo       :only (update!)]))
+  (:use     [hiccup.form-helpers      :only [form-to check-box]]
+            [hiccup.page-helpers      :only [link-to]]
+            [foreclojure.utils        :only [def-page with-user]]
+            [foreclojure.users        :only [golfer?]]
+            [compojure.core           :only [defroutes POST GET]]
+            [somnium.congomongo       :only [update!]]))
 
 (def-page golfer-page []
   "Your preferences have been saved.")

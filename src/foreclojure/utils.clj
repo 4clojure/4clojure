@@ -4,12 +4,12 @@
             [clojure.walk             :as   walk])
   (:import  [java.net                 URLEncoder]
             [org.apache.commons.mail  HtmlEmail])
-  (:use     [hiccup.core              :only (html)]
-            [hiccup.page-helpers      :only (doctype include-css javascript-tag link-to include-js)]
-            [hiccup.form-helpers      :only (label)]
-            [amalloy.utils.transform  :only (transform-if)]
-            [somnium.congomongo       :only (fetch-one)]
-            [foreclojure.config       :only (config)]))
+  (:use     [hiccup.core              :only [html]]
+            [hiccup.page-helpers      :only [doctype include-css javascript-tag link-to include-js]]
+            [hiccup.form-helpers      :only [label]]
+            [amalloy.utils.transform  :only [transform-if]]
+            [somnium.congomongo       :only [fetch-one]]
+            [foreclojure.config       :only [config]]))
 
 (def ^{:dynamic true} *url* nil)
 
