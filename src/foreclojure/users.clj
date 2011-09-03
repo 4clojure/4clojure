@@ -77,14 +77,12 @@
        (filter (set (get-solved username)) difficulty-group))))
 
 (def-page user-profile [username]
-    [:h3 "User: " username]
+    [:h2 "User: " username]
     [:hr]
     [:table
-     [:tr [:td.count-label "Elementary"] [:td.count-value       (count (get-solved username "Elementary")) "/" (count (get-problems "Elementary"))]]
-     [:tr [:td.count-label "Easy"      ] [:td.count-value       (count (get-solved username "Easy"))       "/" (count (get-problems "Easy"))]]
-     [:tr [:td.count-label "Medium"    ] [:td.count-value       (count (get-solved username "Medium"))     "/" (count (get-problems "Medium"))]]
-     [:tr [:td.count-label "Hard"      ] [:td.count-value       (count (get-solved username "Hard"))       "/" (count (get-problems "Hard"))]]
-     [:tr [:td.count-total "TOTAL:"    ] [:td.count-total-value (count (get-solved username))              "/" (count (get-problems))]]])
+     (for [difficulty ["Elementary" "Easy" "Medium" "Hard"]]
+       [:tr [:td.count-label difficulty] [:td.count-value [:div.progress-bar-bg [:div.progress-bar {:style (str "width: " (* 100 (/ (count (get-solved username difficulty)) (count (get-problems difficulty)))) "%")}]]]])
+     [:tr [:td.count-total "TOTAL:"    ] [:td.count-value (count (get-solved username)) "/" (count (get-problems))]]])
 
 (defroutes users-routes
   (GET "/users" [] (users-page))

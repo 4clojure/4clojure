@@ -9,6 +9,19 @@ body {
 
 img {border:none}
 
+div.progress-bar-bg {
+    border: 1px solid black;
+    height: 7px;
+    width: 100px;
+    display: block;
+}
+
+div.progress-bar {
+    background-color: #00FF00;
+    height: 100%;
+    display: block;
+    float: left;
+}
 
 #account.header-option {
    float:right;
@@ -314,6 +327,7 @@ td.count-total-value {
 td.count-value {
     text-align: right;
     width: 45px;
+    padding-left: 15px;
 }
 
 table.my-table th {
