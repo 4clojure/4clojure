@@ -36,6 +36,13 @@
      ~fail-expr
      ~body))
 
+(defn image-builder [data & {:keys [alt src] :or {alt identity,
+                                                  src identity}}]
+  (fn [key]
+    (let [[src-prop alt-prop] (get data key)]
+      [:img {:src (src src-prop)
+             :alt (alt alt-prop)}])))
+
 (defn login-url
   ([] (login-url *url*))
   ([location]
@@ -135,11 +142,11 @@
        (include-js "/vendor/script/ace/ace.js" "/vendor/script/ace/mode-clojure.js")
        (include-css "/css/style.css" "/css/demo_table.css" "/css/shCore.css" "/css/shThemeDefault.css")
        [:style {:type "text/css"}
-        ".syntaxhighlighter { overflow-y: hidden !important; }"]]
-      [:script {:type "text/javascript"} "SyntaxHighlighter.all()"]
+        ".syntaxhighlighter { overflow-y: hidden !important; }"]
+       [:script {:type "text/javascript"} "SyntaxHighlighter.all()"]]
       [:body
        [:div#top
-        (link-to "/" [:img#logo {:src "/images/logo.png"}])]
+        (link-to "/" [:img#logo {:src "/images/logo.png" :alt "4clojure.com"}])]
        [:div#content
         [:br]
         [:div#menu
@@ -153,7 +160,7 @@
            [:a.menu (assoc (when tabbed {:target "_blank"})
                       :href link)
             text])
-         [:span#user-info
+         [:div#user-info
           (if user
             [:div
              [:span#username (str "Logged in as " user)]

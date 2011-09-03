@@ -3,7 +3,7 @@
             [sandbar.stateful-session :as      session]
             [clojure.string           :as      s]
             [ring.util.response       :as      response])
-  (:use     [foreclojure.utils        :only    [from-mongo get-user get-solved login-link *url* flash-msg flash-error def-page row-class approver? can-submit? send-email]]
+  (:use     [foreclojure.utils        :only    [from-mongo get-user get-solved login-link *url* flash-msg flash-error def-page row-class approver? can-submit? send-email image-builder]]
             [foreclojure.social       :only    [tweet-link gist!]]
             [foreclojure.feeds        :only    [create-feed]]
             [foreclojure.users        :only    [golfer? get-user-id]]
@@ -199,19 +199,23 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
     (flash-msg message url)
     (flash-error error url)))
 
-(defn render-test-cases [tests]
-  [:table {:class "testcases"}
-   (let [fail (session/flash-get :failing-test)]
-     (for [[idx test] (map-indexed list tests)]
-       [:tr
-        [:td
-         [:img {:src (cond
-                      (or (nil? fail) (> idx fail)) "/images/bluelight.png"
-                      (= idx fail) "/images/redlight.png"
-                      :else "/images/greenlight.png")}]]
-        [:td
-         [:pre {:class "brush: clojure;gutter: false;toolbar: false;light: true"}
-          test]]]))])
+(let [light-img (image-builder {:red   ["red"   "test failed"]
+                                :green ["green" "test passed"]
+                                :blue  ["blue"  "test not run"]}
+                               :src #(str "/images/" % "light.png"))]
+  (defn render-test-cases [tests]
+    [:table {:class "testcases"}
+     (let [fail (session/flash-get :failing-test)]
+       (for [[idx test] (map-indexed list tests)]
+         [:tr
+          [:td
+           (light-img (cond
+                       (or (nil? fail) (> idx fail)) :blue
+                       (= idx fail)                  :red
+                       :else                         :green))]
+          [:td
+           [:pre {:class "brush: clojure;gutter: false;toolbar: false;light: true"}
+            test]]]))]))
 
 (defn render-golf-chart []
   (let [{:keys [id best score] :as settings}
@@ -290,38 +294,37 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
           [:button.large {:id "edit-button"} "Edit"]
           [:button.large {:id "approve-button"} "Approve"]]))]))
 
-(def-page problem-page []
-  [:div.message (session/flash-get :message)]
-  [:div#problems-error.error (session/flash-get :error)]
-  (link-to "/problems/rss" [:div {:class "rss"}])
-  [:table#problem-table.my-table
-   [:thead
-    [:tr
-     [:th "Title"]
-     [:th "Difficulty"]
-     [:th "Topics"]
-     [:th "Submitted By"]
-     [:th "Times Solved"]
-     [:th "Solved?"]]]
-   (let [solved (get-solved (session/session-get :user))
-         problems (get-problem-list)]
-     (map-indexed
-      (fn [x {:keys [title difficulty times-solved tags user], id :_id}]
-        [:tr (row-class x)
-         [:td.titlelink
-          [:a {:href (str "/problem/" id)}
-           title]]
-         [:td.centered difficulty]
-         [:td.centered
-          (s/join " " (map #(str "<span class='tag'>" % "</span>")
-                           tags))]
-         [:td.centered user]
-         [:td.centered (int times-solved)]
-         [:td.centered
-          [:img {:src (if (contains? solved id)
-                        "/images/checkmark.png"
-                        "/images/empty-sq.png")}]]])
-      problems))])
+(let [checkbox-img (image-builder {true ["/images/checkmark.png" "completed"]
+                                   false ["/images/empty-sq.png" "incomplete"]})]
+  (def-page problem-page []
+    [:div.message (session/flash-get :message)]
+    [:div#problems-error.error (session/flash-get :error)]
+    (link-to "/problems/rss" [:div {:class "rss"}])
+    [:table#problem-table.my-table
+     [:thead
+      [:tr
+       [:th "Title"]
+       [:th "Difficulty"]
+       [:th "Topics"]
+       [:th "Submitted By"]
+       [:th "Times Solved"]
+       [:th "Solved?"]]]
+     (let [solved (get-solved (session/session-get :user))
+           problems (get-problem-list)]
+       (map-indexed
+        (fn [x {:keys [title difficulty times-solved tags user], id :_id}]
+          [:tr (row-class x)
+           [:td.titlelink
+            [:a {:href (str "/problem/" id)}
+             title]]
+           [:td.centered difficulty]
+           [:td.centered
+            (s/join " " (map #(str "<span class='tag'>" % "</span>")
+                             tags))]
+           [:td.centered user]
+           [:td.centered (int times-solved)]
+           [:td.centered (checkbox-img (contains? solved id))]])
+        problems))]))
 
 (def-page unapproved-problem-page []
   [:div.message (session/flash-get :message)]
