@@ -15,7 +15,7 @@
             [foreclojure.version        :only [version-routes]]
             [foreclojure.graphs         :only [graph-routes]]
             [foreclojure.mongo          :only [prepare-mongo]]
-            [foreclojure.utils          :only [wrap-uri-binding]]
+            [foreclojure.utils          :only [wrap-uri-binding *fork-banner*]]
             [ring.adapter.jetty         :only [run-jetty]]
             [ring.middleware.reload     :only [wrap-reload]]
             [ring.middleware.stacktrace :only [wrap-stacktrace]]
@@ -25,7 +25,8 @@
 (def *block-server* false)
 
 (defroutes main-routes
-  (GET "/" [] (welcome-page))
+  (GET "/" [] (binding [*fork-banner* true]
+                (welcome-page)))
   login-routes
   register-routes
   problems-routes

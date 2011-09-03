@@ -12,6 +12,7 @@
             [foreclojure.config       :only [config]]))
 
 (def ^{:dynamic true} *url* nil)
+(def ^{:dynamic true} *fork-banner* false)
 
 (defn wrap-uri-binding [handler]
   (fn [req]
@@ -145,7 +146,8 @@
         ".syntaxhighlighter { overflow-y: hidden !important; }"]
        [:script {:type "text/javascript"} "SyntaxHighlighter.all()"]]
       [:body
-       [:div#github-banner [:a {:href "http://github.com/4clojure" :alt "Fork 4Clojure on Github!"}]]
+       (when *fork-banner*
+         [:div#github-banner [:a {:href "http://github.com/4clojure" :alt "Fork 4Clojure on Github!"}]])
        [:div#top
         (link-to "/" [:img#logo {:src "/images/logo.png" :alt "4clojure.com"}])]
        [:div#content
