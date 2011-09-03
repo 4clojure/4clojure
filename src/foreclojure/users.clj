@@ -1,6 +1,6 @@
 (ns foreclojure.users
   (:use [foreclojure.utils   :only [from-mongo def-page row-class]]
-        [foreclojure.config  :only [config]]
+        [foreclojure.config  :only [config repo-url]]
         [somnium.congomongo  :only [fetch-one fetch]]
         [compojure.core      :only [defroutes GET]]
         [hiccup.page-helpers :only [link-to]]))
@@ -40,7 +40,7 @@
 (def-page users-page []
   [:div
    [:span.contributor "*"] " "
-   (link-to (:repo-url config) "4clojure contributor")]
+   (link-to repo-url "4clojure contributor")]
   [:br]
   [:table#user-table.my-table
    [:thead
