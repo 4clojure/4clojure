@@ -2,11 +2,17 @@
     float: right;
     display: block;
     border: 0px;
-    width: 149px;
-    height: 149px;
+    width: 135px;
+    height: 135px;
     margin-top: -20px;
     background-image: url(/images/banner.png);
     background-repeat: no-repeat;
+    background-position: top right;
+}
+#github-banner a {
+    width: 100%;
+    height: 100%;
+    display: block;
 }
 
 body {

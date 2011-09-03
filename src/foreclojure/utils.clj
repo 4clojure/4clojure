@@ -145,7 +145,7 @@
         ".syntaxhighlighter { overflow-y: hidden !important; }"]
        [:script {:type "text/javascript"} "SyntaxHighlighter.all()"]]
       [:body
-       [:div#github-banner {:onclick "location.href='http://github.com/4clojure'"} "&nbsp;"]
+       [:div#github-banner [:a {:href "http://github.com/4clojure" :alt "Fork 4Clojure on Github!"}]]
        [:div#top
         (link-to "/" [:img#logo {:src "/images/logo.png" :alt "4clojure.com"}])]
        [:div#content
