@@ -24,8 +24,8 @@
   (let [users (from-mongo
                (fetch :users
                       :only [:user :solved :contributor]))
-        sortfn  (comp count :solved)]
-    (reverse (sort-by sortfn users))))
+        sortfn  (comp - count :solved)]
+    (sort-by sortfn users)))
 
 (defn golfer? [user]
   (some user golfer-tags))
@@ -48,16 +48,16 @@
      [:th {:style "width: 40px;"} "Rank"]
      [:th "Username"]
      [:th "Problems Solved"]]]
-   (map-indexed #(vec [:tr (row-class %1)
-                       [:td (inc %1)]
-                       [:td
-                        (when (:contributor %2)
-                          [:span.contributor "* "])
-                        [:a#user-profile-link {:href (str "/user/" (:user %2))} (:user %2)]]
-                       [:td {:class "centered"} (count (:solved %2))]])
+   (map-indexed (fn [rownum {:keys [user contributor solved]}]
+                  [:tr (row-class rownum)
+                   [:td (inc rownum)]
+                   [:td
+                    (when contributor [:span.contributor "* "])
+                    [:a#user-profile-link {:href (str "/user/" user)} user]]
+                   [:td.centered (count solved)]])
                 (get-users))])
 
-;; TODO: this is snagged from problems.clj but can't be imported do to cyclic dependancy, must refactor this out.
+;; TODO: this is snagged from problems.clj but can't be imported due to cyclic dependency, must refactor this out.
 (defn get-problems
   ([]
      (from-mongo
