@@ -72,9 +72,13 @@
   ([username]
      (:solved (get-user username)))
   ([username difficulty]
-     (let [problem-groups   (group-by :difficulty (get-problems))
-           difficulty-group (flatten (vector (:_id (apply merge-with vector (get problem-groups difficulty [{}])))))]
-       (filter (set (get-solved username)) difficulty-group))))
+     (let [ids (->> (from-mongo
+                     (fetch :problems
+                            :only  [:_id]
+                            :where {:approved true, :difficulty difficulty}))
+                    (map :_id)
+                    (set))]
+       (filter ids (get-solved username)))))
 
 (def-page user-profile [username]
     [:h2 "User: " username]
