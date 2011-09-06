@@ -3,6 +3,7 @@
             [sandbar.stateful-session :as      session]
             [clojure.string           :as      s]
             [ring.util.response       :as      response])
+  (:import  [org.apache.commons.mail  EmailException])
   (:use     [foreclojure.utils        :only    [from-mongo get-user get-solved login-link *url* flash-msg flash-error def-page row-class approver? can-submit? send-email image-builder]]
             [foreclojure.social       :only    [tweet-link gist!]]
             [foreclojure.feeds        :only    [create-feed]]
@@ -40,7 +41,7 @@
                        (from-mongo
                         (fetch :problems
                                :only [:_id :title]
-                               :where {:_id {:$nin solved-problems}}
+                               :where {:_id {:$nin solved-problems}, :approved true}
                                :sort {:_id 1})))]
     (let [[skipped not-yet-tried] (split-with #(< (:_id %) just-solved-id)
                                               unsolved)]
@@ -245,8 +246,8 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
                :golfChart (html (render-golf-chart))})))
 
 (def-page code-box [id]
-  (let [{:keys [_id title difficulty tags description restricted tests approved user]}
-        (get-problem (Integer. id))]
+  (let [{:keys [_id title difficulty tags description
+                restricted tests approved user]} (get-problem (Integer. id))]
     [:div
      [:span#prob-title
       (when-not approved
@@ -294,9 +295,15 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
           [:button.large {:id "edit-button"} "Edit"]
           [:button.large {:id "approve-button"} "Approve"]]))]))
 
+(defn problem-page [id]
+  (if (or (:approved (get-problem (Integer. id)))
+          (approver? (session/session-get :user)))
+    (code-box id)
+    (flash-error "You cannot access this page" "/problems")))
+
 (let [checkbox-img (image-builder {true ["/images/checkmark.png" "completed"]
                                    false ["/images/empty-sq.png" "incomplete"]})]
-  (def-page problem-page []
+  (def-page problem-list-page []
     [:div.message (session/flash-get :message)]
     [:div#problems-error.error (session/flash-get :error)]
     (link-to "/problems/rss" [:div {:class "rss"}])
@@ -326,7 +333,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
            [:td.centered (checkbox-img (contains? solved id))]])
         problems))]))
 
-(def-page unapproved-problem-page []
+(def-page unapproved-problem-list-page []
   [:div.message (session/flash-get :message)]
   [:div#problems-error.error (session/flash-get :error)]
   [:table#unapproved-problems.my-table
@@ -350,10 +357,10 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
          [:td.centered user]])
       problems))])
 
-(defn unapproved-problems []
+(defn unapproved-problem-list []
   (let [user (session/session-get :user)]
     (if (approver? user)
-      (unapproved-problem-page)
+      (unapproved-problem-list-page)
       (flash-error "You cannot access this page" "/problems"))))
 
 (def-page problem-submission-page []
@@ -393,14 +400,17 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
                      id)]
 
         (when (empty? author) ; newly submitted, not a moderator tweak
-          (send-email
-           {:from "team@4clojure.com"
-            :to ["team@4clojure.com"]
-            :reply-to [(users/email-address user)]
-            :subject (str "User submission: " title)
-            :html (html [:h3 (link-to edit-url title)]
-                        [:div description])
-            :text (str title ": " edit-url "\n" description)}))
+          (try
+            (send-email
+             {:from "team@4clojure.com"
+              :to ["team@4clojure.com"]
+              :reply-to [(users/email-address user)]
+              :subject (str "User submission: " title)
+              :html (html [:h3 (link-to edit-url title)]
+                          [:div description])
+              :text (str title ": " edit-url "\n" description)})
+            ;; TODO: dump this in a proper log
+            (catch EmailException e (println (str "email failed to send on newly submitted problem #" id)))))
 
         (update! :problems
                  {:_id id}
@@ -466,12 +476,12 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
     (flash-error "You do not have permission to access this page" "/problems")))
 
 (defroutes problems-routes
-  (GET "/problems" [] (problem-page))
-  (GET "/problem/:id" [id] (code-box id))
+  (GET "/problems" [] (problem-list-page))
+  (GET "/problem/:id" [id] (problem-page id))
   (GET "/problems/submit" [] (problem-submission-page))
   (POST "/problems/submit" [prob-id author title difficulty tags restricted description code]
     (create-problem title difficulty tags restricted description code (when (not= "" prob-id) (Integer. prob-id)) author))
-  (GET "/problems/unapproved" [] (unapproved-problems))
+  (GET "/problems/unapproved" [] (unapproved-problem-list))
   (POST "/problem/edit" [id]
     (edit-problem (Integer. id)))
   (POST "/problem/approve" [id]
