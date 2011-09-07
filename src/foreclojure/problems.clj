@@ -341,29 +341,31 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
           problems))])}))
 
 (def-page unapproved-problem-list-page []
-  (list
-   [:div.message (session/flash-get :message)]
-   [:div#problems-error.error (session/flash-get :error)]
-   [:table#unapproved-problems.my-table
-    [:thead
-     [:tr
-      [:th "Title"]
-      [:th "Difficulty"]
-      [:th "Topics"]
-      [:th "Submitted By"]]]
-    (let [problems (get-problem-list {:approved false})]
-      (map-indexed
-       (fn [x {:keys [title difficulty tags user], id :_id}]
-         [:tr (row-class x)
-          [:td.titlelink
-           [:a {:href (str "/problem/" id)}
-            title]]
-          [:td.centered difficulty]
-          [:td.centered
-           (s/join " " (map #(str "<span class='tag'>" % "</span>")
-                            tags))]
-          [:td.centered user]])
-       problems))]))
+  {:title "Unapproved problems"
+   :content
+   (list
+    [:div.message (session/flash-get :message)]
+    [:div#problems-error.error (session/flash-get :error)]
+    [:table#unapproved-problems.my-table
+     [:thead
+      [:tr
+       [:th "Title"]
+       [:th "Difficulty"]
+       [:th "Topics"]
+       [:th "Submitted By"]]]
+     (let [problems (get-problem-list {:approved false})]
+       (map-indexed
+        (fn [x {:keys [title difficulty tags user], id :_id}]
+          [:tr (row-class x)
+           [:td.titlelink
+            [:a {:href (str "/problem/" id)}
+             title]]
+           [:td.centered difficulty]
+           [:td.centered
+            (s/join " " (map #(str "<span class='tag'>" % "</span>")
+                             tags))]
+           [:td.centered user]])
+        problems))])})
 
 (defn unapproved-problem-list []
   (let [user (session/session-get :user)]
@@ -372,28 +374,30 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
       (flash-error "You cannot access this page" "/problems"))))
 
 (def-page problem-submission-page []
-  (list
-   [:div.instructions
-    [:p "Thanks for choosing to submit a problem. Please make sure that you own the rights to the code you are submitting and that you wouldn't mind having us use the code as a 4clojure problem.  Once you've submitted your problem, it won't appear on the site until someone from the 4clojure team has had a chance to review it."]]
-   (form-to {:id "problem-submission"} [:post "/problems/submit"]
-     (hidden-field :author (session/flash-get :author))
-     (hidden-field :prob-id (session/flash-get :prob-id))
-     (label :title "Problem Title")
-     (text-field :title  (session/flash-get :title))
-     (label :diffulty "Difficulty")
-     (drop-down :difficulty ["Elementary" "Easy" "Medium" "Hard"] (session/flash-get :difficulty))
-     (label :tags "Topics (space separated)")
-     (text-field :tags  (session/flash-get :tags))
-     (label :restricted "Restricted Functions (space separated)")
-     (text-field :restricted  (session/flash-get :restricted))
-     (label :description "Problem Description")
-     (text-area {:id "problem-description"} :description  (session/flash-get :description))
-     [:br]
-     (label :code-box "Problem test cases. Use two underscores (__) for user input. Individual tests can span multiple lines, but each test should be separated by a totally blank line.")
-     (text-area {:id "code-box" :spellcheck "false"}
-                :code (session/flash-get :tests))
-     [:p
-      [:button.large {:id "submission-button" :type "submit"} "Submit"]])))
+  {:title "Submit a problem"
+   :content
+   (list
+    [:div.instructions
+     [:p "Thanks for choosing to submit a problem. Please make sure that you own the rights to the code you are submitting and that you wouldn't mind having us use the code as a 4clojure problem.  Once you've submitted your problem, it won't appear on the site until someone from the 4clojure team has had a chance to review it."]]
+    (form-to {:id "problem-submission"} [:post "/problems/submit"]
+      (hidden-field :author (session/flash-get :author))
+      (hidden-field :prob-id (session/flash-get :prob-id))
+      (label :title "Problem Title")
+      (text-field :title  (session/flash-get :title))
+      (label :diffulty "Difficulty")
+      (drop-down :difficulty ["Elementary" "Easy" "Medium" "Hard"] (session/flash-get :difficulty))
+      (label :tags "Topics (space separated)")
+      (text-field :tags  (session/flash-get :tags))
+      (label :restricted "Restricted Functions (space separated)")
+      (text-field :restricted  (session/flash-get :restricted))
+      (label :description "Problem Description")
+      (text-area {:id "problem-description"} :description  (session/flash-get :description))
+      [:br]
+      (label :code-box "Problem test cases. Use two underscores (__) for user input. Individual tests can span multiple lines, but each test should be separated by a totally blank line.")
+      (text-area {:id "code-box" :spellcheck "false"}
+                 :code (session/flash-get :tests))
+      [:p
+       [:button.large {:id "submission-button" :type "submit"} "Submit"]]))})
 
 (defn create-problem
   "create a user submitted problem"
