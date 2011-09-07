@@ -32,8 +32,7 @@
   (add-index! :users [:user] :unique true)
   (add-index! :users [[:solved -1]])
   (update! :users
-           {:user {:$in ["amalloy" "dbyrne" "raynes" "cmeier" "devn"
-                         "citizen428" "daviddavis" "clinteger"]}}
+           {:user {:$in (:contributors config)}}
            {:$set {:contributor true}}
            :upsert false
            :multiple true))

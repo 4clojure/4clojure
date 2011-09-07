@@ -7,12 +7,11 @@
   (:use     [hiccup.core              :only [html]]
             [hiccup.page-helpers      :only [doctype include-css javascript-tag link-to include-js]]
             [hiccup.form-helpers      :only [label]]
-            [amalloy.utils.transform  :only [transform-if]]
+            [useful.fn                :only [to-fix]]
             [somnium.congomongo       :only [fetch-one]]
             [foreclojure.config       :only [config]]))
 
 (def ^{:dynamic true} *url* nil)
-(def ^{:dynamic true} *fork-banner* false)
 
 (defn wrap-uri-binding [handler]
   (fn [req]
@@ -76,21 +75,8 @@
       (.addReplyTo base person))
     (.send base)))
 
-(defn flash-fn [type]
-  (fn [msg url]
-    (session/flash-put! type msg)
-    (response/redirect url)))
-
-(def flash-error (flash-fn :error))
-(def flash-msg (flash-fn :message))
-
-(defmacro def-page [page-name [& args] & code]
-  `(defn ~page-name [~@args]
-     (html-doc
-      ~@code)))
-
 (defn from-mongo [data]
-  (walk/postwalk (transform-if float? int)
+  (walk/postwalk (to-fix float? int)
                  data))
 
 (defn get-user [username]
@@ -103,15 +89,13 @@
        ~@body)
      [:span.error "You must " (login-link) " to do this."]))
 
-(defn form-row [[type name info value]]
-  [:tr
-   [:td (label name info)]
-   [:td (type name value)]])
+(defn flash-fn [type]
+  (fn [msg url]
+    (session/flash-put! type msg)
+    (response/redirect url)))
 
-(defn row-class [x]
-  {:class (if (even? x)
-            "evenrow"
-            "oddrow")})
+(def flash-error (flash-fn :error))
+(def flash-msg (flash-fn :message))
 
 (defn user-attribute [attr]
   (fn [username]
@@ -128,13 +112,34 @@
        (>= (count (get-solved username))
            (:advanced-user-count config))))
 
-(defn html-doc [& body]
-  (let [user (session/session-get :user)]
+(defprotocol PageWriter
+  (page-attributes [this]))
+
+(extend-protocol PageWriter
+  clojure.lang.IPersistentMap
+  (page-attributes [this] this)
+
+  Object
+  (page-attributes [this]
+    {:content this})
+
+  nil
+  (page-attributes [this] nil))
+
+(let [defaults {:content nil
+                :title "4clojure"
+                :fork-banner false}]
+  (defn rendering-info [attributes]
+    (into defaults attributes)))
+
+(defn html-doc [body]
+  (let [attrs (rendering-info (page-attributes body))
+        user (session/session-get :user)]
     (html
      (doctype :html5)
      [:html
       [:head
-       [:title "4Clojure"]
+       [:title (:title attrs)]
        [:link {:rel "alternate" :type "application/atom+xml" :title "Atom" :href "http://4clojure.com/problems/rss"}]
        [:link {:rel "shortcut icon" :href "/favicon.ico"}]
        (include-js "/vendor/script/jquery-1.5.2.min.js" "/vendor/script/jquery.dataTables.min.js")
@@ -146,7 +151,7 @@
         ".syntaxhighlighter { overflow-y: hidden !important; }"]
        [:script {:type "text/javascript"} "SyntaxHighlighter.all()"]]
       [:body
-       (when *fork-banner*
+       (when (:fork-banner attrs)
          [:div#github-banner [:a {:href "http://github.com/4clojure" :alt "Fork 4Clojure on Github!"}]])
        [:div#top
         (link-to "/" [:img#logo {:src "/images/logo.png" :alt "4clojure.com"}])]
@@ -183,7 +188,7 @@
               (link-to "/problems/unapproved" "View Unapproved Problems")])
            (when (can-submit? user)
              [:span (link-to "/problems/submit" "Submit a Problem")])])
-        [:div#content_body body]
+        [:div#content_body (:content attrs)]
         [:div#footer
          "The content on 4clojure.com is available under the EPL v 1.0 license."
          (let [email "team@4clojure.com"]
@@ -202,3 +207,17 @@
         })();
 "
          )]]])))
+
+(defmacro def-page [page-name [& args] & code]
+  `(defn ~page-name [~@args]
+     (html-doc (do ~@code))))
+
+(defn form-row [[type name info value]]
+  [:tr
+   [:td (label name info)]
+   [:td (type name value)]])
+
+(defn row-class [x]
+  {:class (if (even? x)
+            "evenrow"
+            "oddrow")})

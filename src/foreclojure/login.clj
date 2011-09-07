@@ -5,33 +5,36 @@
   (:use     [hiccup.form-helpers      :only [form-to label text-field password-field]]
             [foreclojure.utils        :only [def-page from-mongo flash-error flash-msg with-user form-row assuming send-email login-url]]
             [compojure.core           :only [defroutes GET POST]]
-            [amalloy.utils            :only [rand-in-range keywordize]]
+            [useful.map               :only [keyed]]
             [clojail.core             :only [thunk-timeout]]
             [clojure.stacktrace       :only [print-cause-trace]]
             [somnium.congomongo       :only [update! fetch-one]]))
                         
 (def-page my-login-page [location]
-  (when location
-    (session/session-put! :login-to location)
-    nil) ;; don't include this in HTML output
-  [:div.error
-   (session/flash-get :error)
-   (session/flash-get :message)]
-  (form-to [:post "/login"]
-    [:table
-     [:tr
-      [:td (label :user "Username")]
-      [:td (text-field :user)]]
-     [:tr
-      [:td (label :pwd "Password")]
-      [:td (password-field :pwd)]]
-     [:tr
-      [:td]
-      [:td [:button {:type "submit"} "Log In"]]]
-     [:tr
-      [:td]
-      [:td
-       [:a {:href "/login/reset"} "Forgot your password?"]]]]))
+  {:title "4clojure - login"
+   :content
+   (list
+    (when location
+      (session/session-put! :login-to location)
+      nil) ;; don't include this in HTML output
+    [:div.error
+     (session/flash-get :error)
+     (session/flash-get :message)]
+    (form-to [:post "/login"]
+      [:table
+       [:tr
+        [:td (label :user "Username")]
+        [:td (text-field :user)]]
+       [:tr
+        [:td (label :pwd "Password")]
+        [:td (password-field :pwd)]]
+       [:tr
+        [:td]
+        [:td [:button {:type "submit"} "Log In"]]]
+       [:tr
+        [:td]
+        [:td
+         [:a {:href "/login/reset"} "Forgot your password?"]]]]))})
 
 (defn do-login [user pwd]
   (let [user (.toLowerCase user)
@@ -47,20 +50,22 @@
       (flash-error "Error logging in." "/login"))))
 
 (def-page update-credentials-page []
-  (with-user [{:keys [user] :as user-obj}]
-    [:div#account-settings
-     [:div#update-pwd
-      [:h2 "Change password for " user]
-      [:span.error (session/flash-get :error)]
-      [:table
-       (form-to [:post "/login/update"]
-                (map form-row
-                      [[text-field :new-username "Username" user]
-                       [password-field :old-pwd "Current password"]
-                       [password-field :pwd "New password"]
-                       [password-field :repeat-pwd "Repeat password"]])
-                [:tr
-                 [:td [:button {:type "submit"} "Reset now"]]])]]]))
+  {:title "Change password"
+   :content
+   (with-user [{:keys [user] :as user-obj}]
+     [:div#account-settings
+      [:div#update-pwd
+       [:h2 "Change password for " user]
+       [:span.error (session/flash-get :error)]
+       [:table
+        (form-to [:post "/login/update"]
+          (map form-row
+               [[text-field :new-username "Username" user]
+                [password-field :old-pwd "Current password"]
+                [password-field :pwd "New password"]
+                [password-field :repeat-pwd "Repeat password"]])
+          [:tr
+           [:td [:button {:type "submit"} "Reset now"]]])]]])})
 
 (defn do-update-credentials! [new-username old-pwd new-pwd repeat-pwd]
   (with-user [{:keys [user pwd]}]
@@ -90,23 +95,25 @@
           (flash-error why "/login/update")))))
 
 (def-page reset-password-page []
-  [:div
-   [:div#reset-help
-    [:h3 "Forgot your password?"]
-    [:div "Enter your email address and we'll send you a new password."]
-    [:div
-     [:span.error (session/flash-get :error)]
-     (form-to [:post "/login/reset"]
-       (label :email "Email")
-       (text-field :email)
-       [:button {:type "submit"} "Reset!"])]]])
+  {:title "Reset password"
+   :content
+   [:div
+    [:div#reset-help
+     [:h3 "Forgot your password?"]
+     [:div "Enter your email address and we'll send you a new password."]
+     [:div
+      [:span.error (session/flash-get :error)]
+      (form-to [:post "/login/reset"]
+        (label :email "Email")
+        (text-field :email)
+        [:button {:type "submit"} "Reset!"])]]]})
 
 (let [pw-chars "abcdefghijklmnopqrstuvxyzABCDEFGHIJKLMNOPQRSTUVWXY1234567890"]
   (defn random-pwd []
     (let [pw (apply str
                     (repeatedly 10 #(rand-nth pw-chars)))
           hash (.encryptPassword (StrongPasswordEncryptor.) pw)]
-      (keywordize [pw hash]))))
+      (keyed [pw hash]))))
 
 (defn try-to-email [email name id]
   (let [{:keys [pw hash]} (random-pwd)]
