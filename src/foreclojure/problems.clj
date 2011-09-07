@@ -15,8 +15,7 @@
             [hiccup.form-helpers      :only    [form-to text-area hidden-field label text-field drop-down]]
             [hiccup.page-helpers      :only    [link-to]]
             [hiccup.core              :only    [html]]
-            [amalloy.utils.debug      :only    [?]]
-            [amalloy.utils.reorder    :only    [reorder]]
+            [useful.debug             :only    [?]]
             [amalloy.utils            :only    [defcomp]]
             [compojure.core           :only    [defroutes GET POST]]
             [clojure.contrib.json     :only    [json-str]]))
@@ -76,10 +75,10 @@
           ()
           (get-recent-problems n)))
 
-(defcomp mongo-key-from-number
+(defn mongo-key-from-number
   "Turn an integer into a key suitable for fetching from mongodb."
   [id]
-  keyword str int)
+  (keyword (str (int id))))
 
 (defn trim-code [code]
   (when code (.trim code)))

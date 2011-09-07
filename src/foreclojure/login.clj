@@ -5,7 +5,7 @@
   (:use     [hiccup.form-helpers      :only [form-to label text-field password-field]]
             [foreclojure.utils        :only [def-page from-mongo flash-error flash-msg with-user form-row assuming send-email login-url]]
             [compojure.core           :only [defroutes GET POST]]
-            [amalloy.utils            :only [rand-in-range keywordize]]
+            [useful.map               :only [keyed]]
             [clojail.core             :only [thunk-timeout]]
             [clojure.stacktrace       :only [print-cause-trace]]
             [somnium.congomongo       :only [update! fetch-one]]))
@@ -106,7 +106,7 @@
     (let [pw (apply str
                     (repeatedly 10 #(rand-nth pw-chars)))
           hash (.encryptPassword (StrongPasswordEncryptor.) pw)]
-      (keywordize [pw hash]))))
+      (keyed [pw hash]))))
 
 (defn try-to-email [email name id]
   (let [{:keys [pw hash]} (random-pwd)]

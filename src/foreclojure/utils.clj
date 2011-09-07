@@ -7,7 +7,7 @@
   (:use     [hiccup.core              :only [html]]
             [hiccup.page-helpers      :only [doctype include-css javascript-tag link-to include-js]]
             [hiccup.form-helpers      :only [label]]
-            [amalloy.utils.transform  :only [transform-if]]
+            [useful.fn                :only [to-fix]]
             [somnium.congomongo       :only [fetch-one]]
             [foreclojure.config       :only [config]]))
 
@@ -89,7 +89,7 @@
       ~@code)))
 
 (defn from-mongo [data]
-  (walk/postwalk (transform-if float? int)
+  (walk/postwalk (to-fix float? int)
                  data))
 
 (defn get-user [username]

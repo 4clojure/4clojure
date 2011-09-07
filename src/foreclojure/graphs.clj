@@ -7,16 +7,15 @@
   (:use     [compojure.core          :only [defroutes GET]]
             [foreclojure.utils       :only [from-mongo]]
             [somnium.congomongo      :only [fetch-one]]
-            [amalloy.utils.transform :only [with-adjustments]]
-            [amalloy.utils.reorder   :only [reorder]]))
+            [useful.utils            :only [with-adjustments]]))
 
 (defn un-group
   "Turn a compact set of [data-point num-repetitions] pairs into a
   bunch of repeated data points so that incanter will make a histogram
   of them."
   [frequencies]
-  (mapcat (partial apply (reorder repeat))
-          frequencies))
+  (apply concat (for [[x count] frequencies]
+                  (repeat count x))))
 
 (defn fetch-score-frequencies [problem-id]
   (into {}
