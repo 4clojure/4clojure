@@ -11,27 +11,28 @@
             [somnium.congomongo       :only [update! fetch-one]]))
                         
 (def-page my-login-page [location]
-  (when location
-    (session/session-put! :login-to location)
-    nil) ;; don't include this in HTML output
-  [:div.error
-   (session/flash-get :error)
-   (session/flash-get :message)]
-  (form-to [:post "/login"]
-    [:table
-     [:tr
-      [:td (label :user "Username")]
-      [:td (text-field :user)]]
-     [:tr
-      [:td (label :pwd "Password")]
-      [:td (password-field :pwd)]]
-     [:tr
-      [:td]
-      [:td [:button {:type "submit"} "Log In"]]]
-     [:tr
-      [:td]
-      [:td
-       [:a {:href "/login/reset"} "Forgot your password?"]]]]))
+  (list
+   (when location
+     (session/session-put! :login-to location)
+     nil) ;; don't include this in HTML output
+   [:div.error
+    (session/flash-get :error)
+    (session/flash-get :message)]
+   (form-to [:post "/login"]
+     [:table
+      [:tr
+       [:td (label :user "Username")]
+       [:td (text-field :user)]]
+      [:tr
+       [:td (label :pwd "Password")]
+       [:td (password-field :pwd)]]
+      [:tr
+       [:td]
+       [:td [:button {:type "submit"} "Log In"]]]
+      [:tr
+       [:td]
+       [:td
+        [:a {:href "/login/reset"} "Forgot your password?"]]]])))
 
 (defn do-login [user pwd]
   (let [user (.toLowerCase user)
