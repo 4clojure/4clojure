@@ -246,53 +246,58 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
 
 (def-page code-box [id]
   (let [{:keys [_id title difficulty tags description
-                restricted tests approved user]} (get-problem (Integer. id))]
-    [:div
-     [:span#prob-title
-      (when-not approved
-        "Unapproved: ")
-      title]
-     [:hr]
-     [:table#tags
-      [:tr [:td "Difficulty:"] [:td (or difficulty "N/A")]]
-      [:tr [:td "Topics:"]     [:td (s/join " " tags)]]]
-     [:br]
-     (when-not approved
-       [:div#submitter "Submitted by: "
-        (users/mailto user)])
-     [:br]
-     [:div#prob-desc
-      description[:br]
-      (render-test-cases tests)
-      (when restricted
-        [:div#restrictions
-         [:u "Special Restrictions"] [:br]
-         (map (partial vector :li) restricted)])]
+                restricted tests approved user]}
+        (get-problem (Integer. id)),
+
+        title (str (when-not approved
+                     "Unapproved: ")
+                   title)]
+
+    {:title (str _id ". " title)
+     :content
      [:div
-      [:div.message
-       [:span#message-text (session/flash-get :message)]
-       [:span#error-message-text.error (session/flash-get :error)]]
-      [:div#golfscore
-       (render-golf-score)]]
-     (form-to {:id "run-code"} [:post *url*]
-       [:br]
-       [:br]
-       [:p#instruct "Code which fills in the blank: "]
-       (text-area {:id "code-box"
-                   :spellcheck "false"}
-                  :code (or (session/flash-get :code)
-                            (-> (session/session-get :user)
-                                (get-user-id)
-                                (get-solution ,,, _id))))
-       [:div#golfgraph
-        (render-golf-chart)]
-       (hidden-field :id id)
-       [:br]
-       [:button.large {:id "run-button" :type "submit"} "Run"]
-       (when-not approved
-         [:span [:button.large {:id "reject-button"} "Reject"]
-          [:button.large {:id "edit-button"} "Edit"]
-          [:button.large {:id "approve-button"} "Approve"]]))]))
+      [:span#prob-title title]
+      [:hr]
+      [:table#tags
+       [:tr [:td "Difficulty:"] [:td (or difficulty "N/A")]]
+       [:tr [:td "Topics:"]     [:td (s/join " " tags)]]]
+      [:br]
+      (when-not approved
+        [:div#submitter "Submitted by: "
+         (users/mailto user)])
+      [:br]
+      [:div#prob-desc
+       description[:br]
+       (render-test-cases tests)
+       (when restricted
+         [:div#restrictions
+          [:u "Special Restrictions"] [:br]
+          (map (partial vector :li) restricted)])]
+      [:div
+       [:div.message
+        [:span#message-text (session/flash-get :message)]
+        [:span#error-message-text.error (session/flash-get :error)]]
+       [:div#golfscore
+        (render-golf-score)]]
+      (form-to {:id "run-code"} [:post *url*]
+        [:br]
+        [:br]
+        [:p#instruct "Code which fills in the blank: "]
+        (text-area {:id "code-box"
+                    :spellcheck "false"}
+                   :code (or (session/flash-get :code)
+                             (-> (session/session-get :user)
+                                 (get-user-id)
+                                 (get-solution ,,, _id))))
+        [:div#golfgraph
+         (render-golf-chart)]
+        (hidden-field :id id)
+        [:br]
+        [:button.large {:id "run-button" :type "submit"} "Run"]
+        (when-not approved
+          [:span [:button.large {:id "reject-button"} "Reject"]
+           [:button.large {:id "edit-button"} "Edit"]
+           [:button.large {:id "approve-button"} "Approve"]]))]}))
 
 (defn problem-page [id]
   (if (or (:approved (get-problem (Integer. id)))
