@@ -245,8 +245,9 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
                :golfChart (html (render-golf-chart))})))
 
 (defn wants-no-javascript-codebox? []
-  (with-user [{:keys [user] :as user-obj}]
-    (disable-codebox? user-obj)))
+  (when (session/session-get :user)
+    (with-user [{:keys [user] :as user-obj}]
+      (disable-codebox? user-obj))))
 
 (def-page code-box [id]
   (let [{:keys [_id title difficulty tags description
