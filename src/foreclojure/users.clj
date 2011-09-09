@@ -1,7 +1,8 @@
 (ns foreclojure.users
-  (:use [foreclojure.utils   :only [from-mongo def-page row-class]]
+  (:require [ring.util.response       :as   response])
+  (:use [foreclojure.utils   :only [from-mongo def-page row-class with-user]]
         [foreclojure.config  :only [config repo-url]]
-        [somnium.congomongo  :only [fetch-one fetch]]
+        [somnium.congomongo  :only [fetch-one fetch update!]]
         [compojure.core      :only [defroutes GET]]
         [hiccup.page-helpers :only [link-to]]))
 
@@ -29,6 +30,9 @@
 
 (defn golfer? [user]
   (some user golfer-tags))
+
+(defn disable-codebox? [user]
+  (true? (:disable-code-box user)))
 
 (defn email-address [username]
   (:email (fetch-one :users :where {:user username})))
@@ -59,3 +63,10 @@
 
 (defroutes users-routes
   (GET "/users" [] (users-page)))
+
+(defn set-disable-codebox [disable-flag]
+  (with-user [{:keys [_id]}]
+    (update! :users
+             {:_id _id}
+             {:$set {:disable-code-box (boolean disable-flag)}})
+    (response/redirect "/problems")))
