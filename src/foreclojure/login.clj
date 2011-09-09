@@ -12,27 +12,30 @@
             [somnium.congomongo       :only [update! fetch-one]]))
                         
 (def-page my-login-page [location]
-  (when location
-    (session/session-put! :login-to location)
-    nil) ;; don't include this in HTML output
-  [:div.error
-   (session/flash-get :error)
-   (session/flash-get :message)]
-  (form-to [:post "/login"]
-    [:table
-     [:tr
-      [:td (label :user "Username")]
-      [:td (text-field :user)]]
-     [:tr
-      [:td (label :pwd "Password")]
-      [:td (password-field :pwd)]]
-     [:tr
-      [:td]
-      [:td [:button {:type "submit"} "Log In"]]]
-     [:tr
-      [:td]
-      [:td
-       [:a {:href "/login/reset"} "Forgot your password?"]]]]))
+  {:title "4clojure - login"
+   :content
+   (list
+    (when location
+      (session/session-put! :login-to location)
+      nil) ;; don't include this in HTML output
+    [:div.error
+     (session/flash-get :error)
+     (session/flash-get :message)]
+    (form-to [:post "/login"]
+      [:table
+       [:tr
+        [:td (label :user "Username")]
+        [:td (text-field :user)]]
+       [:tr
+        [:td (label :pwd "Password")]
+        [:td (password-field :pwd)]]
+       [:tr
+        [:td]
+        [:td [:button {:type "submit"} "Log In"]]]
+       [:tr
+        [:td]
+        [:td
+         [:a {:href "/login/reset"} "Forgot your password?"]]]]))})
 
 (defn do-login [user pwd]
   (let [user (.toLowerCase user)
@@ -48,19 +51,21 @@
       (flash-error "Error logging in." "/login"))))
 
 (def-page update-credentials-page []
-  (with-user [{:keys [user] :as user-obj}]
-    [:div#account-settings
-     [:div#update-pwd
-      [:h2 "Change password for " user]
-      [:span.error (session/flash-get :error)]
-      [:table
-       (form-to [:post "/login/update"]
-                (map form-row
-                      [[text-field :new-username "Username" user]
-                       [password-field :old-pwd "Current password"]
-                       [password-field :pwd "New password"]
-                       [password-field :repeat-pwd "Repeat password"]])
-                [:tr
+  {:title "Change password"
+   :content
+   (with-user [{:keys [user] :as user-obj}]
+     [:div#account-settings
+      [:div#update-pwd
+       [:h2 "Change password for " user]
+       [:span.error (session/flash-get :error)]
+       [:table
+        (form-to [:post "/login/update"]
+          (map form-row
+               [[text-field :new-username "Username" user]
+                [password-field :old-pwd "Current password"]
+                [password-field :pwd "New password"]
+                [password-field :repeat-pwd "Repeat password"]])
+          [:tr
                  [:td [:button {:type "submit"} "Reset now"]]])]
       [:div#settings-codebox
        [:h2 "Disable JavaScript Code Box"]
@@ -72,7 +77,7 @@
            "Disable JavaScript in code entry box"]
           [:br]
           [:div#button-div
-           [:button {:type "submit"} "Submit"]])]]]))
+           [:button {:type "submit"} "Submit"]])]]])})
 
 (defn do-update-credentials! [new-username old-pwd new-pwd repeat-pwd]
   (with-user [{:keys [user pwd]}]
@@ -102,16 +107,18 @@
           (flash-error why "/login/update")))))
 
 (def-page reset-password-page []
-  [:div
-   [:div#reset-help
-    [:h3 "Forgot your password?"]
-    [:div "Enter your email address and we'll send you a new password."]
-    [:div
-     [:span.error (session/flash-get :error)]
-     (form-to [:post "/login/reset"]
-       (label :email "Email")
-       (text-field :email)
-       [:button {:type "submit"} "Reset!"])]]])
+  {:title "Reset password"
+   :content
+   [:div
+    [:div#reset-help
+     [:h3 "Forgot your password?"]
+     [:div "Enter your email address and we'll send you a new password."]
+     [:div
+      [:span.error (session/flash-get :error)]
+      (form-to [:post "/login/reset"]
+        (label :email "Email")
+        (text-field :email)
+        [:button {:type "submit"} "Reset!"])]]]})
 
 (let [pw-chars "abcdefghijklmnopqrstuvxyzABCDEFGHIJKLMNOPQRSTUVWXY1234567890"]
   (defn random-pwd []

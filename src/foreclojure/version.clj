@@ -10,10 +10,12 @@
 (def sha (not-empty (:out (sh "git" "rev-parse" "--verify" "HEAD"))))
 
 (def-page version []
-  (if sha
-    [:p "SHA: "
-     [:a {:href (str repo-url "/commit/" sha)} sha]]
-    [:p "No git repository found"]))
+  {:title "About/version"
+   :content
+   (if sha
+     [:p "SHA: "
+      [:a {:href (str repo-url "/commit/" sha)} sha]]
+     [:p "No git repository found"])})
 
 (defroutes version-routes
   (GET ["/about/version"] [] (version)))
