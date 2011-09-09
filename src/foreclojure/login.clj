@@ -2,8 +2,9 @@
   (:require [sandbar.stateful-session :as   session]
             [ring.util.response       :as   response])
   (:import  [org.jasypt.util.password StrongPasswordEncryptor])
-  (:use     [hiccup.form-helpers      :only [form-to label text-field password-field]]
+  (:use     [hiccup.form-helpers      :only [form-to label text-field password-field check-box]]
             [foreclojure.utils        :only [def-page from-mongo flash-error flash-msg with-user form-row assuming send-email login-url]]
+            [foreclojure.users        :only [disable-codebox? set-disable-codebox]]
             [compojure.core           :only [defroutes GET POST]]
             [useful.map               :only [keyed]]
             [clojail.core             :only [thunk-timeout]]
@@ -60,7 +61,18 @@
                        [password-field :pwd "New password"]
                        [password-field :repeat-pwd "Repeat password"]])
                 [:tr
-                 [:td [:button {:type "submit"} "Reset now"]]])]]]))
+                 [:td [:button {:type "submit"} "Reset now"]]])]
+      [:div#settings-codebox
+       [:h2 "Disable JavaScript Code Box"]
+       [:p "Selecting this will disable the JavaScript code entry box and just give you plain text entry"]
+       (form-to [:post "/users/set-disable-codebox"]
+                (check-box :disable-codebox
+                     (disable-codebox? user-obj))
+          [:label {:for "disable-codebox"} 
+           "Disable JavaScript in code entry box"]
+          [:br]
+          [:div#button-div
+           [:button {:type "submit"} "Submit"]])]]]))
 
 (defn do-update-credentials! [new-username old-pwd new-pwd repeat-pwd]
   (with-user [{:keys [user pwd]}]
@@ -165,4 +177,7 @@
   
   (GET "/logout" []
     (do (session/session-delete-key! :user)
-        (response/redirect "/"))))
+        (response/redirect "/")))
+
+  (POST "/users/set-disable-codebox" [disable-codebox]
+        (set-disable-codebox disable-codebox)))

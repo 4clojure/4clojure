@@ -4,10 +4,10 @@
             [clojure.string           :as      s]
             [ring.util.response       :as      response])
   (:import  [org.apache.commons.mail  EmailException])
-  (:use     [foreclojure.utils        :only    [from-mongo get-user get-solved login-link *url* flash-msg flash-error def-page row-class approver? can-submit? send-email image-builder]]
+  (:use     [foreclojure.utils        :only    [from-mongo get-user get-solved login-link *url* flash-msg flash-error def-page row-class approver? can-submit? send-email image-builder with-user]]
             [foreclojure.social       :only    [tweet-link gist!]]
             [foreclojure.feeds        :only    [create-feed]]
-            [foreclojure.users        :only    [golfer? get-user-id]]
+            [foreclojure.users        :only    [golfer? get-user-id disable-codebox?]]
             [foreclojure.solutions    :only    [save-solution get-solution]]
             [clojail.core             :exclude [safe-read]]
             [clojail.testers          :only    [secure-tester]]
@@ -244,6 +244,11 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
                :golfScore (html (render-golf-score))
                :golfChart (html (render-golf-chart))})))
 
+(defn wants-no-javascript-codebox? []
+  (when (session/session-get :user)
+    (with-user [{:keys [user] :as user-obj}]
+      (disable-codebox? user-obj))))
+
 (def-page code-box [id]
   (let [{:keys [_id title difficulty tags description
                 restricted tests approved user]} (get-problem (Integer. id))]
@@ -278,6 +283,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
        [:br]
        [:br]
        [:p#instruct "Code which fills in the blank: "]
+       (when (wants-no-javascript-codebox?) [:span#disable-javascript-codebox])
        (text-area {:id "code-box"
                    :spellcheck "false"}
                   :code (or (session/flash-get :code)
