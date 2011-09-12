@@ -88,12 +88,29 @@
        (filter ids (get-solved username)))))
 
 (def-page user-profile [username]
-    [:h2 "User: " username]
-    [:hr]
-    [:table
-     (for [difficulty ["Elementary" "Easy" "Medium" "Hard"]]
-       [:tr [:td.count-label difficulty] [:td.count-value [:div.progress-bar-bg [:div.progress-bar {:style (str "width: " (* 100 (/ (count (get-solved username difficulty)) (count (get-problems difficulty)))) "%")}]]]])
-     [:tr [:td.count-total "TOTAL:"    ] [:td.count-value (count (get-solved username)) "/" (count (get-problems))]]])
+  (let [page-title (str "User: " username)]
+    {:title title
+     :content
+     (list
+      [:h2 "User: " username]
+      [:hr]
+      [:table
+       (for [difficulty ["Elementary" "Easy" "Medium" "Hard"]]
+         (let [solved (count (get-solved username difficulty))
+               total  (count (get-problems difficulty))]
+           [:tr
+            [:td.count-label difficulty]
+            [:td.count-value
+             [:div.progress-bar-bg
+              [:div.progress-bar
+               {:style (str "width: "
+                            (int (* 100 (/ solved total)))
+                            "%")}]]]]))
+       [:tr
+        [:td.count-total "TOTAL:"    ]
+        [:td.count-value
+         (count (get-solved username)) "/"
+         (count (get-problems))]]])}))
 
 (defn set-disable-codebox [disable-flag]
   (with-user [{:keys [_id]}]
