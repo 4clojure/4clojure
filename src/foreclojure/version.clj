@@ -1,6 +1,7 @@
 (ns foreclojure.version
-  (:use foreclojure.utils
-        compojure.core
+  (:use [foreclojure.utils  :only [def-page]]
+        [foreclojure.config :only [repo-url]]
+        [compojure.core     :only [defroutes GET]]
         [clojure.java.shell :only [sh]]))
 
 ;; fetch this at load time rather than on demand, so that it's accurate even
@@ -9,10 +10,12 @@
 (def sha (not-empty (:out (sh "git" "rev-parse" "--verify" "HEAD"))))
 
 (def-page version []
-  (if sha
-    [:p "SHA: "
-     [:a {:href (str "http://github.com/dbyrne/4clojure/commit/" sha)} sha]]
-    [:p "No git repository found"]))
+  {:title "About/version"
+   :content
+   (if sha
+     [:p "SHA: "
+      [:a {:href (str repo-url "/commit/" sha)} sha]]
+     [:p "No git repository found"])})
 
 (defroutes version-routes
   (GET ["/about/version"] [] (version)))

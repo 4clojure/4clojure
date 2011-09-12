@@ -1,11 +1,11 @@
 (ns foreclojure.social
-  (:use foreclojure.utils
-        compojure.core
-        hiccup.page-helpers
-        somnium.congomongo)
-  (:require [clj-github.gists :as gist]
-            [sandbar.stateful-session :as session])
-  (:import java.net.URLEncoder))
+  (:require [clj-github.gists         :as   gist]
+            [sandbar.stateful-session :as   session])
+  (:import  [java.net                 URLEncoder])
+  (:use     [foreclojure.utils        :only [def-page]]
+            [compojure.core           :only [defroutes GET]]
+            [hiccup.page-helpers      :only [link-to]]
+            [somnium.congomongo       :only [fetch-one]]))
 
 (defn throttled
   "Create a version of a function which 'refuses' to be called too
@@ -71,23 +71,25 @@
     (tweet-link id status-msg link-text)))
 
 (def-page share-page []
-  (if-let [[id code] (session/session-get :code)]
-    (let [user (session/session-get :user)
-          gist-url (gist! user id code)
-          gist-link (if gist-url
-                      [:div {:id "shared-code-box"}
-                       [:div.code
-                        [:h3 "Your Solution"]
-                        [:pre {:class "brush: clojure;gutter: false;toolbar: false;light: true"} code]]
-                       [:br]
-                       [:div.share
+  {:title "Share your code!"
+   :content
+   (if-let [[id code] (session/session-get :code)]
+     (let [user (session/session-get :user)
+           gist-url (gist! user id code)
+           gist-link (if gist-url
+                       [:div {:id "shared-code-box"}
+                        [:div.code
+                         [:h3 "Your Solution"]
+                         [:pre {:class "brush: clojure;gutter: false;toolbar: false;light: true"} code]]
+                        [:br]
+                        [:div.share
                          "Share this " (link-to gist-url "solution")
                          " on " (tweet-solution id gist-url) "?"]]
-                      [:div.error
-                       "Failed to create gist of your solution"])]
-      gist-link)
-    [:div.error
-     "Sorry...I don't remember you solving anything recently!"]))
+                       [:div.error
+                        "Failed to create gist of your solution"])]
+       gist-link)
+     [:div.error
+      "Sorry...I don't remember you solving anything recently!"])})
 
 (defroutes social-routes
   (GET "/share/code" [] (share-page)))

@@ -1,22 +1,21 @@
 (ns foreclojure.graphs
-  (:use compojure.core
-        (foreclojure utils)
-        somnium.congomongo
-        (amalloy.utils [transform :only [with-adjustments]]
-                       [reorder :only [reorder]]))
-  (:require (incanter [charts :as chart]
-                      [core :as incanter]
-                      [stats :as stats]))
-  (:import (java.io ByteArrayInputStream
-                    ByteArrayOutputStream)))
+  (:require [incanter.charts         :as   chart]
+            [incanter.core           :as   incanter]
+            [incanter.stats          :as   stats])
+  (:import  [java.io                 ByteArrayInputStream
+                                     ByteArrayOutputStream])
+  (:use     [compojure.core          :only [defroutes GET]]
+            [foreclojure.utils       :only [from-mongo]]
+            [somnium.congomongo      :only [fetch-one]]
+            [useful.utils            :only [with-adjustments]]))
 
 (defn un-group
   "Turn a compact set of [data-point num-repetitions] pairs into a
   bunch of repeated data points so that incanter will make a histogram
   of them."
   [frequencies]
-  (mapcat (partial apply (reorder repeat))
-          frequencies))
+  (apply concat (for [[x count] frequencies]
+                  (repeat count x))))
 
 (defn fetch-score-frequencies [problem-id]
   (into {}

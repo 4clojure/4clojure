@@ -9,6 +9,19 @@ body {
 
 img {border:none}
 
+div.progress-bar-bg {
+    border: 1px solid black;
+    height: 7px;
+    width: 100px;
+    display: block;
+}
+
+div.progress-bar {
+    background-color: #00FF00;
+    height: 100%;
+    display: block;
+    float: left;
+}
 
 #account.header-option {
    float:right;
@@ -102,6 +115,11 @@ a.novisited {color: #00e;}
 #menu a:hover {color: #7CFC00;}
 #menu a {text-decoration: none; font-size: 14px; font-weight:bold;}
 #menu a.menu {margin: 15px;}
+
+.user-profile-link{
+    text-decoration: none;
+    color: black;
+}
 
 #user-info{
    float:right;
@@ -296,6 +314,22 @@ td.title-link {
    font-size: 16px;
 }
 
+td.count-total {
+    font-weight: bold;
+}
+
+td.count-total-value {
+    font-weight: bold;
+    text-align: right;
+    width: 45px;
+}
+
+td.count-value {
+    text-align: right;
+    width: 45px;
+    padding-left: 15px;
+}
+
 table.my-table th {
    padding: 10px 0px 0px 0px;
    font-size: 14px;
@@ -397,6 +431,28 @@ button:active {
 }
 
 a.graph-class :hover {color: #445599;}
+
+#help-content{
+  width: 90%;
+}
+
+#github-banner {
+    float: right;
+    display: block;
+    border: 0px;
+    width: 135px;
+    height: 135px;
+    margin-top: -20px;
+    background-image: url(/images/banner.png);
+    background-repeat: no-repeat;
+    background-position: top right;
+}
+
+#github-banner a {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
 
 
 

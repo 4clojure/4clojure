@@ -1,16 +1,15 @@
 (ns foreclojure.utils
-  (:use (hiccup [core :only [html]]
-                [page-helpers :only [doctype include-css
-                                     javascript-tag link-to include-js]]
-                [form-helpers :only [label]])
-        [amalloy.utils.transform :only [transform-if]]
-        somnium.congomongo
-        [foreclojure.config])
-  (:require [sandbar.stateful-session :as session]
-            (ring.util [response :as response])
-            [clojure.walk :as walk])
-  (:import java.net.URLEncoder
-           org.apache.commons.mail.HtmlEmail))
+  (:require [sandbar.stateful-session :as   session]
+            [ring.util.response       :as   response]
+            [clojure.walk             :as   walk])
+  (:import  [java.net                 URLEncoder]
+            [org.apache.commons.mail  HtmlEmail])
+  (:use     [hiccup.core              :only [html]]
+            [hiccup.page-helpers      :only [doctype include-css javascript-tag link-to include-js]]
+            [hiccup.form-helpers      :only [label]]
+            [useful.fn                :only [to-fix]]
+            [somnium.congomongo       :only [fetch-one]]
+            [foreclojure.config       :only [config]]))
 
 (def ^{:dynamic true} *url* nil)
 
@@ -36,6 +35,13 @@
                        (partition 2 clauses)))]
      ~fail-expr
      ~body))
+
+(defn image-builder [data & {:keys [alt src] :or {alt identity,
+                                                  src identity}}]
+  (fn [key]
+    (let [[src-prop alt-prop] (get data key)]
+      [:img {:src (src src-prop)
+             :alt (alt alt-prop)}])))
 
 (defn login-url
   ([] (login-url *url*))
@@ -69,21 +75,8 @@
       (.addReplyTo base person))
     (.send base)))
 
-(defn flash-fn [type]
-  (fn [msg url]
-    (session/flash-put! type msg)
-    (response/redirect url)))
-
-(def flash-error (flash-fn :error))
-(def flash-msg (flash-fn :message))
-
-(defmacro def-page [page-name [& args] & code]
-  `(defn ~page-name [~@args]
-     (html-doc
-      ~@code)))
-
 (defn from-mongo [data]
-  (walk/postwalk (transform-if float? int)
+  (walk/postwalk (to-fix float? int)
                  data))
 
 (defn get-user [username]
@@ -96,15 +89,13 @@
        ~@body)
      [:span.error "You must " (login-link) " to do this."]))
 
-(defn form-row [[type name info value]]
-  [:tr
-   [:td (label name info)]
-   [:td (type name value)]])
+(defn flash-fn [type]
+  (fn [msg url]
+    (session/flash-put! type msg)
+    (response/redirect url)))
 
-(defn row-class [x]
-  {:class (if (even? x)
-            "evenrow"
-            "oddrow")})
+(def flash-error (flash-fn :error))
+(def flash-msg (flash-fn :message))
 
 (defn user-attribute [attr]
   (fn [username]
@@ -121,13 +112,34 @@
        (>= (count (get-solved username))
            (:advanced-user-count config))))
 
-(defn html-doc [& body]
-  (let [user (session/session-get :user)]
+(defprotocol PageWriter
+  (page-attributes [this]))
+
+(extend-protocol PageWriter
+  clojure.lang.IPersistentMap
+  (page-attributes [this] this)
+
+  Object
+  (page-attributes [this]
+    {:content this})
+
+  nil
+  (page-attributes [this] nil))
+
+(let [defaults {:content nil
+                :title "4clojure"
+                :fork-banner false}]
+  (defn rendering-info [attributes]
+    (into defaults attributes)))
+
+(defn html-doc [body]
+  (let [attrs (rendering-info (page-attributes body))
+        user (session/session-get :user)]
     (html
      (doctype :html5)
      [:html
       [:head
-       [:title "4Clojure"]
+       [:title (:title attrs)]
        [:link {:rel "alternate" :type "application/atom+xml" :title "Atom" :href "http://4clojure.com/problems/rss"}]
        [:link {:rel "shortcut icon" :href "/favicon.ico"}]
        (include-js "/vendor/script/jquery-1.5.2.min.js" "/vendor/script/jquery.dataTables.min.js")
@@ -136,11 +148,13 @@
        (include-js "/vendor/script/ace/ace.js" "/vendor/script/ace/mode-clojure.js")
        (include-css "/css/style.css" "/css/demo_table.css" "/css/shCore.css" "/css/shThemeDefault.css")
        [:style {:type "text/css"}
-        ".syntaxhighlighter { overflow-y: hidden !important; }"]]
-      [:script {:type "text/javascript"} "SyntaxHighlighter.all()"]
+        ".syntaxhighlighter { overflow-y: hidden !important; }"]
+       [:script {:type "text/javascript"} "SyntaxHighlighter.all()"]]
       [:body
+       (when (:fork-banner attrs)
+         [:div#github-banner [:a {:href "http://github.com/4clojure" :alt "Fork 4Clojure on Github!"}]])
        [:div#top
-        (link-to "/" [:img#logo {:src "/images/logo.png"}])]
+        (link-to "/" [:img#logo {:src "/images/logo.png" :alt "4clojure.com"}])]
        [:div#content
         [:br]
         [:div#menu
@@ -148,13 +162,13 @@
                [["/" "Main Page"]
                 ["/problems" "Problem List"]
                 ["/users" "Top Users"]
-                ["/directions" "Getting Started"]
+                ["/directions" "Help"]
                 ["http://try-clojure.org" "REPL" true]
                 ["http://clojuredocs.org" "Docs" true]]]
            [:a.menu (assoc (when tabbed {:target "_blank"})
                       :href link)
             text])
-         [:span#user-info
+         [:div#user-info
           (if user
             [:div
              [:span#username (str "Logged in as " user)]
@@ -173,10 +187,8 @@
              [:span
               (link-to "/problems/unapproved" "View Unapproved Problems")])
            (when (can-submit? user)
-             [:span (link-to "/problems/submit" "Submit a Problem")])
-           [:span (link-to "http://groups.google.com/group/4clojure"
-                           "Google Group")]])
-        [:div#content_body body]
+             [:span (link-to "/problems/submit" "Submit a Problem")])])
+        [:div#content_body (:content attrs)]
         [:div#footer
          "The content on 4clojure.com is available under the EPL v 1.0 license."
          (let [email "team@4clojure.com"]
@@ -195,3 +207,17 @@
         })();
 "
          )]]])))
+
+(defmacro def-page [page-name [& args] & code]
+  `(defn ~page-name [~@args]
+     (html-doc (do ~@code))))
+
+(defn form-row [[type name info value]]
+  [:tr
+   [:td (label name info)]
+   [:td (type name value)]])
+
+(defn row-class [x]
+  {:class (if (even? x)
+            "evenrow"
+            "oddrow")})

@@ -1,9 +1,9 @@
 (ns foreclojure.mongo
   (:use somnium.congomongo
         [foreclojure.data-set :only [load-problems]]
-        [foreclojure.config :only [config]]
+        [foreclojure.config   :only [config]]
         [foreclojure.problems :only [total-solved get-problem-list]]
-        [foreclojure.users :only [get-users]]))
+        [foreclojure.users    :only [get-users]]))
 
 (defn connect-to-db []
   (let [{:keys [db-user db-pwd db-host]} config]
@@ -32,8 +32,7 @@
   (add-index! :users [:user] :unique true)
   (add-index! :users [[:solved -1]])
   (update! :users
-           {:user {:$in ["amalloy" "dbyrne" "raynes" "cmeier" "devn"
-                         "citizen428" "daviddavis" "clinteger"]}}
+           {:user {:$in (:contributors config)}}
            {:$set {:contributor true}}
            :upsert false
            :multiple true))
