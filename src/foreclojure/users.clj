@@ -89,10 +89,10 @@
 
 (def-page user-profile [username]
   (let [page-title (str "User: " username)]
-    {:title title
+    {:title page-title
      :content
      (list
-      [:h2 "User: " username]
+      [:h2 page-title]
       [:hr]
       [:table
        (for [difficulty ["Elementary" "Easy" "Medium" "Hard"]]
