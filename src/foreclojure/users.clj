@@ -1,6 +1,6 @@
 (ns foreclojure.users
   (:require [ring.util.response       :as   response])
-  (:use [foreclojure.utils   :only [from-mongo def-page row-class with-user]]
+  (:use [foreclojure.utils   :only [from-mongo def-page row-class get-user with-user]]
         [foreclojure.config  :only [config repo-url]]
         [somnium.congomongo  :only [fetch-one fetch update!]]
         [compojure.core      :only [defroutes GET]]
@@ -25,8 +25,8 @@
   (let [users (from-mongo
                (fetch :users
                       :only [:user :solved :contributor]))
-        sortfn  (comp count :solved)]
-    (reverse (sort-by sortfn users))))
+        sortfn  (comp - count :solved)]
+    (sort-by sortfn users)))
 
 (defn golfer? [user]
   (some user golfer-tags))
@@ -55,17 +55,45 @@
        [:th {:style "width: 40px;"} "Rank"]
        [:th "Username"]
        [:th "Problems Solved"]]]
-     (map-indexed #(vec [:tr (row-class %1)
-                         [:td (inc %1)]
-                         [:td
-                          (when (:contributor %2)
-                            [:span.contributor "* "])
-                          (:user %2)]
-                         [:td {:class "centered"} (count (:solved %2))]])
+     (map-indexed (fn [rownum {:keys [user contributor solved]}]
+                    [:tr (row-class rownum)
+                     [:td (inc rownum)]
+                     [:td
+                      (when contributor [:span.contributor "* "])
+                      [:a#user-profile-link {:href (str "/user/" user)} user]]
+                     [:td.centered (count solved)]])
                   (get-users))])})
 
-(defroutes users-routes
-  (GET "/users" [] (users-page)))
+;; TODO: this is snagged from problems.clj but can't be imported due to cyclic dependency, must refactor this out.
+(defn get-problems
+  ([]
+     (from-mongo
+      (fetch :problems
+             :only  [:_id :difficulty]
+             :where {:approved true}
+             :sort  {:_id 1})))
+  ([difficulty]
+     (get (group-by :difficulty (get-problems)) difficulty [{}])))
+
+(defn get-solved
+  ([username]
+     (:solved (get-user username)))
+  ([username difficulty]
+     (let [ids (->> (from-mongo
+                     (fetch :problems
+                            :only  [:_id]
+                            :where {:approved true, :difficulty difficulty}))
+                    (map :_id)
+                    (set))]
+       (filter ids (get-solved username)))))
+
+(def-page user-profile [username]
+    [:h2 "User: " username]
+    [:hr]
+    [:table
+     (for [difficulty ["Elementary" "Easy" "Medium" "Hard"]]
+       [:tr [:td.count-label difficulty] [:td.count-value [:div.progress-bar-bg [:div.progress-bar {:style (str "width: " (* 100 (/ (count (get-solved username difficulty)) (count (get-problems difficulty)))) "%")}]]]])
+     [:tr [:td.count-total "TOTAL:"    ] [:td.count-value (count (get-solved username)) "/" (count (get-problems))]]])
 
 (defn set-disable-codebox [disable-flag]
   (with-user [{:keys [_id]}]
@@ -73,3 +101,7 @@
              {:_id _id}
              {:$set {:disable-code-box (boolean disable-flag)}})
     (response/redirect "/problems")))
+
+(defroutes users-routes
+  (GET "/users" [] (users-page))
+  (GET "/user/:username" [username] (user-profile username)))
