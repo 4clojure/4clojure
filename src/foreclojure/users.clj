@@ -60,7 +60,7 @@
                      [:td (inc rownum)]
                      [:td
                       (when contributor [:span.contributor "* "])
-                      [:a#user-profile-link {:href (str "/user/" user)} user]]
+                      [:a.user-profile-link {:href (str "/user/" user)} user]]
                      [:td.centered (count solved)]])
                   (get-users))])})
 

@@ -116,7 +116,7 @@ a.novisited {color: #00e;}
 #menu a {text-decoration: none; font-size: 14px; font-weight:bold;}
 #menu a.menu {margin: 15px;}
 
-#user-profile-link{
+.user-profile-link{
     text-decoration: none;
     color: black;
 }
