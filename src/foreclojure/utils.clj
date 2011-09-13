@@ -18,9 +18,6 @@
     (binding [*url* (:uri req)]
       (handler req))))
 
-(defmacro dbg [x]
-  `(let [x# ~x] (println '~x "=" x#) x#))
-
 (defmacro assuming
   "Guard body with a series of tests. Each clause is a test-expression
   followed by a failure value. Tests will be performed in order; if
