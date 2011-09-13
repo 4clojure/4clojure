@@ -409,16 +409,21 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
   "create a user submitted problem"
   [title difficulty tags restricted description code id author]
   (let [user (session/session-get :user)]
-    (if (can-submit? user)
+    (if (or (approver? user)
+            (and (can-submit? user)
+                 (not id)))
       (let [id (or id
                    (:seq (fetch-and-modify
                           :seqs
                           {:_id "problems"}
                           {:$inc {:seq 1}})))
             edit-url (str "https://4clojure.com/problem/"
-                     id)]
+                          id)
+            approved (true? (:approved (fetch-one :problems
+                                                  :where {:_id id}
+                                                  :only [:approved])))]
 
-        (when (empty? author) ; newly submitted, not a moderator tweak
+        (when (empty? author)           ; newly submitted, not a moderator tweak
           (try
             (send-email
              {:from "team@4clojure.com"
@@ -442,7 +447,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
                   :restricted (re-seq #"\S+" restricted)
                   :tests (s/split code #"\r\n\r\n")
                   :user (if (empty? author) user author)
-                  :approved false})
+                  :approved approved})
         (flash-msg "Thank you for submitting a problem! Be sure to check back to see it posted." "/problems"))
       (flash-error "You are not authorized to submit a problem." "/problems"))))
 
@@ -501,6 +506,8 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
   (POST "/problems/submit" [prob-id author title difficulty tags restricted description code]
     (create-problem title difficulty tags restricted description code (when (not= "" prob-id) (Integer. prob-id)) author))
   (GET "/problems/unapproved" [] (unapproved-problem-list))
+  (GET "/problem/:id/edit" [id]
+    (edit-problem (Integer. id)))
   (POST "/problem/edit" [id]
     (edit-problem (Integer. id)))
   (POST "/problem/approve" [id]

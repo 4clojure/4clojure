@@ -114,9 +114,10 @@
 (def approver? (user-attribute :approver))
 
 (defn can-submit? [username]
-  (and (:problem-submission config)
-       (>= (count (get-solved username))
-           (:advanced-user-count config))))
+  (or (approver? username)
+      (and (:problem-submission config)
+           (>= (count (get-solved username))
+               (:advanced-user-count config)))))
 
 
 (defprotocol PageWriter
