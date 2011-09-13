@@ -517,8 +517,8 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
   (POST "/problem/:id" [id code]
     (static-run-code (Integer. id) (trim-code code)))
   (POST "/rest/problem/:id" [id code]
-     {:headers {"Content-Type" "application/json"}}
-     (rest-run-code (Integer. id) (trim-code code)))
+    {:headers {"Content-Type" "application/json"}}
+    (rest-run-code (Integer. id) (trim-code code)))
   (GET "/problems/rss" [] (create-feed
                            "4Clojure: Recent Problems"
                            "http://4clojure.com/problems"

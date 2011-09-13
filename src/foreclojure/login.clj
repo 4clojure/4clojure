@@ -10,7 +10,7 @@
             [clojail.core             :only [thunk-timeout]]
             [clojure.stacktrace       :only [print-cause-trace]]
             [somnium.congomongo       :only [update! fetch-one]]))
-                        
+
 (def-page my-login-page [location]
   {:title "4clojure - login"
    :content
@@ -73,7 +73,7 @@
        (form-to [:post "/users/set-disable-codebox"]
                 (check-box :disable-codebox
                      (disable-codebox? user-obj))
-          [:label {:for "disable-codebox"} 
+          [:label {:for "disable-codebox"}
            "Disable JavaScript in code entry box"]
           [:br]
           [:div#button-div
@@ -181,7 +181,7 @@
   (GET  "/login/reset" [] (reset-password-page))
   (POST "/login/reset" [email]
     (do-reset-password! email))
-  
+
   (GET "/logout" []
     (do (session/session-delete-key! :user)
         (response/redirect "/")))
