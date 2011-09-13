@@ -9,7 +9,7 @@
             [hiccup.form-helpers      :only [label]]
             [useful.fn                :only [to-fix]]
             [somnium.congomongo       :only [fetch-one]]
-            [foreclojure.config       :only [config]]))
+            [foreclojure.config       :only [config repo-url]]))
 
 (def ^{:dynamic true} *url* nil)
 
@@ -149,7 +149,8 @@
        [:script {:type "text/javascript"} "SyntaxHighlighter.all()"]]
       [:body
        (when (:fork-banner attrs)
-         [:div#github-banner [:a {:href "http://github.com/4clojure" :alt "Fork 4Clojure on Github!"}]])
+         [:div#github-banner [:a {:href repo-url
+                                  :alt "Fork 4Clojure on Github!"}]])
        [:div#top
         (link-to "/" [:img#logo {:src "/images/logo.png" :alt "4clojure.com"}])]
        [:div#content
