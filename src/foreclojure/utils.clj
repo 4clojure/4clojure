@@ -33,8 +33,17 @@
      ~fail-expr
      ~body))
 
-(defn image-builder [data & {:keys [alt src] :or {alt identity,
-                                                  src identity}}]
+(defn image-builder
+  "Return a function for constructing an [:img] element from a keyword.
+
+  data should be a map from image \"names\" to pairs [src, alt]. The function
+  returned by image-builder will look up its argument as an image name, and
+  return an img element with the appropriate src and alt attributes.
+
+  Optionally, additional keyword arguments :alt and :src may be supplied to
+  image-builder - these functions will be called to transform the alt and src
+  attributes of the returned img."
+  [data & {:keys [alt src] :or {alt identity, src identity}}]
   (fn [key]
     (let [[src-prop alt-prop] (get data key)]
       [:img {:src (src src-prop)
@@ -109,18 +118,24 @@
        (>= (count (get-solved username))
            (:advanced-user-count config))))
 
+
 (defprotocol PageWriter
+  "Specify how an object should be converted to the {:title \"foo\" :content
+  [:div ...] :baz-attr true} format used by def-page for rendering pages."
   (page-attributes [this]))
 
 (extend-protocol PageWriter
   clojure.lang.IPersistentMap
+  ;; Supplied map should be used verbatim
   (page-attributes [this] this)
 
   Object
+  ;; User probably just returned a Hiccup structure; shove it into :content
   (page-attributes [this]
     {:content this})
 
   nil
+  ;; Allow to return nothing at all so Compojure keeps looking
   (page-attributes [this] nil))
 
 (let [defaults {:content nil
