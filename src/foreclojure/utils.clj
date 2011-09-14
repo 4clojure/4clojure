@@ -173,13 +173,13 @@
        [:title (:title attrs)]
        [:link {:rel "alternate" :type "application/atom+xml" :title "Atom" :href "http://4clojure.com/problems/rss"}]
        [:link {:rel "shortcut icon" :href "/favicon.ico"}]
+       [:style {:type "text/css"}
+        ".syntaxhighlighter { overflow-y: hidden !important; }"]
+       (css "/css/style.css" "/css/demo_table.css" "/css/shCore.css" "/css/shThemeDefault.css")
        (js "/vendor/script/jquery-1.5.2.min.js" "/vendor/script/jquery.dataTables.min.js")
        (js "/script/foreclojure.js")
        (js "/vendor/script/xregexp.js" "/vendor/script/shCore.js" "/vendor/script/shBrushClojure.js")
        (js "/vendor/script/ace/ace.js" "/vendor/script/ace/mode-clojure.js")
-       (css "/css/style.css" "/css/demo_table.css" "/css/shCore.css" "/css/shThemeDefault.css")
-       [:style {:type "text/css"}
-        ".syntaxhighlighter { overflow-y: hidden !important; }"]
        [:script {:type "text/javascript"} "SyntaxHighlighter.all()"]]
       [:body
        (when (:fork-banner attrs)
