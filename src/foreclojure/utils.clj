@@ -1,11 +1,14 @@
 (ns foreclojure.utils
   (:require [sandbar.stateful-session :as   session]
             [ring.util.response       :as   response]
-            [clojure.walk             :as   walk])
+            [clojure.walk             :as   walk]
+            [clojure.string           :as   string]
+            [foreclojure.git          :as   git]
+            [hiccup.page-helpers      :as   hiccup])
   (:import  [java.net                 URLEncoder]
             [org.apache.commons.mail  HtmlEmail])
   (:use     [hiccup.core              :only [html]]
-            [hiccup.page-helpers      :only [doctype include-css javascript-tag link-to include-js]]
+            [hiccup.page-helpers      :only [doctype javascript-tag link-to]]
             [hiccup.form-helpers      :only [label]]
             [useful.fn                :only [to-fix]]
             [somnium.congomongo       :only [fetch-one]]
@@ -145,6 +148,21 @@
   (defn rendering-info [attributes]
     (into defaults attributes)))
 
+(let [version-suffix (str "__" git/tag)]
+  (defn add-version-number [file]
+    (let [[_ path ext] (re-find #"(.*)\.(.*)$" file)]
+      (str path version-suffix "." ext)))
+
+  (defn strip-version-number [file]
+    (string/replace file version-suffix "")))
+
+(letfn [(wrap-versioning [f]
+          (fn [& files]
+            (for [file files]
+              (f (add-version-number file)))))]
+  (def js  (wrap-versioning hiccup/include-js))
+  (def css (wrap-versioning hiccup/include-css)))
+
 (defn html-doc [body]
   (let [attrs (rendering-info (page-attributes body))
         user (session/session-get :user)]
@@ -155,11 +173,11 @@
        [:title (:title attrs)]
        [:link {:rel "alternate" :type "application/atom+xml" :title "Atom" :href "http://4clojure.com/problems/rss"}]
        [:link {:rel "shortcut icon" :href "/favicon.ico"}]
-       (include-js "/vendor/script/jquery-1.5.2.min.js" "/vendor/script/jquery.dataTables.min.js")
-       (include-js "/script/foreclojure.js")
-       (include-js "/vendor/script/xregexp.js" "/vendor/script/shCore.js" "/vendor/script/shBrushClojure.js")
-       (include-js "/vendor/script/ace/ace.js" "/vendor/script/ace/mode-clojure.js")
-       (include-css "/css/style.css" "/css/demo_table.css" "/css/shCore.css" "/css/shThemeDefault.css")
+       (js "/vendor/script/jquery-1.5.2.min.js" "/vendor/script/jquery.dataTables.min.js")
+       (js "/script/foreclojure.js")
+       (js "/vendor/script/xregexp.js" "/vendor/script/shCore.js" "/vendor/script/shBrushClojure.js")
+       (js "/vendor/script/ace/ace.js" "/vendor/script/ace/mode-clojure.js")
+       (css "/css/style.css" "/css/demo_table.css" "/css/shCore.css" "/css/shThemeDefault.css")
        [:style {:type "text/css"}
         ".syntaxhighlighter { overflow-y: hidden !important; }"]
        [:script {:type "text/javascript"} "SyntaxHighlighter.all()"]]
