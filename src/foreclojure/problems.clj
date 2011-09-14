@@ -85,7 +85,8 @@
 
 (defn code-length [code]
   (count (remove #(or (Character/isWhitespace %)
-                      (= % \,)))))
+                      (= % \,))
+                 code)))
 
 (defn record-golf-score! [user-id problem-id score]
   (let [user-score-key (keyword (str "scores." problem-id))
