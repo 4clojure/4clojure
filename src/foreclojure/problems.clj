@@ -312,6 +312,38 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
     (code-box id)
     (flash-error "You cannot access this page" "/problems")))
 
+(def-page show-solutions-page [problem-id]
+  {:title "4Clojure - Problem Solutions"
+   :content
+   (list
+    [:div.message (session/flash-get :message)]
+    [:div#problems-error.error (session/flash-get :error)]
+    (with-user [{:keys [following]}]
+      (if (empty? following)
+        [:p "You can only see solutions of users whom you follow.  Click on any user from the " (link-to "/users" "Top Users") " page to see their profile, and click follow."]
+        (interpose [:hr]
+                   (for [f-user-id following]
+                     (let [f-user (:user (from-mongo
+                                          (fetch-one :users
+                                                     :where {:_id f-user-id}
+                                                     :only [:user])))
+                           f-code (get-solution f-user-id problem-id)]
+                       [:div.follower-solution
+                        [:div.follower-username (str f-user "'s solution:")]
+                        [:pre.follower-code (or f-code "No solution available.")]]))))))})
+  
+(defn show-solutions [id]
+  (let [problem-id (Integer. id)
+        user (session/session-get :user)]
+    (if user
+      (with-user [{:keys [solved]}]
+        (if (some #{problem-id} solved)
+          (show-solutions-page problem-id)
+          (flash-error "You must solve this problem before you can see other's solutions!" (str "/problem/" problem-id))))
+      (do
+        (session/session-put! :login-to (str "/problem/solutions/" problem-id))
+        (flash-error "You must login to see solutions!" "/login")))))
+
 (let [checkbox-img (image-builder {true ["/images/checkmark.png" "completed"]
                                    false ["/images/empty-sq.png" "incomplete"]})]
   (def-page problem-list-page []
@@ -515,6 +547,8 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
     (approve-problem (Integer. id)))
   (POST "/problem/reject" [id]
     (reject-problem (Integer. id) "We didn't like your problem."))
+  (GET "/problem/solutions/:id" [id]
+    (show-solutions id))
   (POST "/problem/:id" [id code]
     (static-run-code (Integer. id) (trim-code code)))
   (POST "/rest/problem/:id" [id code]
