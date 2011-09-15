@@ -32,9 +32,8 @@ vaguely like this:
 * For the first time use, you will need to load the problem data. Run the script `load-data.sh`:
 
         ./load-data.sh
-* Run `lein run` and then open the brower to http://localhost:8080/
 
-        lein run  # or `lein ring server`
+* Run `lein ring server`
 
 ## Contributors
 
