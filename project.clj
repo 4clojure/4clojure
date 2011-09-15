@@ -16,8 +16,9 @@
                  [incanter/incanter-core "1.2.3"]
                  [incanter/incanter-charts "1.2.3"]
                  [org.apache.commons/commons-email "1.2"]]
-  :dev-dependencies [[lein-ring "0.4.0"]
+  :dev-dependencies [[lein-ring "0.4.5"]
                      [swank-clojure "1.2.1"]
                      [midje "1.1.1"]]
   :main foreclojure.core
-  :ring {:handler foreclojure.core/app})
+  :ring {:handler foreclojure.core/app
+         :init foreclojure.mongo/prepare-mongo})
