@@ -436,6 +436,16 @@ a.graph-class :hover {color: #445599;}
   width: 90%;
 }
 
+.ranking {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.ranking a{
+  color: blue;
+  text-decoration: underline;
+}
+
 #github-banner {
     float: right;
     display: block;

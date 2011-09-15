@@ -1,5 +1,6 @@
 (ns foreclojure.users
-  (:require [ring.util.response       :as   response])
+  (:require [ring.util.response       :as   response]
+            [sandbar.stateful-session :as      session])
   (:use [foreclojure.utils   :only [from-mongo def-page row-class get-user with-user]]
         [foreclojure.config  :only [config repo-url]]
         [somnium.congomongo  :only [fetch-one fetch update!]]
@@ -28,6 +29,13 @@
         sortfn  (comp - count :solved)]
     (sort-by sortfn users)))
 
+(defn get-user-with-ranking [username, users]
+  (let [users-with-rankings (map-indexed
+                             (fn [idx itm]
+                               (assoc itm :rank (inc idx))) users) ]
+    (first
+     (filter #(= username (% :user)) users-with-rankings))))
+
 (defn golfer? [user]
   (some user golfer-tags))
 
@@ -41,10 +49,28 @@
   (link-to (str "mailto:" (email-address username))
            username))
 
+(defn format-user-ranking [{:keys [rank user contributor solved]}]
+  [:div
+   [:h2 "Your Ranking"]
+   [:div.ranking (str "Username: ")
+     (when contributor [:span.contributor "* "])
+                      [:a.user-profile-link {:href (str "/user/" user)} user]]
+   [:div.ranking (str "Rank: " rank)]
+   [:div.ranking (str "Problems Solved: " (count solved))]
+   [:br]
+   [:br]])
+
+(defn display-user-ranking []
+  (when-let [username  (session/session-get :user)]
+    (format-user-ranking
+     (get-user-with-ranking username (get-users)))))
+
 (def-page users-page []
-  {:title "Top Users"
+  {:title "Top 100 Users"
    :content
    (list
+    [:h1 "Top 100 Users"]
+     (display-user-ranking)
     [:div
      [:span.contributor "*"] " "
      (link-to repo-url "4clojure contributor")]
@@ -62,7 +88,7 @@
                       (when contributor [:span.contributor "* "])
                       [:a.user-profile-link {:href (str "/user/" user)} user]]
                      [:td.centered (count solved)]])
-                  (get-users))])})
+                  (take 100 (get-users)))])})
 
 ;; TODO: this is snagged from problems.clj but can't be imported due to cyclic dependency, must refactor this out.
 (defn get-problems
