@@ -36,7 +36,7 @@
     (first
      (filter #(= username (% :user)) users-with-rankings))))
 
- (defn golfer? [user]
+(defn golfer? [user]
   (some user golfer-tags))
 
 (defn disable-codebox? [user]
@@ -49,9 +49,12 @@
   (link-to (str "mailto:" (email-address username))
            username))
 
-(defn format-user-ranking [{:keys [rank, user, solved]}]
+(defn format-user-ranking [{:keys [rank user contributor solved]}]
   [:div
    [:h2 "Your Ranking"]
+   [:div.ranking (str "Username: ")
+     (when contributor [:span.contributor "* "])
+                      [:a.user-profile-link {:href (str "/user/" user)} user]]
    [:div.ranking (str "Rank: " rank)]
    [:div.ranking (str "Problems Solved: " (count solved))]
    [:br]
@@ -81,11 +84,10 @@
      (map-indexed (fn [rownum {:keys [user contributor solved]}]
                     [:tr (row-class rownum)
                      [:td (inc rownum)]
-                         [:td
-                          (when (:contributor %2)
-                            [:span.contributor "* "])
-                          (:user %2)]
-                         [:td {:class "centered"} (count (:solved %2))]])
+                     [:td
+                      (when contributor [:span.contributor "* "])
+                      [:a.user-profile-link {:href (str "/user/" user)} user]]
+                     [:td.centered (count solved)]])
                   (take 100 (get-users)))])})
 
 ;; TODO: this is snagged from problems.clj but can't be imported due to cyclic dependency, must refactor this out.
