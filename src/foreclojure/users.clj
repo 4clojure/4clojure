@@ -88,7 +88,7 @@
                       (when contributor [:span.contributor "* "])
                       [:a.user-profile-link {:href (str "/user/" user)} user]]
                      [:td.centered (count solved)]])
-                  (get-users))])})
+                  (take 100 (get-users)))])})
 
 ;; TODO: this is snagged from problems.clj but can't be imported due to cyclic dependency, must refactor this out.
 (defn get-problems
