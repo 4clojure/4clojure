@@ -34,7 +34,7 @@ vaguely like this:
         ./load-data.sh
 * Run `lein run` and then open the brower to http://localhost:8080/
 
-        lein run
+        lein run  # or `lein ring server`
 
 ## Contributors
 
