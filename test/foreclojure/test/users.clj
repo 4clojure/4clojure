@@ -38,8 +38,8 @@
 
   
   (facts "about user"
-         (:rank (get-user-with-ranking "user1" users)) => 1
-         (:rank (get-user-with-ranking "user2" users)) => 2
-         (:rank (get-user-with-ranking "user3" users)) => 3
-         (:rank (get-user-with-ranking "user4" users)) => 4 ))
+         (:rank (get-user-with-ranking "user1" users)) => "1 out of 4"
+         (:rank (get-user-with-ranking "user2" users)) => "2 out of 4"
+         (:rank (get-user-with-ranking "user3" users)) => "3 out of 4"
+         (:rank (get-user-with-ranking "user4" users)) => "4 out of 4" ))
 

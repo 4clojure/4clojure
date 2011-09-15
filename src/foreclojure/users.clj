@@ -30,9 +30,10 @@
     (sort-by sortfn users)))
 
 (defn get-user-with-ranking [username, users]
-  (let [users-with-rankings (map-indexed
+  (let [total (count users)
+        users-with-rankings (map-indexed
                              (fn [idx itm]
-                               (assoc itm :rank (inc idx))) users) ]
+                               (assoc itm :rank (str (inc idx) " out of " total))) users) ]
     (first
      (filter #(= username (% :user)) users-with-rankings))))
 
