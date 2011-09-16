@@ -21,6 +21,11 @@
     (binding [*url* (:uri req)]
       (handler req))))
 
+(defn as-int [s]
+  (if (integer? s) s,
+      (try (Integer. s)
+           (catch Exception _ nil))))
+
 (defmacro assuming
   "Guard body with a series of tests. Each clause is a test-expression
   followed by a failure value. Tests will be performed in order; if

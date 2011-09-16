@@ -4,7 +4,7 @@
             [clojure.string           :as      s]
             [ring.util.response       :as      response])
   (:import  [org.apache.commons.mail  EmailException])
-  (:use     [foreclojure.utils        :only    [from-mongo get-user get-solved login-link *url* flash-msg flash-error def-page row-class approver? can-submit? send-email image-builder with-user maybe-update]]
+  (:use     [foreclojure.utils        :only    [from-mongo get-user get-solved login-link *url* flash-msg flash-error def-page row-class approver? can-submit? send-email image-builder with-user as-int maybe-update]]
             [foreclojure.social       :only    [tweet-link gist!]]
             [foreclojure.feeds        :only    [create-feed]]
             [foreclojure.users        :only    [golfer? get-user-id disable-codebox?]]
@@ -270,7 +270,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
       (if session-user
         (with-user [{:keys [solved]}]
           (if (some #{(Integer. id)} solved)
-            (link-to (str "/problem/solutions/" id) 
+            (link-to (str "/problem/solutions/" id)
                      [:button#solutions-link {:type "submit"} "Solutions"])
             [:div {:style "clear: right; margin-bottom: 15px;"} "&nbsp;"]))
         [:div {:style "clear: right; margin-bottom: 15px;"} "&nbsp;"])
@@ -318,7 +318,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
            [:button.large {:id "approve-button"} "Approve"]]))]}))
 
 (defn problem-page [id]
-  (if (or (:approved (get-problem (Integer. id)))
+  (if (or (:approved (get-problem id))
           (approver? (session/session-get :user)))
     (code-box id)
     (flash-error "You cannot access this page" "/problems")))
@@ -347,7 +347,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
                         [:div.follower-username (str f-user "'s solution:")]
                         [:pre.follower-code f-code]]))
           [:p "None of the users you follow have solved this problem yet!"]))))})
-  
+
 (defn show-solutions [id]
   (let [problem-id (Integer. id)
         user (session/session-get :user)]
@@ -550,7 +550,11 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
 
 (defroutes problems-routes
   (GET "/problems" [] (problem-list-page))
-  (GET "/problem/:id" [id] (problem-page id))
+  (GET "/problem/:id" [id]
+    (if-let [id-int (as-int id)]
+      (problem-page id-int)
+      (flash-error (format "'%s' is not a valid problem number." id)
+                   "/problems")))
   (GET "/problems/submit" [] (problem-submission-page))
   (POST "/problems/submit" [prob-id author title difficulty tags restricted description code]
     (create-problem title difficulty tags restricted description code (when (not= "" prob-id) (Integer. prob-id)) author))
