@@ -4,13 +4,13 @@
   (:import  [org.jasypt.util.password StrongPasswordEncryptor])
   (:use     [hiccup.form-helpers      :only [form-to label text-field password-field check-box]]
             [foreclojure.utils        :only [def-page from-mongo flash-error flash-msg with-user form-row assuming send-email login-url]]
-            [foreclojure.users        :only [disable-codebox? set-disable-codebox]]
+            [foreclojure.users        :only [disable-codebox? set-disable-codebox hide-solutions? set-hide-solutions]]
             [compojure.core           :only [defroutes GET POST]]
             [useful.map               :only [keyed]]
             [clojail.core             :only [thunk-timeout]]
             [clojure.stacktrace       :only [print-cause-trace]]
             [somnium.congomongo       :only [update! fetch-one]]))
-                        
+
 (def-page my-login-page [location]
   {:title "4clojure - login"
    :content
@@ -50,6 +50,7 @@
           (response/redirect (or location "/problems")))
       (flash-error "Error logging in." "/login"))))
 
+;; TODO this page is getting hella gross. Need a real Settings page soon.
 (def-page update-credentials-page []
   {:title "Change password"
    :content
@@ -66,15 +67,28 @@
                 [password-field :pwd "New password"]
                 [password-field :repeat-pwd "Repeat password"]])
           [:tr
-                 [:td [:button {:type "submit"} "Reset now"]]])]
-      [:div#settings-codebox
-       [:h2 "Disable JavaScript Code Box"]
-       [:p "Selecting this will disable the JavaScript code entry box and just give you plain text entry"]
-       (form-to [:post "/users/set-disable-codebox"]
-                (check-box :disable-codebox
+           [:td [:button {:type "submit"} "Reset now"]]])]
+       [:hr]
+       [:div#settings-codebox
+        [:h2 "Disable JavaScript Code Box"]
+        [:p "Selecting this will disable the JavaScript code entry box and just give you plain text entry"]
+        (form-to [:post "/users/set-disable-codebox"]
+          (check-box :disable-codebox
                      (disable-codebox? user-obj))
-          [:label {:for "disable-codebox"} 
+          [:label {:for "disable-codebox"}
            "Disable JavaScript in code entry box"]
+          [:br]
+          [:div#button-div
+           [:button {:type "submit"} "Submit"]])]
+       [:hr]
+       [:div#settings-follow
+        [:h2 "Hide My Solutions"]
+        [:p "When you solve a problem, we allow any user who has solved a problem to view your solutions to that problem. Check this box to keep your solutions private."]
+        (form-to [:post "/users/set-hide-solutions"]
+          (check-box :hide-solutions
+                     (hide-solutions? user-obj))
+          [:label {:for "hide-solutions"}
+           "Hide my solutions"]
           [:br]
           [:div#button-div
            [:button {:type "submit"} "Submit"]])]]])})
@@ -181,10 +195,14 @@
   (GET  "/login/reset" [] (reset-password-page))
   (POST "/login/reset" [email]
     (do-reset-password! email))
-  
+
   (GET "/logout" []
     (do (session/session-delete-key! :user)
         (response/redirect "/")))
 
   (POST "/users/set-disable-codebox" [disable-codebox]
-        (set-disable-codebox disable-codebox)))
+        (set-disable-codebox disable-codebox))
+
+  (POST "/users/set-hide-solutions" [hide-solutions]
+    (println "POST")
+    (set-hide-solutions hide-solutions)))

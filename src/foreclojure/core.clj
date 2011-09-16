@@ -8,7 +8,7 @@
             [foreclojure.login          :only [login-routes]]
             [foreclojure.register       :only [register-routes]]
             [foreclojure.golf           :only [golf-routes]]
-            [foreclojure.ring           :only [resources wrap-strip-trailing-slash wrap-url-as-file]]
+            [foreclojure.ring           :only [resources wrap-strip-trailing-slash wrap-url-as-file wrap-versioned-expiry]]
             [foreclojure.users          :only [users-routes]]
             [foreclojure.config         :only [config]]
             [foreclojure.social         :only [social-routes]]
@@ -37,7 +37,8 @@
   golf-routes
   (-> (resources "/*")
       (wrap-url-as-file)
-      (wrap-file-info))
+      (wrap-file-info)
+      (wrap-versioned-expiry))
   (route/not-found "Page not found"))
 
 (def app (-> #'main-routes

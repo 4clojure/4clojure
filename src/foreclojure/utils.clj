@@ -1,15 +1,18 @@
 (ns foreclojure.utils
   (:require [sandbar.stateful-session :as   session]
             [ring.util.response       :as   response]
-            [clojure.walk             :as   walk])
+            [clojure.walk             :as   walk]
+            [clojure.string           :as   string]
+            [foreclojure.git          :as   git]
+            [hiccup.page-helpers      :as   hiccup])
   (:import  [java.net                 URLEncoder]
             [org.apache.commons.mail  HtmlEmail])
   (:use     [hiccup.core              :only [html]]
-            [hiccup.page-helpers      :only [doctype include-css javascript-tag link-to include-js]]
+            [hiccup.page-helpers      :only [doctype javascript-tag link-to]]
             [hiccup.form-helpers      :only [label]]
             [useful.fn                :only [to-fix]]
             [somnium.congomongo       :only [fetch-one]]
-            [foreclojure.config       :only [config]]))
+            [foreclojure.config       :only [config repo-url]]))
 
 (def ^{:dynamic true} *url* nil)
 
@@ -17,9 +20,6 @@
   (fn [req]
     (binding [*url* (:uri req)]
       (handler req))))
-
-(defmacro dbg [x]
-  `(let [x# ~x] (println '~x "=" x#) x#))
 
 (defmacro assuming
   "Guard body with a series of tests. Each clause is a test-expression
@@ -36,8 +36,17 @@
      ~fail-expr
      ~body))
 
-(defn image-builder [data & {:keys [alt src] :or {alt identity,
-                                                  src identity}}]
+(defn image-builder
+  "Return a function for constructing an [:img] element from a keyword.
+
+  data should be a map from image \"names\" to pairs [src, alt]. The function
+  returned by image-builder will look up its argument as an image name, and
+  return an img element with the appropriate src and alt attributes.
+
+  Optionally, additional keyword arguments :alt and :src may be supplied to
+  image-builder - these functions will be called to transform the alt and src
+  attributes of the returned img."
+  [data & {:keys [alt src] :or {alt identity, src identity}}]
   (fn [key]
     (let [[src-prop alt-prop] (get data key)]
       [:img {:src (src src-prop)
@@ -108,22 +117,29 @@
 (def approver? (user-attribute :approver))
 
 (defn can-submit? [username]
-  (and (:problem-submission config)
-       (>= (count (get-solved username))
-           (:advanced-user-count config))))
+  (or (approver? username)
+      (and (:problem-submission config)
+           (>= (count (get-solved username))
+               (:advanced-user-count config)))))
+
 
 (defprotocol PageWriter
+  "Specify how an object should be converted to the {:title \"foo\" :content
+  [:div ...] :baz-attr true} format used by def-page for rendering pages."
   (page-attributes [this]))
 
 (extend-protocol PageWriter
   clojure.lang.IPersistentMap
+  ;; Supplied map should be used verbatim
   (page-attributes [this] this)
 
   Object
+  ;; User probably just returned a Hiccup structure; shove it into :content
   (page-attributes [this]
     {:content this})
 
   nil
+  ;; Allow to return nothing at all so Compojure keeps looking
   (page-attributes [this] nil))
 
 (let [defaults {:content nil
@@ -131,6 +147,21 @@
                 :fork-banner false}]
   (defn rendering-info [attributes]
     (into defaults attributes)))
+
+(let [version-suffix (str "__" git/tag)]
+  (defn add-version-number [file]
+    (let [[_ path ext] (re-find #"(.*)\.(.*)$" file)]
+      (str path version-suffix "." ext)))
+
+  (defn strip-version-number [file]
+    (string/replace file version-suffix "")))
+
+(letfn [(wrap-versioning [f]
+          (fn [& files]
+            (for [file files]
+              (f (add-version-number file)))))]
+  (def js  (wrap-versioning hiccup/include-js))
+  (def css (wrap-versioning hiccup/include-css)))
 
 (defn html-doc [body]
   (let [attrs (rendering-info (page-attributes body))
@@ -142,19 +173,21 @@
        [:title (:title attrs)]
        [:link {:rel "alternate" :type "application/atom+xml" :title "Atom" :href "http://4clojure.com/problems/rss"}]
        [:link {:rel "shortcut icon" :href "/favicon.ico"}]
-       (include-js "/vendor/script/jquery-1.5.2.min.js" "/vendor/script/jquery.dataTables.min.js")
-       (include-js "/script/foreclojure.js")
-       (include-js "/vendor/script/xregexp.js" "/vendor/script/shCore.js" "/vendor/script/shBrushClojure.js")
-       (include-js "/vendor/script/ace/ace.js" "/vendor/script/ace/mode-clojure.js")
-       (include-css "/css/style.css" "/css/demo_table.css" "/css/shCore.css" "/css/shThemeDefault.css")
        [:style {:type "text/css"}
         ".syntaxhighlighter { overflow-y: hidden !important; }"]
+       (css "/css/style.css" "/css/demo_table.css" "/css/shCore.css" "/css/shThemeDefault.css")
+       (js "/vendor/script/jquery-1.5.2.min.js" "/vendor/script/jquery.dataTables.min.js")
+       (js "/script/foreclojure.js")
+       (js "/vendor/script/xregexp.js" "/vendor/script/shCore.js" "/vendor/script/shBrushClojure.js")
+       (js "/vendor/script/ace/ace.js" "/vendor/script/ace/mode-clojure.js")
        [:script {:type "text/javascript"} "SyntaxHighlighter.all()"]]
       [:body
        (when (:fork-banner attrs)
-         [:div#github-banner [:a {:href "http://github.com/4clojure" :alt "Fork 4Clojure on Github!"}]])
+         [:div#github-banner [:a {:href repo-url
+                                  :alt "Fork 4Clojure on Github!"}]])
        [:div#top
-        (link-to "/" [:img#logo {:src "/images/logo.png" :alt "4clojure.com"}])]
+        (link-to "/" [:img#logo {:src "/images/logo.png" :alt "4clojure.com"
+                                 :width 230 :height 57}])]
        [:div#content
         [:br]
         [:div#menu

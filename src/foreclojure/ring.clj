@@ -3,6 +3,7 @@
             [clojure.string     :as   s])
   (:import  [java.net           URL])
   (:use     [compojure.core     :only [GET]]
+            [foreclojure.utils  :only [strip-version-number]]
             [ring.util.response :only [response]]))
 
 ;; copied from compojure.route, modified to use File instead of Stream
@@ -27,3 +28,11 @@
 (defn wrap-strip-trailing-slash [handler]
   (fn [request]
     (handler (update-in request [:uri] s/replace #"(?<=.)/$" ""))))
+
+(defn wrap-versioned-expiry [handler]
+  (fn [request]
+    (-> request
+        (update-in [:uri] strip-version-number)
+        (handler)
+        (assoc-in [:headers "Cache-control"]
+                  "public, max-age=31536000"))))

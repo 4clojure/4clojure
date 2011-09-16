@@ -116,6 +116,18 @@ a.novisited {color: #00e;}
 #menu a {text-decoration: none; font-size: 14px; font-weight:bold;}
 #menu a.menu {margin: 15px;}
 
+.user-follow-button{
+    margin-left: 20px;
+    margin-top: -3px;
+    margin-bottom: 10px;
+}
+
+.user-profile-name{
+    float: left;
+    font-weight: bold;
+    font-size: 15px;
+}
+
 .user-profile-link{
     text-decoration: none;
     color: black;
@@ -210,10 +222,16 @@ div.message {
    float: left;
 }
 
-span#prob-title {
-   font-size: 20px;
+div#prob-title {
+   font-size: 15pt;
    font-family: sans-serif;
    font-weight: bold;
+   float: left;
+}
+
+button#solutions-link {
+    margin-left: 20px;
+    margin-top: -1px;
 }
 
 div#prob-desc {
@@ -434,6 +452,11 @@ a.graph-class :hover {color: #445599;}
 
 #help-content{
   width: 90%;
+}
+
+.ranking {
+  font-weight: bold;
+  font-size: 14px;
 }
 
 #github-banner {

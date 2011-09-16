@@ -3,12 +3,13 @@
 An interactive problem website for Clojure beginners
 [https://www.4clojure.com](https://www.4clojure.com).
 
-## State of the Art
+## Contributing
 
-This site is in a very early stage of development, so there is not a
-lot of polish yet. Anyone interested in contributing should check out
+Anyone interested in contributing should check out
 the [Issues](https://github.com/dbyrne/4clojure/issues) page for ideas
 on what to work on.
+
+Join us in #4clojure on freenode for help or discussion.
 
 ## Setup instructions for running locally
 
@@ -32,9 +33,8 @@ vaguely like this:
 * For the first time use, you will need to load the problem data. Run the script `load-data.sh`:
 
         ./load-data.sh
-* Run `lein run` and then open the brower to http://localhost:8080/
 
-        lein run
+* Run `lein ring server`
 
 ## Contributors
 

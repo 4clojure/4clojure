@@ -55,7 +55,7 @@
     ([problem]
        (str "Now try " (problem-link problem) "!"))
     ([skipped not-tried]
-      (str "Now move on to " (problem-link not-tried)
+      (str "Now you can move on to " (problem-link not-tried)
            ", or go back and try " (problem-link skipped) " again!"))))
 
 (defn next-problem-link [completed-problem-id]
@@ -84,7 +84,8 @@
   (when code (.trim code)))
 
 (defn code-length [code]
-  (count (remove #(Character/isWhitespace %)
+  (count (remove #(or (Character/isWhitespace %)
+                      (= % \,))
                  code)))
 
 (defn record-golf-score! [user-id problem-id score]
@@ -132,20 +133,24 @@
 (defn mark-completed [problem code & [user]]
   (let [user (or user (session/session-get :user))
         {:keys [_id approved]} problem
-        gist-link (html [:div.share
-                         [:a.novisited {:href "/share/code"} "Share"]
-                         " this solution with your friends!"])
+        gist-link (html [:span.share
+                         [:a.novisited {:href "/share/code"} "share"]
+                         " this solution on github and twitter!  "])
         message
         (cond
          (not approved) (str "You've solved the unapproved problem. Now you can approve it!")
          user (do
                 (store-completed-state! user _id code)
-                (str "Congratulations, you've solved the problem!"
-                     "<br />" (next-problem-link _id)))
-         :else (str "You've solved the problem! If you "
-                    (login-link "log in" (str "/problem/" _id)) " we can track your progress."))]
+                (str "Congratulations, you've solved the problem!  See the "
+                     "<a href='/problem/solutions/" _id "'>solutions</a>"
+                     " that the users you follow have submitted, or "
+                     gist-link
+                     (next-problem-link _id)))
+         :else (str "You've solved the problem; "
+                    gist-link
+                    "You need to " (login-link "log in" (str "/problem/" _id)) " in order to save your solutions and track progress."))]
     (session/session-put! :code [_id code])
-    {:message (str message " " gist-link), :error "",  :url (str "/problem/" _id)}))
+    {:message message, :error "",  :url (str "/problem/" _id)}))
 
 (def restricted-list '[use require in-ns future agent send send-off pmap pcalls])
 
@@ -253,7 +258,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
   (let [{:keys [_id title difficulty tags description
                 restricted tests approved user]}
         (get-problem (Integer. id)),
-
+        session-user (session/session-get :user)
         title (str (when-not approved
                      "Unapproved: ")
                    title)]
@@ -261,7 +266,14 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
     {:title (str _id ". " title)
      :content
      [:div
-      [:span#prob-title title]
+      [:div#prob-title title]
+      (if session-user
+        (with-user [{:keys [solved]}]
+          (if (some #{(Integer. id)} solved)
+            (link-to (str "/problem/solutions/" id) 
+                     [:button#solutions-link {:type "submit"} "Solutions"])
+            [:div {:style "clear: right; margin-bottom: 15px;"} "&nbsp;"]))
+        [:div {:style "clear: right; margin-bottom: 15px;"} "&nbsp;"])
       [:hr]
       [:table#tags
        [:tr [:td "Difficulty:"] [:td (or difficulty "N/A")]]
@@ -310,6 +322,43 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
           (approver? (session/session-get :user)))
     (code-box id)
     (flash-error "You cannot access this page" "/problems")))
+
+(def-page show-solutions-page [problem-id]
+  {:title "4Clojure - Problem Solutions"
+   :content
+   (list
+    [:div.message (session/flash-get :message)]
+    [:div#problems-error.error (session/flash-get :error)]
+    [:h3 {:style "margin-top: -20px;"} "Solutions:"]
+    (with-user [{:keys [following]}]
+      (if (empty? following)
+        [:p "You can only see solutions of users whom you follow.  Click on any name from the " (link-to "/users" "users") " listing page to see their profile, and click follow from there."]
+        (if (some (complement nil?) (map #(get-solution :public % problem-id) following))
+          (interpose [:hr {:style "margin-top: 20px; margin-bottom: 20px;"}]
+                     (for [f-user-id following
+                           :let [f-user (:user (from-mongo
+                                                (fetch-one :users
+                                                           :where {:_id f-user-id}
+                                                           :only [:user])))
+                                 f-code (get-solution :public
+                                                      f-user-id problem-id)]
+                           :when f-code]
+                       [:div.follower-solution
+                        [:div.follower-username (str f-user "'s solution:")]
+                        [:pre.follower-code f-code]]))
+          [:p "None of the users you follow have solved this problem yet!"]))))})
+  
+(defn show-solutions [id]
+  (let [problem-id (Integer. id)
+        user (session/session-get :user)]
+    (if user
+      (with-user [{:keys [solved]}]
+        (if (some #{problem-id} solved)
+          (show-solutions-page problem-id)
+          (flash-error "You must solve this problem before you can see others' solutions!" (str "/problem/" problem-id))))
+      (do
+        (session/session-put! :login-to (str "/problem/solutions/" problem-id))
+        (flash-error "You must login to see solutions!" "/login")))))
 
 (let [checkbox-img (image-builder {true ["/images/checkmark.png" "completed"]
                                    false ["/images/empty-sq.png" "incomplete"]})]
@@ -409,16 +458,21 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
   "create a user submitted problem"
   [title difficulty tags restricted description code id author]
   (let [user (session/session-get :user)]
-    (if (can-submit? user)
+    (if (or (approver? user)
+            (and (can-submit? user)
+                 (not id)))
       (let [id (or id
                    (:seq (fetch-and-modify
                           :seqs
                           {:_id "problems"}
                           {:$inc {:seq 1}})))
             edit-url (str "https://4clojure.com/problem/"
-                     id)]
+                          id)
+            approved (true? (:approved (fetch-one :problems
+                                                  :where {:_id id}
+                                                  :only [:approved])))]
 
-        (when (empty? author) ; newly submitted, not a moderator tweak
+        (when (empty? author)           ; newly submitted, not a moderator tweak
           (try
             (send-email
              {:from "team@4clojure.com"
@@ -442,7 +496,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
                   :restricted (re-seq #"\S+" restricted)
                   :tests (s/split code #"\r\n\r\n")
                   :user (if (empty? author) user author)
-                  :approved false})
+                  :approved approved})
         (flash-msg "Thank you for submitting a problem! Be sure to check back to see it posted." "/problems"))
       (flash-error "You are not authorized to submit a problem." "/problems"))))
 
@@ -501,17 +555,21 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
   (POST "/problems/submit" [prob-id author title difficulty tags restricted description code]
     (create-problem title difficulty tags restricted description code (when (not= "" prob-id) (Integer. prob-id)) author))
   (GET "/problems/unapproved" [] (unapproved-problem-list))
+  (GET "/problem/:id/edit" [id]
+    (edit-problem (Integer. id)))
   (POST "/problem/edit" [id]
     (edit-problem (Integer. id)))
   (POST "/problem/approve" [id]
     (approve-problem (Integer. id)))
   (POST "/problem/reject" [id]
     (reject-problem (Integer. id) "We didn't like your problem."))
+  (GET "/problem/solutions/:id" [id]
+    (show-solutions id))
   (POST "/problem/:id" [id code]
     (static-run-code (Integer. id) (trim-code code)))
   (POST "/rest/problem/:id" [id code]
-     {:headers {"Content-Type" "application/json"}}
-     (rest-run-code (Integer. id) (trim-code code)))
+    {:headers {"Content-Type" "application/json"}}
+    (rest-run-code (Integer. id) (trim-code code)))
   (GET "/problems/rss" [] (create-feed
                            "4Clojure: Recent Problems"
                            "http://4clojure.com/problems"
