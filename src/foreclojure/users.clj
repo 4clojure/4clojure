@@ -31,13 +31,14 @@
 
 (defn get-user-with-ranking [username, users]
   (when username
-   (let [total (count users)
-         users-with-rankings (map-indexed
-                              (fn [idx itm]
-                                (assoc itm :rank (str (inc idx) " out of " total))) users) ]
-     (first
-      (filter #(= username (% :user)) users-with-rankings)))))
-
+    (let [total (count users)
+          users-with-rankings (map-indexed
+                               (fn [idx itm]
+                                 (assoc itm :rank
+                                        (str (inc idx) " out of " total)))
+                               users)]
+      (first
+       (filter #(= username (% :user)) users-with-rankings)))))
 
 (defn get-top-100-and-current-user [username]
   (let [users (get-users)
