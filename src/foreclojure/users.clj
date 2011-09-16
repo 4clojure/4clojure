@@ -74,9 +74,7 @@
 
 (def-page users-page []
   (let [username (session/session-get :user) 
-        top-100-and-current-user (get-top-100-and-current-user username)
-        user-ranking (:user-ranking top-100-and-current-user)
-        top-100 (:top-100 top-100-and-current-user)]
+        {:keys [user-ranking top-100]} (get-top-100-and-current-user username)]
     {:title "Top 100 Users"
     :content
     (list
