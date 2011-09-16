@@ -333,14 +333,15 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
     (with-user [{:keys [following]}]
       (if (empty? following)
         [:p "You can only see solutions of users whom you follow.  Click on any name from the " (link-to "/users" "users") " listing page to see their profile, and click follow from there."]
-        (if (some (complement nil?) (map #(get-solution % problem-id) following))
+        (if (some (complement nil?) (map #(get-solution :public % problem-id) following))
           (interpose [:hr {:style "margin-top: 20px; margin-bottom: 20px;"}]
                      (for [f-user-id following
                            :let [f-user (:user (from-mongo
                                                 (fetch-one :users
                                                            :where {:_id f-user-id}
                                                            :only [:user])))
-                                 f-code (get-solution f-user-id problem-id)]
+                                 f-code (get-solution :public
+                                                      f-user-id problem-id)]
                            :when f-code]
                        [:div.follower-solution
                         [:div.follower-username (str f-user "'s solution:")]

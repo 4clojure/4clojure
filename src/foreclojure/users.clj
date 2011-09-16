@@ -54,6 +54,9 @@
 (defn disable-codebox? [user]
   (true? (:disable-code-box user)))
 
+(defn hide-solutions? [user]
+  (true? (:hide-solutions user)))
+
 (defn email-address [username]
   (:email (fetch-one :users :where {:user username})))
 
@@ -174,6 +177,13 @@
     (update! :users
              {:_id _id}
              {:$set {:disable-code-box (boolean disable-flag)}})
+    (response/redirect "/problems")))
+
+(defn set-hide-solutions [hide-flag]
+  (with-user [{:keys [_id]}]
+    (update! :users
+             {:_id _id}
+             {:$set {:hide-solutions (boolean hide-flag)}})
     (response/redirect "/problems")))
 
 (defroutes users-routes
