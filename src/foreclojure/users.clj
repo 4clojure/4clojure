@@ -30,12 +30,21 @@
     (sort-by sortfn users)))
 
 (defn get-user-with-ranking [username, users]
-  (let [total (count users)
-        users-with-rankings (map-indexed
-                             (fn [idx itm]
-                               (assoc itm :rank (str (inc idx) " out of " total))) users) ]
-    (first
-     (filter #(= username (% :user)) users-with-rankings))))
+  (when username
+   (let [total (count users)
+         users-with-rankings (map-indexed
+                              (fn [idx itm]
+                                (assoc itm :rank (str (inc idx) " out of " total))) users) ]
+     (first
+      (filter #(= username (% :user)) users-with-rankings)))))
+
+
+(defn get-top-100-and-current-user [username]
+  (let [users (get-users)
+        user-ranking (get-user-with-ranking username users)]
+    {:user-ranking user-ranking
+     :top-100 (take 100 users)}))
+
 
 (defn golfer? [user]
   (some user golfer-tags))
@@ -51,45 +60,47 @@
            username))
 
 (defn format-user-ranking [{:keys [rank user contributor solved]}]
-  [:div
-   [:h2 "Your Ranking"]
-   [:div.ranking (str "Username: ")
+  (when user
+    [:div
+    [:h2 "Your Ranking"]
+    [:div.ranking (str "Username: ")
      (when contributor [:span.contributor "* "])
-                      [:a.user-profile-link {:href (str "/user/" user)} user]]
-   [:div.ranking (str "Rank: " rank)]
-   [:div.ranking (str "Problems Solved: " (count solved))]
-   [:br]
-   [:br]])
+     [:a.user-profile-link {:href (str "/user/" user)} user]]
+    [:div.ranking (str "Rank: " rank)]
+    [:div.ranking (str "Problems Solved: " (count solved))]
+    [:br]
+    [:br]]))
 
-(defn display-user-ranking []
-  (when-let [username  (session/session-get :user)]
-    (format-user-ranking
-     (get-user-with-ranking username (get-users)))))
 
 (def-page users-page []
-  {:title "Top 100 Users"
-   :content
-   (list
-    [:h1 "Top 100 Users"]
-     (display-user-ranking)
-    [:div
-     [:span.contributor "*"] " "
-     (link-to repo-url "4clojure contributor")]
-    [:br]
-    [:table#user-table.my-table
-     [:thead
-      [:tr
-       [:th {:style "width: 40px;"} "Rank"]
-       [:th "Username"]
-       [:th "Problems Solved"]]]
-     (map-indexed (fn [rownum {:keys [user contributor solved]}]
-                    [:tr (row-class rownum)
-                     [:td (inc rownum)]
-                     [:td
-                      (when contributor [:span.contributor "* "])
-                      [:a.user-profile-link {:href (str "/user/" user)} user]]
-                     [:td.centered (count solved)]])
-                  (take 100 (get-users)))])})
+  (let [username (session/session-get :user) 
+        top-100-and-current-user (get-top-100-and-current-user username)
+        user-ranking (:user-ranking top-100-and-current-user)
+        top-100 (:top-100 top-100-and-current-user)]
+    {:title "Top 100 Users"
+    :content
+    (list
+     [:h1 "Top 100 Users"]
+     (format-user-ranking user-ranking)
+     [:div
+      [:span.contributor "*"] " "
+      (link-to repo-url "4clojure contributor")]
+     [:br]
+     [:table#user-table.my-table
+      [:thead
+       [:tr
+        [:th {:style "width: 40px;"} "Rank"]
+        [:th "Username"]
+        [:th "Problems Solved"]]]
+      (map-indexed (fn [rownum {:keys [user contributor solved]}]
+                     [:tr (row-class rownum)
+                      [:td (inc rownum)]
+                      [:td
+                       (when contributor [:span.contributor "* "])
+                       [:a.user-profile-link {:href (str "/user/" user)} user]]
+                      [:td.centered (count solved)]])
+                   top-100)])}))
+
 
 ;; TODO: this is snagged from problems.clj but can't be imported due to cyclic dependency, must refactor this out.
 (defn get-problems
