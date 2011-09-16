@@ -1,10 +1,11 @@
 (ns foreclojure.users
-  (:require [ring.util.response       :as   response]
-            [sandbar.stateful-session :as      session])
+  (:require [ring.util.response       :as response]
+            [sandbar.stateful-session :as session])
   (:use [foreclojure.utils   :only [from-mongo def-page row-class get-user with-user]]
         [foreclojure.config  :only [config repo-url]]
         [somnium.congomongo  :only [fetch-one fetch update!]]
-        [compojure.core      :only [defroutes GET]]
+        [compojure.core      :only [defroutes GET POST]]
+        [hiccup.form-helpers :only [form-to hidden-field]]
         [hiccup.page-helpers :only [link-to]]))
 
 (def golfer-tags (into [:contributor]
@@ -125,11 +126,22 @@
        (filter ids (get-solved username)))))
 
 (def-page user-profile [username]
-  (let [page-title (str "User: " username)]
+  (let [page-title (str "User: " username)
+        user-id (:_id (get-user username))]
     {:title page-title
      :content
      (list
-      [:h2 page-title]
+      [:div.user-profile-name page-title]
+      (if (session/session-get :user)
+        (with-user [{:keys [_id following]}]
+          (if (not= _id user-id)
+            (let [[url label] (if (some #{user-id} following)
+                                ["unfollow" "Unfollow"]
+                                ["follow"   "Follow"])]
+              (form-to [:post (str "/user/" url "/" username)]
+                [:button.user-follow-button {:type "submit"} label]))
+            [:div {:style "clear: right; margin-bottom: 10px;"} "&nbsp;"]))
+        [:div {:style "clear: right; margin-bottom: 10px;"} "&nbsp;"])
       [:hr]
       [:table
        (for [difficulty ["Elementary" "Easy" "Medium" "Hard"]]
@@ -149,6 +161,14 @@
          (count (get-solved username)) "/"
          (count (get-problems))]]])}))
 
+(defn follow-user [username operation]
+  (with-user [{:keys [_id]}]
+    (let [follow-id (:_id (get-user username))]
+      (update! :users
+               {:_id _id}
+               {operation {:following follow-id}})))
+  (response/redirect (str "/user/" username)))
+
 (defn set-disable-codebox [disable-flag]
   (with-user [{:keys [_id]}]
     (update! :users
@@ -157,5 +177,7 @@
     (response/redirect "/problems")))
 
 (defroutes users-routes
-  (GET "/users" [] (users-page))
-  (GET "/user/:username" [username] (user-profile username)))
+  (GET  "/users" [] (users-page))
+  (GET  "/user/:username" [username] (user-profile username))
+  (POST "/user/follow/:username" [username] (follow-user username :$addToSet))
+  (POST "/user/unfollow/:username" [username] (follow-user username :$pull)))
