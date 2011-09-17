@@ -468,9 +468,10 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
                           {:$inc {:seq 1}})))
             edit-url (str "https://4clojure.com/problem/"
                           id)
-            approved (true? (:approved (fetch-one :problems
-                                                  :where {:_id id}
-                                                  :only [:approved])))]
+            existing-problem (fetch-one :problems
+                                        :where {:_id id}
+                                        :only [:approved :times-solved])
+            approved (true? (:approved existing-problem))]
 
         (when (empty? author)           ; newly submitted, not a moderator tweak
           (try
@@ -490,7 +491,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
                  {:_id id
                   :title title
                   :difficulty difficulty
-                  :times-solved 0
+                  :times-solved (or (:times-solved existing-problem) 0)
                   :description description
                   :tags (re-seq #"\S+" tags)
                   :restricted (re-seq #"\S+" restricted)
