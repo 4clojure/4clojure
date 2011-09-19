@@ -488,16 +488,15 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
 
         (update! :problems
                  {:_id id}
-                 {:_id id
-                  :title title
-                  :difficulty difficulty
-                  :times-solved (or (:times-solved existing-problem) 0)
-                  :description description
-                  :tags (re-seq #"\S+" tags)
-                  :restricted (re-seq #"\S+" restricted)
-                  :tests (s/split code #"\r\n\r\n")
-                  :user (if (empty? author) user author)
-                  :approved approved})
+                 {:$set
+                  {:title title
+                   :difficulty difficulty
+                   :description description
+                   :tags (re-seq #"\S+" tags)
+                   :restricted (re-seq #"\S+" restricted)
+                   :tests (s/split code #"\r\n\r\n")
+                   :user (if (empty? author) user author)
+                   :approved approved}})
         (flash-msg "Thank you for submitting a problem! Be sure to check back to see it posted." "/problems"))
       (flash-error "You are not authorized to submit a problem." "/problems"))))
 
