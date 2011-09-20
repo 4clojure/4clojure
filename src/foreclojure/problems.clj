@@ -4,7 +4,7 @@
             [clojure.string           :as      s]
             [ring.util.response       :as      response])
   (:import  [org.apache.commons.mail  EmailException])
-  (:use     [foreclojure.utils        :only    [from-mongo get-user get-solved login-link *url* flash-msg flash-error def-page row-class approver? can-submit? send-email image-builder with-user]]
+  (:use     [foreclojure.utils        :only    [from-mongo get-user get-solved login-link *url* flash-msg flash-error def-page row-class approver? can-submit? send-email image-builder with-user as-int maybe-update]]
             [foreclojure.social       :only    [tweet-link gist!]]
             [foreclojure.feeds        :only    [create-feed]]
             [foreclojure.users        :only    [golfer? get-user-id disable-codebox?]]
@@ -20,7 +20,7 @@
             [compojure.core           :only    [defroutes GET POST]]
             [clojure.contrib.json     :only    [json-str]]))
 
-(def total-solved (agent 0))
+(def solved-stats (agent {:total 0}))
 
 (defn get-problem [x]
   (from-mongo
@@ -31,7 +31,7 @@
   ([criteria]
      (from-mongo
       (fetch :problems
-             :only [:_id :title :difficulty :tags :times-solved :user]
+             :only [:_id :title :difficulty :tags :user]
              :where criteria
              :sort {:_id 1}))))
 
@@ -80,6 +80,11 @@
   [id]
   (keyword (str (int id))))
 
+(defn number-from-mongo-key
+  "Turn a keyword like :4 into an integer"
+  [k]
+  (Integer. (name k)))
+
 (defn trim-code [code]
   (when code (.trim code)))
 
@@ -89,33 +94,29 @@
                  code)))
 
 (defn record-golf-score! [user-id problem-id score]
-  (let [user-score-key (keyword (str "scores." problem-id))
-        problem-score-key (keyword (str "scores." score))
-        [problem-scores-key user-subkey] (map mongo-key-from-number
-                                              [score problem-id])]
-    (when-let [{:keys [_id scores] :as user}
-               (from-mongo
-                (fetch-one :users
-                           :where {:_id user-id}))]
-      (let [old-score-real (get scores user-subkey)
-            old-score-test (or old-score-real 1e6)
-            old-score-key (keyword (str "scores." old-score-real))]
-        (when (golfer? user)
-          (session/session-put! :golf-chart
-                                {:id problem-id
-                                 :score score
-                                 :best old-score-real}))
-        (when (< score old-score-test)
-          (update! :problems
-                   {:_id problem-id,
-                    old-score-key {:$gt 0}}
-                   {:$inc {old-score-key -1}})
-          (update! :problems
-                   {:_id problem-id}
-                   {:$inc {problem-score-key 1}})
-          (update! :users
-                   {:_id _id}
-                   {:$set {user-score-key score}}))))))
+  (when-let [{user-id :_id {old-score (keyword problem-id)} :scores :as user}
+             (from-mongo
+              (fetch-one :users
+                         :where {:_id user-id}))]
+    (when (golfer? user)
+      (session/session-put! :golf-chart
+                            {:id problem-id
+                             :score score
+                             :best old-score}))
+    (when (or (not old-score)
+              (> old-score score))
+      (update! :users
+               {:_id user-id}
+               {:$set {(keyword (str "scores." problem-id)) score}})
+      (send solved-stats (fn [scores]
+                           (let [inc (fnil inc 0),
+                                 dec (fn [x]
+                                       (when (and x (> x 1))
+                                         (dec x)))]
+                             (maybe-update scores [problem-id]
+                                           #(-> %
+                                                (maybe-update [score] inc)
+                                                (maybe-update [old-score] dec)))))))))
 
 (defn store-completed-state! [username problem-id code]
   (let [{user-id :_id} (fetch-one :users
@@ -123,10 +124,9 @@
                                   :only [:_id])
         current-time (java.util.Date.)]
     (when (not-any? #{problem-id} (get-solved username))
-      (update! :users {:_id user-id} {:$addToSet {:solved problem-id}})
-      (update! :problems {:_id problem-id} {:$inc {:times-solved 1}})
-      (update! :users {:_id problem-id} {:$set {:last-solved-date current-time}})
-      (send total-solved inc))
+      (update! :users {:_id user-id} {:$addToSet {:solved problem-id}
+                                      :$set {:last-solved-date current-time}})
+      (send solved-stats update-in [:total] inc))
     (record-golf-score! user-id problem-id (code-length code))
     (save-solution user-id problem-id code)))
 
@@ -270,7 +270,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
       (if session-user
         (with-user [{:keys [solved]}]
           (if (some #{(Integer. id)} solved)
-            (link-to (str "/problem/solutions/" id) 
+            (link-to (str "/problem/solutions/" id)
                      [:button#solutions-link {:type "submit"} "Solutions"])
             [:div {:style "clear: right; margin-bottom: 15px;"} "&nbsp;"]))
         [:div {:style "clear: right; margin-bottom: 15px;"} "&nbsp;"])
@@ -318,7 +318,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
            [:button.large {:id "approve-button"} "Approve"]]))]}))
 
 (defn problem-page [id]
-  (if (or (:approved (get-problem (Integer. id)))
+  (if (or (:approved (get-problem id))
           (approver? (session/session-get :user)))
     (code-box id)
     (flash-error "You cannot access this page" "/problems")))
@@ -347,7 +347,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
                         [:div.follower-username (str f-user "'s solution:")]
                         [:pre.follower-code f-code]]))
           [:p "None of the users you follow have solved this problem yet!"]))))})
-  
+
 (defn show-solutions [id]
   (let [problem-id (Integer. id)
         user (session/session-get :user)]
@@ -381,7 +381,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
        (let [solved (get-solved (session/session-get :user))
              problems (get-problem-list)]
          (map-indexed
-          (fn [x {:keys [title difficulty times-solved tags user], id :_id}]
+          (fn [x {:keys [title difficulty tags user], id :_id}]
             [:tr (row-class x)
              [:td.titlelink
               [:a {:href (str "/problem/" id)}
@@ -391,7 +391,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
               (s/join " " (map #(str "<span class='tag'>" % "</span>")
                                tags))]
              [:td.centered user]
-             [:td.centered (int times-solved)]
+             [:td.centered (reduce + (vals (get @solved-stats id)))]
              [:td.centered (checkbox-img (contains? solved id))]])
           problems))])}))
 
@@ -488,16 +488,15 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
 
         (update! :problems
                  {:_id id}
-                 {:_id id
-                  :title title
-                  :difficulty difficulty
-                  :times-solved (or (:times-solved existing-problem) 0)
-                  :description description
-                  :tags (re-seq #"\S+" tags)
-                  :restricted (re-seq #"\S+" restricted)
-                  :tests (s/split code #"\r\n\r\n")
-                  :user (if (empty? author) user author)
-                  :approved approved})
+                 {:$set
+                  {:title title
+                   :difficulty difficulty
+                   :description description
+                   :tags (re-seq #"\S+" tags)
+                   :restricted (re-seq #"\S+" restricted)
+                   :tests (s/split code #"\r\n\r\n")
+                   :user (if (empty? author) user author)
+                   :approved approved}})
         (flash-msg "Thank you for submitting a problem! Be sure to check back to see it posted." "/problems"))
       (flash-error "You are not authorized to submit a problem." "/problems"))))
 
@@ -551,7 +550,11 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
 
 (defroutes problems-routes
   (GET "/problems" [] (problem-list-page))
-  (GET "/problem/:id" [id] (problem-page id))
+  (GET "/problem/:id" [id]
+    (if-let [id-int (as-int id)]
+      (problem-page id-int)
+      (flash-error (format "'%s' is not a valid problem number." id)
+                   "/problems")))
   (GET "/problems/submit" [] (problem-submission-page))
   (POST "/problems/submit" [prob-id author title difficulty tags restricted description code]
     (create-problem title difficulty tags restricted description code (when (not= "" prob-id) (Integer. prob-id)) author))

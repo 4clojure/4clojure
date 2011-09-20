@@ -21,6 +21,11 @@
     (binding [*url* (:uri req)]
       (handler req))))
 
+(defn as-int [s]
+  (if (integer? s) s,
+      (try (Integer. s)
+           (catch Exception _ nil))))
+
 (defmacro assuming
   "Guard body with a series of tests. Each clause is a test-expression
   followed by a failure value. Tests will be performed in order; if
@@ -35,6 +40,23 @@
                        (partition 2 clauses)))]
      ~fail-expr
      ~body))
+
+
+
+(defn maybe-update
+  "Acts like clojure.core/update-in, except that if the value being assoc'd in
+  is nil, then instead the key is dissoc'd entirely."
+  ([m ks f]
+     (let [[k & ks] ks
+           inner (get m k)
+           v (if ks
+               (maybe-update inner ks f)
+               (f inner))]
+       (if v
+         (assoc m k v)
+         (dissoc m k))))
+  ([m ks f & args]
+     (maybe-update m ks #(apply f % args))))
 
 (defn image-builder
   "Return a function for constructing an [:img] element from a keyword.

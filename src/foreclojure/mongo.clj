@@ -2,7 +2,7 @@
   (:use somnium.congomongo
         [foreclojure.data-set :only [load-problems]]
         [foreclojure.config   :only [config]]
-        [foreclojure.problems :only [total-solved get-problem-list]]
+        [foreclojure.problems :only [number-from-mongo-key solved-stats get-problem-list]]
         [foreclojure.users    :only [get-users]]))
 
 (defn connect-to-db []
@@ -43,16 +43,18 @@
 (defn reconcile-solved-count
   "Overwrites the times-solved field in the problems collection based on data from the users collection. Should only be called on server startup since it isn't a safe operation. Also updates the total-solved agent."
   []
-  (let [total (->> (get-users)
-                   (mapcat :solved)
-                   (frequencies)
-                   (reduce (fn [sum [id solved]]
-                             (update! :problems
-                                      {:_id id}
-                                      {:$set {:times-solved solved}})
-                             (+ sum solved))
-                           0))]
-    (send total-solved (constantly total))))
+  (let [+ (fnil + 0)
+        [total scores]
+        (->> (fetch :users :only [:scores])
+             (mapcat :scores)
+             (frequencies)
+             (reduce (fn [[total scores] [[id score] times]]
+                       [(+ total times)
+                        (update-in scores
+                                   [(number-from-mongo-key id) score]
+                                   + times)])
+                     [0 {}]))]
+    (send solved-stats (constantly (assoc scores :total total)))))
 
 (defn prepare-mongo []
   (connect-to-db)

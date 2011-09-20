@@ -16,6 +16,7 @@
             [foreclojure.graphs         :only [graph-routes]]
             [foreclojure.mongo          :only [prepare-mongo]]
             [foreclojure.utils          :only [wrap-uri-binding]]
+            [foreclojure.periodic       :only [schedule-task]]
             [ring.adapter.jetty         :only [run-jetty]]
             [ring.middleware.reload     :only [wrap-reload]]
             [ring.middleware.stacktrace :only [wrap-stacktrace]]
@@ -51,8 +52,21 @@
              wrap-strip-trailing-slash
              wrap-gzip))
 
+(defn register-heartbeat []
+  (when-let [period (:heartbeat config)]
+    (apply schedule-task
+           (let [^java.io.PrintWriter out *out*
+                 ^Runtime r (Runtime/getRuntime)]
+             (fn []
+               (.println out (format "%d/%d/%d MB free/total/max"
+                                     (int (/ (. r (freeMemory)) 1e6))
+                                     (int (/ (. r (totalMemory)) 1e6))
+                                     (int (/ (. r (maxMemory)) 1e6))))))
+           period)))
+
 (defn run []
   (prepare-mongo)
+  (register-heartbeat)
   (run-jetty (var app) {:join? *block-server* :port 8080}))
 
 (defn -main [& args]
