@@ -5,8 +5,7 @@
   (:import  [java.io                 ByteArrayInputStream
                                      ByteArrayOutputStream])
   (:use     [compojure.core          :only [defroutes GET]]
-            [foreclojure.utils       :only [from-mongo]]
-            [somnium.congomongo      :only [fetch-one]]
+            [foreclojure.problems    :only [solved-stats]]
             [useful.utils            :only [with-adjustments]]))
 
 (defn un-group
@@ -18,13 +17,9 @@
                   (repeat count x))))
 
 (defn fetch-score-frequencies [problem-id]
-  (into {}
-        (for [[k v] (:scores
-                     (from-mongo
-                      (fetch-one :problems
-                                 :where {:_id problem-id}
-                                 :only [:scores])))]
-          [(Integer/parseInt (name k)), v])))
+  (-> @solved-stats
+      (get problem-id)
+      (dissoc nil)))
 
 (defn make-problem-plot [id best curr]
   (let [freqs (fetch-score-frequencies id)
