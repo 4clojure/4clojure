@@ -43,17 +43,17 @@
 (defn reconcile-solved-count
   "Overwrites the times-solved field in the problems collection based on data from the users collection. Should only be called on server startup since it isn't a safe operation. Also updates the total-solved agent."
   []
-  (let [+ (fnil + 0)
-        [total scores]
-        (->> (fetch :users :only [:scores])
-             (mapcat :scores)
-             (frequencies)
-             (reduce (fn [[total scores] [[id score] times]]
-                       [(+ total times)
-                        (update-in scores
-                                   [(number-from-mongo-key id) score]
-                                   + times)])
-                     [0 {}]))]
+  (let [+      (fnil + 0)
+        users  (fetch :users :only [:scores :solved])
+        scores (->> users
+                    (mapcat :scores)
+                    (frequencies)
+                    (reduce (fn [scores [[id score] times]]
+                              (update-in scores
+                                         [(number-from-mongo-key id) score]
+                                         + times))
+                            {}))
+        total  (count (mapcat :solved users))]
     (send solved-stats (constantly (assoc scores :total total)))))
 
 (defn prepare-mongo []
