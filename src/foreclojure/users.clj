@@ -27,7 +27,7 @@
   (let [users (from-mongo
                (fetch :users
                       :only [:user :solved :contributor]))
-        sortfn  (comp - count :solved)]
+        sortfn (comp - count :solved)]
     (sort-by sortfn users)))
 
 (defn get-user-with-ranking [username, users]
@@ -81,28 +81,29 @@
   (let [username (session/session-get :user) 
         {:keys [user-ranking top-100]} (get-top-100-and-current-user username)]
     {:title "Top 100 Users"
-    :content
-    (list
-     [:h1 "Top 100 Users"]
-     (format-user-ranking user-ranking)
-     [:div
-      [:span.contributor "*"] " "
-      (link-to repo-url "4clojure contributor")]
-     [:br]
-     [:table#user-table.my-table
-      [:thead
-       [:tr
-        [:th {:style "width: 40px;"} "Rank"]
-        [:th "Username"]
-        [:th "Problems Solved"]]]
-      (map-indexed (fn [rownum {:keys [user contributor solved]}]
-                     [:tr (row-class rownum)
-                      [:td (inc rownum)]
-                      [:td
-                       (when contributor [:span.contributor "* "])
-                       [:a.user-profile-link {:href (str "/user/" user)} user]]
-                      [:td.centered (count solved)]])
-                   top-100)])}))
+     :content
+     (list
+      [:p {:style "margin: 0;"} "(click " (link-to "/users/all" "here") " to list all users)"]
+      [:h1 "Top 100 Users"]
+      (format-user-ranking user-ranking)
+      [:div
+       [:span.contributor "*"] " "
+       (link-to repo-url "4clojure contributor")]
+      [:br]
+      [:table#user-table.my-table
+       [:thead
+        [:tr
+         [:th {:style "width: 40px;"} "Rank"]
+         [:th "Username"]
+         [:th "Problems Solved"]]]
+       (map-indexed (fn [rownum {:keys [user contributor solved]}]
+                      [:tr (row-class rownum)
+                       [:td (inc rownum)]
+                       [:td
+                        (when contributor [:span.contributor "* "])
+                        [:a.user-profile-link {:href (str "/user/" user)} user]]
+                       [:td.centered (count solved)]])
+                    top-100)])}))
 
 
 ;; TODO: this is snagged from problems.clj but can't be imported due to cyclic dependency, must refactor this out.
