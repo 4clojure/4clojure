@@ -52,7 +52,7 @@ function configureDataTables(){
     } );
 
     $('#user-table').dataTable( {
-        "iDisplayLength":25,
+        "iDisplayLength":100,
         "aaSorting": [[ 0, "asc" ]],
         "aoColumns": [
 	    null,

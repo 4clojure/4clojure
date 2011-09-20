@@ -76,8 +76,31 @@
     [:br]
     [:br]]))
 
+(def-page all-users-page []
+  {:title "All 4Clojure Users"
+   :content
+   (list
+    [:h1 "All 4Clojure Users"]
+    [:div
+     [:span.contributor "*"] " "
+     (link-to repo-url "4clojure contributor")]
+    [:br]
+    [:table#user-table.my-table
+     [:thead
+      [:tr
+       [:th {:style "width: 40px;"} "Rank"]
+       [:th "Username"]
+       [:th "Problems Solved"]]]
+     (map-indexed (fn [rownum {:keys [user contributor solved]}]
+                    [:tr (row-class rownum)
+                     [:td (inc rownum)]
+                     [:td
+                      (when contributor [:span.contributor "* "])
+                      [:a.user-profile-link {:href (str "/user/" user)} user]]
+                     [:td.centered (count solved)]])
+                  (get-users))])})
 
-(def-page users-page []
+(def-page top-users-page []
   (let [username (session/session-get :user) 
         {:keys [user-ranking top-100]} (get-top-100-and-current-user username)]
     {:title "Top 100 Users"
@@ -104,7 +127,6 @@
                         [:a.user-profile-link {:href (str "/user/" user)} user]]
                        [:td.centered (count solved)]])
                     top-100)])}))
-
 
 ;; TODO: this is snagged from problems.clj but can't be imported due to cyclic dependency, must refactor this out.
 (defn get-problems
@@ -188,7 +210,8 @@
     (response/redirect "/problems")))
 
 (defroutes users-routes
-  (GET  "/users" [] (users-page))
+  (GET  "/users" [] (top-users-page))
+  (GET  "/users/all" [] (all-users-page))
   (GET  "/user/:username" [username] (user-profile username))
   (POST "/user/follow/:username" [username] (follow-user username :$addToSet))
   (POST "/user/unfollow/:username" [username] (follow-user username :$pull)))
