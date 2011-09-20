@@ -94,7 +94,8 @@
                  code)))
 
 (defn record-golf-score! [user-id problem-id score]
-  (when-let [{user-id :_id {old-score (keyword problem-id)} :scores :as user}
+  (when-let [{{old-score (keyword (str problem-id))} :scores
+              user-id :_id :as user}
              (from-mongo
               (fetch-one :users
                          :where {:_id user-id}))]
