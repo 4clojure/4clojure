@@ -106,8 +106,7 @@
     {:title "Top 100 Users"
      :content
      (list
-      [:h1 "Top 100 Users"]
-      [:span "(or " (link-to "/users/all" "see all") ")"]
+      [:h1 "Top 100 Users" [:span {:style "font-size: 14px; font-weight: normal; margin-left: 10px;"} "[show " (link-to "/users/all" "all") "]"]]
       (format-user-ranking user-ranking)
       [:div
        [:span.contributor "*"] " "
