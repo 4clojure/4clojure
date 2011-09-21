@@ -177,15 +177,18 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
     (let [{:keys [tests restricted] :as problem} (get-problem id)
           sb-tester (get-tester restricted)
           user-forms (s/join " " (map pr-str (read-string-safely code)))
+          devnull (java.io.StringWriter.) ;; TODO consider Apache Commons IO
           results (if (empty? user-forms)
                     ["Empty input is not allowed."]
                     (for [test tests]
                       (try
-                        (when-not (->> user-forms
-                                       (s/replace test "__")
-                                       read-string-safely
-                                       first
-                                       (sb sb-tester))
+                        (when-not (sb sb-tester
+                                      (->> user-forms
+                                           (s/replace test "__")
+                                           read-string-safely
+                                           first)
+                                      {#'*out* devnull
+                                       #'*err* devnull})
                           "You failed the unit tests")
                         (catch Throwable t (.getMessage t)))))
           [passed [fail-msg]] (split-with nil? results)]
