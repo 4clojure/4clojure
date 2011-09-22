@@ -3,7 +3,8 @@
             [sandbar.stateful-session :as   session])
   (:use     [hiccup.form-helpers      :only [form-to check-box]]
             [hiccup.page-helpers      :only [link-to]]
-            [foreclojure.utils        :only [def-page with-user]]
+            [foreclojure.utils        :only [with-user]]
+            [foreclojure.template     :only [def-page]]
             [foreclojure.users        :only [golfer?]]
             [compojure.core           :only [defroutes POST GET]]
             [somnium.congomongo       :only [update!]]))

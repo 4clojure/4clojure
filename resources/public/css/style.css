@@ -222,6 +222,35 @@ div.message {
    float: left;
 }
 
+div#heading {
+    font-weight: bold;
+    font-size: 25px;
+    float: left;
+    display: block;
+    clear: left;
+    margin-bottom: 10px;
+}
+div#heading-note {
+    font-weight: bold;
+    font-size: 13px;
+    display: block;
+    float: left;
+    clear: right;
+    margin: 11px 0 0 13px;
+}
+
+div#subheading {
+    font-size: 13px;
+    font-weight: normal;
+    display: block;
+    float: left;
+    clear: both;
+    margin-bottom: 10px;
+}
+
+div.message #flash-text {}
+div.message #error-text {}
+
 div#prob-title {
    font-size: 15pt;
    font-family: sans-serif;

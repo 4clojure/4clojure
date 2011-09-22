@@ -4,7 +4,8 @@
   (:import  [org.jasypt.util.password StrongPasswordEncryptor])
   (:use     [hiccup.form-helpers      :only [form-to text-field password-field]]
             [compojure.core           :only [defroutes GET POST]]
-            [foreclojure.utils        :only [def-page form-row assuming flash-error]]
+            [foreclojure.utils        :only [form-row assuming flash-error]]
+            [foreclojure.template     :only [def-page]]
             [somnium.congomongo       :only [insert! fetch-one]]))
 
 (def-page register-page []
