@@ -366,8 +366,8 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
           (show-solutions-page problem-id)
           (flash-error "You must solve this problem before you can see others' solutions!" (str "/problem/" problem-id))))
       (do
-        (session/session-put! :login-to (str "/problem/solutions/" problem-id))
-        (flash-error "You must login to see solutions!" "/login")))))
+        (session/session-put! :login-to *url*)
+        (flash-error "You must log in to see solutions!" "/login")))))
 
 (let [checkbox-img (image-builder {true ["/images/checkmark.png" "completed"]
                                    false ["/images/empty-sq.png" "incomplete"]})]
