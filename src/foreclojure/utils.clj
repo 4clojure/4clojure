@@ -144,7 +144,7 @@
      [:span.error "You must " (login-link) " to do this."]))
 
 (defn flash-fn [type]
-  (fn [msg url]
+  (fn [url msg]
     (session/flash-put! type msg)
     (response/redirect url)))
 

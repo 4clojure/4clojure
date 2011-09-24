@@ -48,7 +48,7 @@
           (session/session-put! :user user)
           (session/session-delete-key! :login-to)
           (response/redirect (or location "/problems")))
-      (flash-error "Error logging in." "/login"))))
+      (flash-error "/login" "Error logging in."))))
 
 (defn account-settings-box [user]
   [:table
@@ -124,9 +124,9 @@
                      {:$set {:pwd (if (not-empty new-pwd) new-pwd-hash pwd) :user new-lower-user}}
                      :upsert false)
             (session/session-put! :user new-lower-user)
-            (flash-msg (str "Account for " new-lower-user " updated successfully")
-                       "/problems"))
-          (flash-error why "/login/update")))))
+            (flash-msg "/problems"
+              (str "Account for " new-lower-user " updated successfully")))
+          (flash-error "/login/update" why)))))
 
 (def-page reset-password-page []
   {:title "Reset password"
@@ -183,13 +183,13 @@
     (let [{:keys [success] :as diagnostics} (try-to-email email name id)]
       (if success
         (do (session/session-put! :login-to "/login/update")
-            (flash-msg "Your password has been reset! You should receive an email soon."
-                       (login-url "/login/update")))
+            (flash-msg (login-url "/login/update")
+              "Your password has been reset! You should receive an email soon."))
         (do (spit (str name ".pwd") diagnostics)
-            (flash-error (str "Something went wrong emailing your new password! Please contact <a href='mailto:team@4clojure.com?subject=Password Reset: " name "'>team@4clojure.com</a> - we'll reset it manually and look into the problem. When you do, please mention your username.")
-                         "/login/reset"))))
-    (flash-error "We don't know anyone with that email address!"
-                 "/login/reset")))
+            (flash-error "/login/reset"
+              (str "Something went wrong emailing your new password! Please contact <a href='mailto:team@4clojure.com?subject=Password Reset: " name "'>team@4clojure.com</a> - we'll reset it manually and look into the problem. When you do, please mention your username.")))))
+    (flash-error "/login/reset"
+      "We don't know anyone with that email address!")))
 
 (defroutes login-routes
   (GET  "/login" [location] (my-login-page location))

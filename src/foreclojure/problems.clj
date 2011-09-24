@@ -206,8 +206,8 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
         (binding [*url* (str *url* "#prob-desc")]
           (run-code id code))]
     (session/flash-put! :failing-test num-tests-passed)
-    (flash-msg message url)
-    (flash-error error url)))
+    (flash-msg url message)
+    (flash-error url error)))
 
 (let [light-img (image-builder {:red   ["red"   "test failed"]
                                 :green ["green" "test passed"]
@@ -323,7 +323,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
            [:button.large {:id "approve-button"} "Approve"]]))]}))
 
 (defn problem-page [id]
-  (let [error #(flash-error % "/problems")
+  (let [error #(flash-error "/problems" %)
         user (delay (session/session-get :user))]
     (if-let [{:keys [approved]} (get-problem id)]
       (cond (or approved (approver? (force user))) (code-box id)
@@ -364,10 +364,11 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
       (with-user [{:keys [solved]}]
         (if (some #{problem-id} solved)
           (show-solutions-page problem-id)
-          (flash-error "You must solve this problem before you can see others' solutions!" (str "/problem/" problem-id))))
+          (flash-error (str "/problem/" problem-id)
+            "You must solve this problem before you can see others' solutions!")))
       (do
         (session/session-put! :login-to *url*)
-        (flash-error "You must log in to see solutions!" "/login")))))
+        (flash-error "/login" "You must log in to see solutions!")))))
 
 (let [checkbox-img (image-builder {true ["/images/checkmark.png" "completed"]
                                    false ["/images/empty-sq.png" "incomplete"]})]
@@ -437,7 +438,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
   (let [user (session/session-get :user)]
     (if (approver? user)
       (unapproved-problem-list-page)
-      (flash-error "You cannot access this page" "/problems"))))
+      (flash-error "/problems" "You cannot access this page"))))
 
 (def-page problem-submission-page []
   {:title "Submit a problem"
@@ -508,8 +509,9 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
                    :tests (s/split code #"\r\n\r\n")
                    :user (if (empty? author) user author)
                    :approved approved}})
-        (flash-msg "Thank you for submitting a problem! Be sure to check back to see it posted." "/problems"))
-      (flash-error "You are not authorized to submit a problem." "/problems"))))
+        (flash-msg "/problems"
+          "Thank you for submitting a problem! Be sure to check back to see it posted."))
+      (flash-error "/problems" "You are not authorized to submit a problem."))))
 
 (defn edit-problem [id]
   (if (approver? (session/session-get :user))
@@ -524,7 +526,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
                      :tests (s/join "\r\n\r\n" tests)}]
         (session/flash-put! k v))
       (response/redirect "/problems/submit"))
-  (flash-error "You don't have access to this page" "/problems")))
+  (flash-error "/problems" "You don't have access to this page")))
 
 (defn approve-problem [id]
   "take a user submitted problem and approve it"
@@ -546,9 +548,8 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
           :text (str title ": " url)})
         ;; TODO: dump this in a proper log
         (catch EmailException e (println (str "email failed to send on approved problem #" id))))
-      (flash-msg (str "Problem " id " has been approved!")
-                 url))
-    (flash-error "You don't have access to this page" "/problems")))
+      (flash-msg url (str "Problem " id " has been approved!")))
+    (flash-error "/problems" "You don't have access to this page")))
 
 (defn reject-problem [id reason]
   "reject a user submitted problem by deleting it from the database"
@@ -569,16 +570,16 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
              "Description: " description "\n"
              "Tests: " tests "\n"
              "Rejection Reason: " reason)})
-      (flash-msg (str "Problem " id " was rejected and deleted.") "/problems"))
-    (flash-error "You do not have permission to access this page" "/problems")))
+      (flash-msg "/problems" (str "Problem " id " was rejected and deleted.")))
+    (flash-error "/problems" "You do not have permission to access this page")))
 
 (defroutes problems-routes
   (GET "/problems" [] (problem-list-page))
   (GET "/problem/:id" [id]
     (if-let [id-int (as-int id)]
       (problem-page id-int)
-      (flash-error (format "'%s' is not a valid problem number." id)
-                   "/problems")))
+      (flash-error "/problems"
+        (format "'%s' is not a valid problem number." id))))
   (GET "/problems/submit" [] (problem-submission-page))
   (POST "/problems/submit" [prob-id author title difficulty tags restricted description code]
     (create-problem title difficulty tags restricted description code (when (not= "" prob-id) (Integer. prob-id)) author))

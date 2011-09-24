@@ -48,7 +48,7 @@
       (do
         (session/flash-put! :user user)
         (session/flash-put! :email email)
-        (flash-error why "/register")))))
+        (flash-error "/register" why)))))
 
 (defroutes register-routes
   (GET  "/register" [] (register-page))
