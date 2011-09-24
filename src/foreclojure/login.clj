@@ -74,7 +74,7 @@
       [:button {:type "submit"} "Submit"]])))
 
 (defn hide-settings-box [user-obj]
-  (list     
+  (list
    [:p "When you solve a problem, we allow any user who has solved a problem to view your solutions to that problem. Check this box to keep your solutions private."]
    (form-to [:post "/users/set-hide-solutions"]
      (check-box :hide-solutions
