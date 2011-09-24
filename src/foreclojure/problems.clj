@@ -5,7 +5,7 @@
             [ring.util.response       :as      response])
   (:import  [org.apache.commons.mail  EmailException])
   (:use     [foreclojure.utils        :only    [from-mongo get-user get-solved login-link *url* flash-msg flash-error row-class approver? can-submit? send-email image-builder with-user as-int maybe-update]]
-            [foreclojure.template     :only    [def-page]]
+            [foreclojure.template     :only    [def-page content-page]]
             [foreclojure.social       :only    [tweet-link gist!]]
             [foreclojure.feeds        :only    [create-feed]]
             [foreclojure.users        :only    [golfer? get-user-id disable-codebox?]]
@@ -400,34 +400,36 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
              [:td.centered (checkbox-img (contains? solved id))]])
           problems))])}))
 
+(defn generate-unapproved-problems-list []
+  (let [problems (get-problem-list {:approved false})]
+    (list
+     [:table#unapproved-problems.my-table
+      [:thead
+       [:tr
+        [:th "Title"]
+        [:th "Difficulty"]
+        [:th "Topics"]
+        [:th "Submitted By"]]]
+      (map-indexed
+       (fn [x {:keys [title difficulty tags user], id :_id}]
+         [:tr (row-class x)
+          [:td.titlelink
+           [:a {:href (str "/problem/" id)}
+            title]]
+          [:td.centered difficulty]
+          [:td.centered
+           (s/join " " (map #(str "<span class='tag'>" % "</span>")
+                            tags))]
+          [:td.centered user]])
+       problems)])))
+
 (def-page unapproved-problem-list-page []
   {:title "Unapproved problems"
    :content
-   (list
-    [:div.message (session/flash-get :message)]
-    [:div#problems-error.error (session/flash-get :error)]
-    [:table#unapproved-problems.my-table
-     [:thead
-      [:tr
-       [:th "Title"]
-       [:th "Difficulty"]
-       [:th "Topics"]
-       [:th "Submitted By"]]]
-     (let [problems (get-problem-list {:approved false})]
-       (map-indexed
-        (fn [x {:keys [title difficulty tags user], id :_id}]
-          [:tr (row-class x)
-           [:td.titlelink
-            [:a {:href (str "/problem/" id)}
-             title]]
-           [:td.centered difficulty]
-           [:td.centered
-            (s/join " " (map #(str "<span class='tag'>" % "</span>")
-                             tags))]
-           [:td.centered user]])
-        problems))])})
+   (content-page
+    {:main (generate-unapproved-problems-list)})})
 
-(defn unapproved-problem-list []
+(defn access-unapproved-problem-list-page []
   (let [user (session/session-get :user)]
     (if (approver? user)
       (unapproved-problem-list-page)
@@ -563,7 +565,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
   (GET "/problems/submit" [] (problem-submission-page))
   (POST "/problems/submit" [prob-id author title difficulty tags restricted description code]
     (create-problem title difficulty tags restricted description code (when (not= "" prob-id) (Integer. prob-id)) author))
-  (GET "/problems/unapproved" [] (unapproved-problem-list))
+  (GET "/problems/unapproved" [] (access-unapproved-problem-list-page))
   (GET "/problem/:id/edit" [id]
     (edit-problem (Integer. id)))
   (POST "/problem/edit" [id]

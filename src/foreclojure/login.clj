@@ -4,7 +4,7 @@
   (:import  [org.jasypt.util.password StrongPasswordEncryptor])
   (:use     [hiccup.form-helpers      :only [form-to label text-field password-field check-box]]
             [foreclojure.utils        :only [from-mongo flash-error flash-msg with-user form-row assuming send-email login-url]]
-            [foreclojure.template     :only [def-page]]
+            [foreclojure.template     :only [def-page content-page]]
             [foreclojure.users        :only [disable-codebox? set-disable-codebox hide-solutions? set-hide-solutions]]
             [compojure.core           :only [defroutes GET POST]]
             [useful.map               :only [keyed]]
@@ -12,31 +12,30 @@
             [clojure.stacktrace       :only [print-cause-trace]]
             [somnium.congomongo       :only [update! fetch-one]]))
 
+(def login-box
+  (form-to [:post "/login"]
+    [:table
+     [:tr
+      [:td (label :user "Username")]
+      [:td (text-field :user)]]
+     [:tr
+      [:td (label :pwd "Password")]
+      [:td (password-field :pwd)]]
+     [:tr
+      [:td]
+      [:td [:button {:type "submit"} "Log In"]]]
+     [:tr
+      [:td]
+      [:td
+       [:a {:href "/login/reset"} "Forgot your password?"]]]]))
+
 (def-page my-login-page [location]
-  {:title "4clojure - login"
-   :content
-   (list
-    (when location
-      (session/session-put! :login-to location)
-      nil) ;; don't include this in HTML output
-    [:div.error
-     (session/flash-get :error)
-     (session/flash-get :message)]
-    (form-to [:post "/login"]
-      [:table
-       [:tr
-        [:td (label :user "Username")]
-        [:td (text-field :user)]]
-       [:tr
-        [:td (label :pwd "Password")]
-        [:td (password-field :pwd)]]
-       [:tr
-        [:td]
-        [:td [:button {:type "submit"} "Log In"]]]
-       [:tr
-        [:td]
-        [:td
-         [:a {:href "/login/reset"} "Forgot your password?"]]]]))})
+  (do
+    (if location (session/session-put! :login-to location))
+    {:title "4clojure - login"
+     :content
+     (content-page
+      {:main login-box})}))
 
 (defn do-login [user pwd]
   (let [user (.toLowerCase user)
@@ -51,48 +50,56 @@
           (response/redirect (or location "/problems")))
       (flash-error "Error logging in." "/login"))))
 
-;; TODO this page is getting hella gross. Need a real Settings page soon.
+(defn account-settings-box [user]
+  [:table
+   (form-to [:post "/login/update"]
+     (map form-row
+          [[text-field :new-username "Username" user]
+           [password-field :old-pwd "Current password"]
+           [password-field :pwd "New password"]
+           [password-field :repeat-pwd "Repeat password"]])
+     [:tr
+      [:td [:button {:type "submit"} "Reset now"]]])])
+
+(defn js-settings-box [user-obj]
+  (list
+   [:p "Selecting this will disable the JavaScript code entry box and just give you plain text entry"]
+   (form-to [:post "/users/set-disable-codebox"]
+     (check-box :disable-codebox
+                (disable-codebox? user-obj))
+     [:label {:for "disable-codebox"}
+      "Disable JavaScript in code entry box"]
+     [:br]
+     [:div#button-div
+      [:button {:type "submit"} "Submit"]])))
+
+(defn hide-settings-box [user-obj]
+  (list     
+   [:p "When you solve a problem, we allow any user who has solved a problem to view your solutions to that problem. Check this box to keep your solutions private."]
+   (form-to [:post "/users/set-hide-solutions"]
+     (check-box :hide-solutions
+                (hide-solutions? user-obj))
+     [:label {:for "hide-solutions"}
+      "Hide my solutions"]
+     [:br]
+     [:div#button-div
+      [:button {:type "submit"} "Submit"]])))
+
 (def-page update-credentials-page []
-  {:title "Change password"
-   :content
-   (with-user [{:keys [user] :as user-obj}]
-     [:div#account-settings
-      [:div#update-pwd
-       [:h2 "Change password for " user]
-       [:span.error (session/flash-get :error)]
-       [:table
-        (form-to [:post "/login/update"]
-          (map form-row
-               [[text-field :new-username "Username" user]
-                [password-field :old-pwd "Current password"]
-                [password-field :pwd "New password"]
-                [password-field :repeat-pwd "Repeat password"]])
-          [:tr
-           [:td [:button {:type "submit"} "Reset now"]]])]
-       [:hr]
-       [:div#settings-codebox
+  (with-user [{:keys [user] :as user-obj}]
+    {:title "Change password"
+     :content
+     (content-page
+      {:main
+       (list
+        [:h2 "Change password for " user]
+        [:div#account-settings (account-settings-box user)]
+        [:hr]
         [:h2 "Disable JavaScript Code Box"]
-        [:p "Selecting this will disable the JavaScript code entry box and just give you plain text entry"]
-        (form-to [:post "/users/set-disable-codebox"]
-          (check-box :disable-codebox
-                     (disable-codebox? user-obj))
-          [:label {:for "disable-codebox"}
-           "Disable JavaScript in code entry box"]
-          [:br]
-          [:div#button-div
-           [:button {:type "submit"} "Submit"]])]
-       [:hr]
-       [:div#settings-follow
+        [:div#settings-codebox (js-settings-box user-obj)]
+        [:hr]
         [:h2 "Hide My Solutions"]
-        [:p "When you solve a problem, we allow any user who has solved a problem to view your solutions to that problem. Check this box to keep your solutions private."]
-        (form-to [:post "/users/set-hide-solutions"]
-          (check-box :hide-solutions
-                     (hide-solutions? user-obj))
-          [:label {:for "hide-solutions"}
-           "Hide my solutions"]
-          [:br]
-          [:div#button-div
-           [:button {:type "submit"} "Submit"]])]]])})
+        [:div#settings-follow (hide-settings-box user-obj)])})}))
 
 (defn do-update-credentials! [new-username old-pwd new-pwd repeat-pwd]
   (with-user [{:keys [user pwd]}]

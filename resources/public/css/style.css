@@ -239,13 +239,19 @@ div#heading-note {
     margin: 11px 0 0 13px;
 }
 
-div#subheading {
+div#sub-heading {
     font-size: 13px;
     font-weight: normal;
     display: block;
     float: left;
     clear: both;
     margin-bottom: 10px;
+}
+
+div#main {
+    display: block;
+    float: left;
+    clear: both;
 }
 
 div.message #flash-text {}

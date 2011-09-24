@@ -84,15 +84,18 @@
          )]]])))
 
 ;; Content templates
-(defn content-page [body-map]
-  (list
-   [:div#heading      (:heading body-map)]
-   [:div#heading-note (:heading-note body-map)]
-   [:div#subheading   (:sub-heading body-map)]
-   [:div.message
-    [:span#flash-text (session/flash-get :message)]
-    [:span#error-text (session/flash-get :error)]]
-   [:div.main         (:main body-map)]))
+(defn content-page [{:keys [heading heading-note sub-heading main]}]
+  (let [flash-message (session/flash-get :message)
+        flash-error   (session/flash-get :error)]
+    (list
+     (when heading       [:div#heading      heading])
+     (when heading-note  [:div#heading-note heading-note])
+     (when sub-heading   [:div#sub-heading  sub-heading])
+     (when flash-message [:div.message
+                          [:span#flash-text flash-message]])
+     (when flash-error   [:div.message
+                          [:span#error-text flash-error]])
+     (when main          [:div#main         main]))))
 
 (defmacro def-page [page-name [& args] & code]
   `(defn ~page-name [~@args]
