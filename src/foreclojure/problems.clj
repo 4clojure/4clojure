@@ -323,10 +323,14 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
            [:button.large {:id "approve-button"} "Approve"]]))]}))
 
 (defn problem-page [id]
-  (if (or (:approved (get-problem id))
-          (approver? (session/session-get :user)))
-    (code-box id)
-    (flash-error "You cannot access this page" "/problems")))
+  (let [error #(flash-error % "/problems")
+        user (delay (session/session-get :user))]
+    (if-let [{:keys [approved]} (get-problem id)]
+      (cond (or approved (approver? (force user))) (code-box id)
+            (force user) (error "You cannot access this page")
+            :else (error (str "You must " (login-link)
+                              " to view unapproved problems")))
+      (error "No such problem!"))))
 
 (def-page show-solutions-page [problem-id]
   {:title "4Clojure - Problem Solutions"
