@@ -484,7 +484,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
                                         :only [:approved :times-solved])
             approved (true? (:approved existing-problem))]
 
-        (when (empty? author)           ; newly submitted, not a moderator tweak
+        (when-not existing-problem
           (try
             (send-email
              {:from "team@4clojure.com"
@@ -529,12 +529,25 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
 (defn approve-problem [id]
   "take a user submitted problem and approve it"
   (if (approver? (session/session-get :user))
-    (do
+    (let [{:keys [title user]} (from-mongo
+                                (fetch-one :problems
+                                           :where {:_id id}
+                                           :only [:title :user]))
+          url (str "/problem/" id)]
       (update! :problems
                {:_id id}
                {:$set {:approved true}})
+      (try
+        (send-email
+         {:from "team@4clojure.com"
+          :to [(users/email-address user)]
+          :subject (format "Problem #%d: submission accepted" id)
+          :html (html (link-to url title))
+          :text (str title ": " url)})
+        ;; TODO: dump this in a proper log
+        (catch EmailException e (println (str "email failed to send on approved problem #" id))))
       (flash-msg (str "Problem " id " has been approved!")
-                 (str "/problem/" id)))
+                 url))
     (flash-error "You don't have access to this page" "/problems")))
 
 (defn reject-problem [id reason]
