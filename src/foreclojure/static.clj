@@ -2,7 +2,7 @@
   (:use [compojure.core       :only [defroutes GET]]
         [foreclojure.problems :only [solved-stats]]
         [foreclojure.config   :only [repo-url]]
-        [foreclojure.utils    :only [def-page]]))
+        [foreclojure.template :only [def-page]]))
 
 (def df
   (let [df (java.text.DecimalFormat.)

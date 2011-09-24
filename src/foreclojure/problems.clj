@@ -4,7 +4,8 @@
             [clojure.string           :as      s]
             [ring.util.response       :as      response])
   (:import  [org.apache.commons.mail  EmailException])
-  (:use     [foreclojure.utils        :only    [from-mongo get-user get-solved login-link *url* flash-msg flash-error def-page row-class approver? can-submit? send-email image-builder with-user as-int maybe-update]]
+  (:use     [foreclojure.utils        :only    [from-mongo get-user get-solved login-link *url* flash-msg flash-error row-class approver? can-submit? send-email image-builder with-user as-int maybe-update]]
+            [foreclojure.template     :only    [def-page content-page]]
             [foreclojure.social       :only    [tweet-link gist!]]
             [foreclojure.feeds        :only    [create-feed]]
             [foreclojure.users        :only    [golfer? get-user-id disable-codebox?]]
@@ -177,15 +178,18 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
     (let [{:keys [tests restricted] :as problem} (get-problem id)
           sb-tester (get-tester restricted)
           user-forms (s/join " " (map pr-str (read-string-safely code)))
+          devnull (java.io.StringWriter.) ;; TODO consider Apache Commons IO
           results (if (empty? user-forms)
                     ["Empty input is not allowed."]
                     (for [test tests]
                       (try
-                        (when-not (->> user-forms
-                                       (s/replace test "__")
-                                       read-string-safely
-                                       first
-                                       (sb sb-tester))
+                        (when-not (sb sb-tester
+                                      (->> user-forms
+                                           (s/replace test "__")
+                                           read-string-safely
+                                           first)
+                                      {#'*out* devnull
+                                       #'*err* devnull})
                           "You failed the unit tests")
                         (catch Throwable t (.getMessage t)))))
           [passed [fail-msg]] (split-with nil? results)]
@@ -202,8 +206,8 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
         (binding [*url* (str *url* "#prob-desc")]
           (run-code id code))]
     (session/flash-put! :failing-test num-tests-passed)
-    (flash-msg message url)
-    (flash-error error url)))
+    (flash-msg url message)
+    (flash-error url error)))
 
 (let [light-img (image-builder {:red   ["red"   "test failed"]
                                 :green ["green" "test passed"]
@@ -319,10 +323,14 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
            [:button.large {:id "approve-button"} "Approve"]]))]}))
 
 (defn problem-page [id]
-  (if (or (:approved (get-problem id))
-          (approver? (session/session-get :user)))
-    (code-box id)
-    (flash-error "You cannot access this page" "/problems")))
+  (let [error #(flash-error "/problems" %)
+        user (delay (session/session-get :user))]
+    (if-let [{:keys [approved]} (get-problem id)]
+      (cond (or approved (approver? (force user))) (code-box id)
+            (force user) (error "You cannot access this page")
+            :else (error (str "You must " (login-link)
+                              " to view unapproved problems")))
+      (error "No such problem!"))))
 
 (def-page show-solutions-page [problem-id]
   {:title "4Clojure - Problem Solutions"
@@ -356,10 +364,11 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
       (with-user [{:keys [solved]}]
         (if (some #{problem-id} solved)
           (show-solutions-page problem-id)
-          (flash-error "You must solve this problem before you can see others' solutions!" (str "/problem/" problem-id))))
+          (flash-error (str "/problem/" problem-id)
+            "You must solve this problem before you can see others' solutions!")))
       (do
-        (session/session-put! :login-to (str "/problem/solutions/" problem-id))
-        (flash-error "You must login to see solutions!" "/login")))))
+        (session/session-put! :login-to *url*)
+        (flash-error "/login" "You must log in to see solutions!")))))
 
 (let [checkbox-img (image-builder {true ["/images/checkmark.png" "completed"]
                                    false ["/images/empty-sq.png" "incomplete"]})]
@@ -396,38 +405,40 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
              [:td.centered (checkbox-img (contains? solved id))]])
           problems))])}))
 
+(defn generate-unapproved-problems-list []
+  (let [problems (get-problem-list {:approved false})]
+    (list
+     [:table#unapproved-problems.my-table
+      [:thead
+       [:tr
+        [:th "Title"]
+        [:th "Difficulty"]
+        [:th "Topics"]
+        [:th "Submitted By"]]]
+      (map-indexed
+       (fn [x {:keys [title difficulty tags user], id :_id}]
+         [:tr (row-class x)
+          [:td.titlelink
+           [:a {:href (str "/problem/" id)}
+            title]]
+          [:td.centered difficulty]
+          [:td.centered
+           (s/join " " (map #(str "<span class='tag'>" % "</span>")
+                            tags))]
+          [:td.centered user]])
+       problems)])))
+
 (def-page unapproved-problem-list-page []
   {:title "Unapproved problems"
    :content
-   (list
-    [:div.message (session/flash-get :message)]
-    [:div#problems-error.error (session/flash-get :error)]
-    [:table#unapproved-problems.my-table
-     [:thead
-      [:tr
-       [:th "Title"]
-       [:th "Difficulty"]
-       [:th "Topics"]
-       [:th "Submitted By"]]]
-     (let [problems (get-problem-list {:approved false})]
-       (map-indexed
-        (fn [x {:keys [title difficulty tags user], id :_id}]
-          [:tr (row-class x)
-           [:td.titlelink
-            [:a {:href (str "/problem/" id)}
-             title]]
-           [:td.centered difficulty]
-           [:td.centered
-            (s/join " " (map #(str "<span class='tag'>" % "</span>")
-                             tags))]
-           [:td.centered user]])
-        problems))])})
+   (content-page
+    {:main (generate-unapproved-problems-list)})})
 
-(defn unapproved-problem-list []
+(defn access-unapproved-problem-list-page []
   (let [user (session/session-get :user)]
     (if (approver? user)
       (unapproved-problem-list-page)
-      (flash-error "You cannot access this page" "/problems"))))
+      (flash-error "/problems" "You cannot access this page"))))
 
 (def-page problem-submission-page []
   {:title "Submit a problem"
@@ -474,7 +485,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
                                         :only [:approved :times-solved])
             approved (true? (:approved existing-problem))]
 
-        (when (empty? author)           ; newly submitted, not a moderator tweak
+        (when-not existing-problem
           (try
             (send-email
              {:from "team@4clojure.com"
@@ -498,8 +509,9 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
                    :tests (s/split code #"\r\n\r\n")
                    :user (if (empty? author) user author)
                    :approved approved}})
-        (flash-msg "Thank you for submitting a problem! Be sure to check back to see it posted." "/problems"))
-      (flash-error "You are not authorized to submit a problem." "/problems"))))
+        (flash-msg "/problems"
+          "Thank you for submitting a problem! Be sure to check back to see it posted."))
+      (flash-error "/problems" "You are not authorized to submit a problem."))))
 
 (defn edit-problem [id]
   (if (approver? (session/session-get :user))
@@ -514,18 +526,30 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
                      :tests (s/join "\r\n\r\n" tests)}]
         (session/flash-put! k v))
       (response/redirect "/problems/submit"))
-  (flash-error "You don't have access to this page" "/problems")))
+  (flash-error "/problems" "You don't have access to this page")))
 
 (defn approve-problem [id]
   "take a user submitted problem and approve it"
   (if (approver? (session/session-get :user))
-    (do
+    (let [{:keys [title user]} (from-mongo
+                                (fetch-one :problems
+                                           :where {:_id id}
+                                           :only [:title :user]))
+          url (str "/problem/" id)]
       (update! :problems
                {:_id id}
                {:$set {:approved true}})
-      (flash-msg (str "Problem " id " has been approved!")
-                 (str "/problem/" id)))
-    (flash-error "You don't have access to this page" "/problems")))
+      (try
+        (send-email
+         {:from "team@4clojure.com"
+          :to [(users/email-address user)]
+          :subject (format "Problem #%d: submission accepted" id)
+          :html (html (link-to url title))
+          :text (str title ": " url)})
+        ;; TODO: dump this in a proper log
+        (catch EmailException e (println (str "email failed to send on approved problem #" id))))
+      (flash-msg url (str "Problem " id " has been approved!")))
+    (flash-error "/problems" "You don't have access to this page")))
 
 (defn reject-problem [id reason]
   "reject a user submitted problem by deleting it from the database"
@@ -546,20 +570,20 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
              "Description: " description "\n"
              "Tests: " tests "\n"
              "Rejection Reason: " reason)})
-      (flash-msg (str "Problem " id " was rejected and deleted.") "/problems"))
-    (flash-error "You do not have permission to access this page" "/problems")))
+      (flash-msg "/problems" (str "Problem " id " was rejected and deleted.")))
+    (flash-error "/problems" "You do not have permission to access this page")))
 
 (defroutes problems-routes
   (GET "/problems" [] (problem-list-page))
   (GET "/problem/:id" [id]
     (if-let [id-int (as-int id)]
       (problem-page id-int)
-      (flash-error (format "'%s' is not a valid problem number." id)
-                   "/problems")))
+      (flash-error "/problems"
+        (format "'%s' is not a valid problem number." id))))
   (GET "/problems/submit" [] (problem-submission-page))
   (POST "/problems/submit" [prob-id author title difficulty tags restricted description code]
     (create-problem title difficulty tags restricted description code (when (not= "" prob-id) (Integer. prob-id)) author))
-  (GET "/problems/unapproved" [] (unapproved-problem-list))
+  (GET "/problems/unapproved" [] (access-unapproved-problem-list-page))
   (GET "/problem/:id/edit" [id]
     (edit-problem (Integer. id)))
   (POST "/problem/edit" [id]

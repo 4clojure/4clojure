@@ -1,8 +1,8 @@
 (ns foreclojure.version
-  (:use [foreclojure.utils  :only [def-page]]
-        [foreclojure.config :only [repo-url]]
-        [foreclojure.git    :only [sha]]
-        [compojure.core     :only [defroutes GET]]))
+  (:use [foreclojure.template :only [def-page]]
+        [foreclojure.config   :only [repo-url]]
+        [foreclojure.git      :only [sha]]
+        [compojure.core       :only [defroutes GET]]))
 
 (def-page version []
   {:title "About/version"

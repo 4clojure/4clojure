@@ -1,12 +1,13 @@
 (ns foreclojure.users
   (:require [ring.util.response       :as response]
             [sandbar.stateful-session :as session])
-  (:use [foreclojure.utils   :only [from-mongo def-page row-class get-user with-user]]
-        [foreclojure.config  :only [config repo-url]]
-        [somnium.congomongo  :only [fetch-one fetch update!]]
-        [compojure.core      :only [defroutes GET POST]]
-        [hiccup.form-helpers :only [form-to hidden-field]]
-        [hiccup.page-helpers :only [link-to]]))
+  (:use     [foreclojure.utils        :only [from-mongo row-class get-user with-user]]
+            [foreclojure.template     :only [def-page content-page]]
+            [foreclojure.config       :only [config repo-url]]
+            [somnium.congomongo       :only [fetch-one fetch update!]]
+            [compojure.core           :only [defroutes GET POST]]
+            [hiccup.form-helpers      :only [form-to hidden-field]]
+            [hiccup.page-helpers      :only [link-to]]))
 
 (def golfer-tags (into [:contributor]
                        (when (:golfing-active config)
@@ -76,57 +77,44 @@
     [:br]
     [:br]]))
 
+(defn generate-user-list [user-set]
+  (list
+   [:br]
+   [:table#user-table.my-table
+    [:thead
+     [:tr
+      [:th {:style "width: 40px;"} "Rank"]
+      [:th "Username"]
+      [:th "Problems Solved"]]]
+    (map-indexed (fn [rownum {:keys [user contributor solved]}]
+                   [:tr (row-class rownum)
+                    [:td (inc rownum)]
+                    [:td
+                     (when contributor [:span.contributor "* "])
+                     [:a.user-profile-link {:href (str "/user/" user)} user]]
+                    [:td.centered (count solved)]])
+                 user-set)]))
+
 (def-page all-users-page []
   {:title "All 4Clojure Users"
    :content
-   (list
-    [:h1 "All 4Clojure Users"]
-    [:div
-     [:span.contributor "*"] " "
-     (link-to repo-url "4clojure contributor")]
-    [:br]
-    [:table#user-table.my-table
-     [:thead
-      [:tr
-       [:th {:style "width: 40px;"} "Rank"]
-       [:th "Username"]
-       [:th "Problems Solved"]]]
-     (map-indexed (fn [rownum {:keys [user contributor solved]}]
-                    [:tr (row-class rownum)
-                     [:td (inc rownum)]
-                     [:td
-                      (when contributor [:span.contributor "* "])
-                      [:a.user-profile-link {:href (str "/user/" user)} user]]
-                     [:td.centered (count solved)]])
-                  (get-users))])})
+   (content-page
+    {:heading "All 4Clojure Users"
+     :sub-heading (list [:span.contributor "*"] "&nbsp;" (link-to repo-url "4clojure contributor"))
+     :main (generate-user-list (get-users))})})
 
 (def-page top-users-page []
   (let [username (session/session-get :user) 
         {:keys [user-ranking top-100]} (get-top-100-and-current-user username)]
     {:title "Top 100 Users"
      :content
-     (list
-      [:h1 "Top 100 Users"]
-      [:span "(or " (link-to "/users/all" "see all") ")"]
-      (format-user-ranking user-ranking)
-      [:div
-       [:span.contributor "*"] " "
-       (link-to repo-url "4clojure contributor")]
-      [:br]
-      [:table#user-table.my-table
-       [:thead
-        [:tr
-         [:th {:style "width: 40px;"} "Rank"]
-         [:th "Username"]
-         [:th "Problems Solved"]]]
-       (map-indexed (fn [rownum {:keys [user contributor solved]}]
-                      [:tr (row-class rownum)
-                       [:td (inc rownum)]
-                       [:td
-                        (when contributor [:span.contributor "* "])
-                        [:a.user-profile-link {:href (str "/user/" user)} user]]
-                       [:td.centered (count solved)]])
-                    top-100)])}))
+     (content-page
+      {:heading "Top 100 Users"
+       :heading-note (list "[show " (link-to "/users/all" "all") "]")
+       :sub-heading (list (format-user-ranking user-ranking) 
+                          [:span.contributor "*"] "&nbsp;"
+                          (link-to repo-url "4clojure contributor"))
+       :main (generate-user-list top-100)})}))
 
 ;; TODO: this is snagged from problems.clj but can't be imported due to cyclic dependency, must refactor this out.
 (defn get-problems

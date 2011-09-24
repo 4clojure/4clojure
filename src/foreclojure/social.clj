@@ -2,7 +2,7 @@
   (:require [clj-github.gists         :as   gist]
             [sandbar.stateful-session :as   session])
   (:import  [java.net                 URLEncoder])
-  (:use     [foreclojure.utils        :only [def-page]]
+  (:use     [foreclojure.template     :only [def-page]]
             [compojure.core           :only [defroutes GET]]
             [hiccup.page-helpers      :only [link-to]]
             [somnium.congomongo       :only [fetch-one]]))

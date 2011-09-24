@@ -64,10 +64,12 @@
                                      (int (/ (. r (maxMemory)) 1e6))))))
            period)))
 
-(defn run []
-  (prepare-mongo)
-  (register-heartbeat)
-  (run-jetty (var app) {:join? *block-server* :port 8080}))
+(let [default-jetty-port 8080]
+  (defn run []
+    (prepare-mongo)
+    (register-heartbeat)
+    (run-jetty (var app) {:join? *block-server*
+                          :port (get config :jetty-port default-jetty-port)})))
 
 (defn -main [& args]
   (binding [*block-server* true]
