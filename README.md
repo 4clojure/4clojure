@@ -1,6 +1,6 @@
 # 4Clojure
 
-An interactive problem website for Clojure beginners
+An interactive problem website for learning Clojure:
 [https://www.4clojure.com](https://www.4clojure.com).
 
 ## Contributing
