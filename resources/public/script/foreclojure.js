@@ -24,15 +24,29 @@ $(document).ready(function() {
 
 });
 
+var difficulty = new Array();
+difficulty["Elementary"] = 0;
+difficulty["Easy"]       = 1;
+difficulty["Medium"]     = 2;
+difficulty["Hard"]       = 3;
+difficulty[""]           = 4;
+
+jQuery.fn.dataTableExt.oSort['difficulty-asc'] = function(a, b) {
+    return difficulty[a] - difficulty[b];
+};
+
+jQuery.fn.dataTableExt.oSort['difficulty-desc'] = function(a, b) {
+    return difficulty[b] - difficulty[a];
+};
 
 function configureDataTables(){
 
     $('#problem-table').dataTable( {
         "iDisplayLength": 25,
-        "aaSorting": [[ 4, "desc" ]],
+        "aaSorting": [[5, "desc"], [ 1, "asc" ], [ 4, "desc" ]],
         "aoColumns": [
             null,
-            null,
+            { "sType": "difficulty" },
             null,
             null,
             null,
