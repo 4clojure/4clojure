@@ -6,7 +6,7 @@ An interactive problem website for learning Clojure:
 ## Contributing
 
 Anyone interested in contributing should check out
-the [Issues](https://github.com/dbyrne/4clojure/issues) page for ideas
+the [Issues](https://github.com/4clojure/4clojure/issues) page for ideas
 on what to work on.
 
 Join us in #4clojure on freenode for help or discussion.
