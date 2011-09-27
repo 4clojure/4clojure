@@ -29,10 +29,8 @@
          [:div#github-banner [:a {:href repo-url
                                   :alt "Fork 4Clojure on Github!"}]])
        [:div#top
-        (link-to "/" [:img#logo {:src "/images/logo.png" :alt "4clojure.com"
-                                 :width 230 :height 57}])]
+        (link-to "/" [:img#logo {:src "/images/4clj-logo.png" :alt "4clojure.com"}])]
        [:div#content
-        [:br]
         [:div#menu
          (for [[link text & [tabbed]]
                [["/" "Main Page"]

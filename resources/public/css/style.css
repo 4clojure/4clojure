@@ -57,7 +57,7 @@ div.progress-bar {
 #content {
    width: 85%;
    margin: 15px auto;
-   padding: 15px 0px 15px 0px;
+   border: 2px solid #3D3C3C;
    text-align: left;
    background-color: #fff;
    overflow: auto;
@@ -92,6 +92,7 @@ h3 {
 
 #menu{
    background-color:#445599;
+   border-radius: 12px 12px 0 0;
    padding: 20px 15px 15px 15px;
    color: #fff;
 }
@@ -162,6 +163,9 @@ a.novisited {color: #00e;}
 }
 
 #logo {
+   width: 249px;
+   height: 84px;
+   margin-left: -7px;
    float:left;
    padding:15px 0px 15px 0px;
    border: 0;
@@ -181,6 +185,7 @@ a.novisited {color: #00e;}
 
 #footer{
    background-color:#445599;
+   border-radius: 0 0 12px 12px;
    padding: 15px;
    color: #fff;
    text-align: center;
