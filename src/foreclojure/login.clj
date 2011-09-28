@@ -212,5 +212,4 @@
         (set-disable-codebox disable-codebox))
 
   (POST "/users/set-hide-solutions" [hide-solutions]
-    (println "POST")
     (set-hide-solutions hide-solutions)))
