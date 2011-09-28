@@ -15,7 +15,7 @@
       [:head
        [:title (:title attrs)]
        [:link {:rel "alternate" :type "application/atom+xml" :title "Atom" :href "http://4clojure.com/problems/rss"}]
-       [:link {:rel "shortcut icon" :href "/favicon.ico"}]
+       [:link {:rel "shortcut icon" :href "/favicon2.ico"}]
        [:style {:type "text/css"}
         ".syntaxhighlighter { overflow-y: hidden !important; }"]
        (css "/css/style.css" "/css/demo_table.css" "/css/shCore.css" "/css/shThemeDefault.css")
