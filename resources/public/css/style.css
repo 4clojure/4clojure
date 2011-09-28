@@ -368,6 +368,14 @@ table.my-table td {
    font-size: 12px;
 }
 
+td.oddrank {
+    background-color: #DDF !important;
+}
+
+td.evenrank {
+    background-color: #EEF !important;
+}
+
 td.title-link {
    font-size: 16px;
 }
