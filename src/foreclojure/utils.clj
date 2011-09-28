@@ -191,3 +191,8 @@
   {:class (if (even? x)
             "evenrow"
             "oddrow")})
+
+(defn rank-class [x]
+  {:class (if (even? x)
+            "evenrank"
+            "oddrank")})
