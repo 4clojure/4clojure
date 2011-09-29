@@ -44,10 +44,11 @@
     (? (handler (? request)))))
 
 (defn split-hosts [host-handlers]
-  (fn [request]
-    (let [host (get-in request [:headers "host"])
-          handler (some host-handlers [host :default])]
-      (handler request))))
+  (let [default (:default host-handlers)]
+    (fn [request]
+      (let [host (get-in request [:headers "host"])
+            handler (or (host-handlers host) default)]
+        (handler request)))))
 
 (defn wrap-404 [handler]
   (fn [request]

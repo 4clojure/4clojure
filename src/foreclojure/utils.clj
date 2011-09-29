@@ -169,7 +169,7 @@
                (:advanced-user-count config)))))
 
 (let [prefix (str (when-let [host config/static-host]
-                    (str "http://" config/static-host))
+                    (str "http://" host))
                   "/")]
   (defn static-url [url]
     (str prefix url)))
