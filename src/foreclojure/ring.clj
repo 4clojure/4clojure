@@ -1,9 +1,11 @@
 (ns foreclojure.ring
   (:require [clojure.java.io    :as   io]
-            [clojure.string     :as   s])
+            [clojure.string     :as   s]
+            [compojure.route    :as   route])
   (:import  [java.net           URL])
   (:use     [compojure.core     :only [GET]]
             [foreclojure.utils  :only [strip-version-number]]
+            [useful.debug       :only [?]]
             [ring.util.response :only [response]]))
 
 ;; copied from compojure.route, modified to use File instead of Stream
@@ -36,3 +38,19 @@
         (handler)
         (assoc-in [:headers "Cache-control"]
                   "public, max-age=31536000"))))
+
+(defn wrap-debug [handler]
+  (fn [request]
+    (? (handler (? request)))))
+
+(defn split-hosts [host-handlers]
+  (let [default (:default host-handlers)]
+    (fn [request]
+      (let [host (get-in request [:headers "host"])
+            handler (or (host-handlers host) default)]
+        (handler request)))))
+
+(defn wrap-404 [handler]
+  (fn [request]
+    (or (handler request)
+        (route/not-found "Page not found"))))

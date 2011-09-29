@@ -1,14 +1,15 @@
 (ns foreclojure.core
   (:require [compojure.route            :as   route]
             [compojure.handler          :as   handler]
+            [foreclojure.config         :as   config]
             [sandbar.stateful-session   :as   session])
-  (:use     [compojure.core             :only [defroutes GET]]
+  (:use     [compojure.core             :only [defroutes routes GET]]
             [foreclojure.static         :only [static-routes welcome-page]]
             [foreclojure.problems       :only [problems-routes]]
             [foreclojure.login          :only [login-routes]]
             [foreclojure.register       :only [register-routes]]
             [foreclojure.golf           :only [golf-routes]]
-            [foreclojure.ring           :only [resources wrap-strip-trailing-slash wrap-url-as-file wrap-versioned-expiry]]
+            [foreclojure.ring           :only [resources wrap-strip-trailing-slash wrap-url-as-file wrap-versioned-expiry split-hosts wrap-404 wrap-debug]]
             [foreclojure.users          :only [users-routes]]
             [foreclojure.config         :only [config]]
             [foreclojure.social         :only [social-routes]]
@@ -25,31 +26,55 @@
 
 (def *block-server* false)
 
-(defroutes main-routes
-  (GET "/" [] (welcome-page))
-  login-routes
-  register-routes
-  problems-routes
-  users-routes
-  static-routes
-  social-routes
-  version-routes
-  graph-routes
-  golf-routes
+(defroutes resource-routes
   (-> (resources "/*")
       (wrap-url-as-file)
       (wrap-file-info)
-      (wrap-versioned-expiry))
-  (route/not-found "Page not found"))
+      (wrap-versioned-expiry)))
 
-(def app (-> #'main-routes
-             ((if (:wrap-reload config)
-                #(wrap-reload % '(foreclojure.core))
-                identity))
-             session/wrap-stateful-session
+(def dynamic-routes
+  (-> (routes (GET "/" [] (welcome-page))
+              login-routes
+              register-routes
+              problems-routes
+              users-routes
+              static-routes
+              social-routes
+              version-routes
+              graph-routes
+              golf-routes)
+      ((if (:wrap-reload config)
+         #(wrap-reload % '(foreclojure.core))
+         identity))
+      session/wrap-stateful-session
+      wrap-uri-binding
+      wrap-strip-trailing-slash))
+
+(let [canonical-host (or config/dynamic-host "www.4clojure.com")]
+  (defn redirect-routes [request]
+    (let [{:keys [scheme uri]} request
+          proper-uri (str (name scheme)
+                          "://"
+                          canonical-host
+                          uri)]
+      {:status 302
+       :headers {"Location" proper-uri}
+       :body (str "<a href='" proper-uri "'>"
+                  proper-uri
+                  "</a>")})))
+
+(def host-handlers (reduce into
+                           {:default (routes dynamic-routes resource-routes)}
+                           [(for [host config/redirect-hosts]
+                              [host redirect-routes])
+                            (for [[host route] [[config/static-host resource-routes]
+                                                [config/dynamic-host dynamic-routes]]
+                                  :when host]
+                              [host (wrap-debug route)])]))
+
+(def app (-> (split-hosts host-handlers)
+             wrap-404
              handler/site
-             wrap-uri-binding
-             wrap-strip-trailing-slash
              wrap-gzip))
 
 (defn register-heartbeat []
