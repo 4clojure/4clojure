@@ -1,6 +1,7 @@
 (ns foreclojure.utils
   (:require [sandbar.stateful-session :as   session]
             [ring.util.response       :as   response]
+            [foreclojure.config       :as   config]
             [clojure.walk             :as   walk]
             [clojure.string           :as   string]
             [foreclojure.git          :as   git]
@@ -167,6 +168,12 @@
            (>= (count (get-solved username))
                (:advanced-user-count config)))))
 
+(let [prefix (str (when-let [host config/static-host]
+                    (str "http://" config/static-host))
+                  "/")]
+  (defn static-url [url]
+    (str prefix url)))
+
 (let [version-suffix (str "__" git/tag)]
   (defn add-version-number [file]
     (let [[_ path ext] (re-find #"(.*)\.(.*)$" file)]
@@ -178,7 +185,7 @@
 (letfn [(wrap-versioning [f]
           (fn [& files]
             (for [file files]
-              (f (add-version-number file)))))]
+              (f (static-url (add-version-number file))))))]
   (def js  (wrap-versioning hiccup/include-js))
   (def css (wrap-versioning hiccup/include-css)))
 
