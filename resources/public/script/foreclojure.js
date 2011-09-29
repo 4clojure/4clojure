@@ -22,6 +22,22 @@ $(document).ready(function() {
     $(this).parents("form").attr("action", "/problem/edit").submit();
   });
 
+  $("form input.following").live("click", function(e) {
+    e.preventDefault();
+    var $checkbox = $(this)
+    var $form = $checkbox.parents("form")
+    $.ajax({type: "POST",
+            url: "/rest" + $form.attr("action"),
+            dataType: "json",
+            success: function(data) {
+              if (data) {
+                $checkbox.attr("checked", data["following"]);
+                $form.attr("action", data["next-action"]);
+              }
+             },
+           });
+    return false;
+  });
 });
 
 var difficulty = new Array();
@@ -71,7 +87,8 @@ function configureDataTables(){
         "aoColumns": [
 	    {"sType": "numeric"},
             {"sType": "string"},
-            {"sType": "numeric"}
+            {"sType": "numeric"},
+            {"sType": "string"}
         ]
     } );
 }
