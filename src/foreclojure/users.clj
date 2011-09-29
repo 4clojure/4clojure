@@ -26,22 +26,25 @@
           :only [:user :solved :contributor])))
 
 (defn get-ranked-users []
-  (let [users (get-users)]
-    (mapcat
-     (fn [rank tied-users]
-       (for [user (sort-by :user tied-users)]
-         (assoc user :rank (inc rank))))
-     (range)
-     (map second
-          (sort-by #(-> % first -)
-                   (group-by #(count (or (:solved %) []))
-                             users))))))
+  (let [users (get-users)
+        tied-groups (map val
+                         (sort-by #(-> % key -)
+                                  (group-by #(count (or (:solved %) []))
+                                            users)))]
+    (first
+     (reduce (fn [[user-list rank] new-group]
+               [(into user-list
+                      (for [user (sort-by :user new-group)]
+                        (assoc user :rank rank)))
+                (+ rank (count new-group))])
+             [[] 1]
+             tied-groups))))
 
 (defn get-top-100-and-current-user [username]
   (let [ranked-users      (get-ranked-users)
         this-user         (first (filter (comp #{username} :user)
                                          ranked-users))
-        this-user-ranking (update-in this-user [:rank] #(str (or % "?") " out of " (count ranked-users)))]           
+        this-user-ranking (update-in this-user [:rank] #(str (or % "?") " out of " (count ranked-users)))]
     {:user-ranking this-user-ranking
      :top-100 (take 100 ranked-users)}))
 
@@ -84,7 +87,7 @@
                                   :checked following? :value following?}]))))
 
 (defn generate-user-list [user-set]
-  (let [[user-id following] 
+  (let [[user-id following]
         (if (session/session-get :user)
           (with-user [{:keys [_id following]}]
             [_id following])
@@ -117,14 +120,14 @@
      :main (generate-user-list (get-ranked-users))})})
 
 (def-page top-users-page []
-  (let [username (session/session-get :user) 
+  (let [username (session/session-get :user)
         {:keys [user-ranking top-100]} (get-top-100-and-current-user username)]
     {:title "Top 100 Users"
      :content
      (content-page
       {:heading "Top 100 Users"
        :heading-note (list "[show " (link-to "/users/all" "all") "]")
-       :sub-heading (list (format-user-ranking user-ranking) 
+       :sub-heading (list (format-user-ranking user-ranking)
                           [:span.contributor "*"] "&nbsp;"
                           (link-to repo-url "4clojure contributor"))
        :main (generate-user-list top-100)})}))
@@ -195,7 +198,7 @@
       (update! :users
                {:_id _id}
                {operation {:following follow-id}}))))
-  
+
 (defn static-follow-user [username follow?]
   (follow-user username follow?)
   (response/redirect (str "/user/" username)))
