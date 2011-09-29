@@ -7,7 +7,8 @@
             [somnium.congomongo       :only [fetch-one fetch update!]]
             [compojure.core           :only [defroutes GET POST]]
             [hiccup.form-helpers      :only [form-to hidden-field]]
-            [hiccup.page-helpers      :only [link-to]]))
+            [hiccup.page-helpers      :only [link-to]]
+            [clojure.contrib.json     :only [json-str]]))
 
 (def golfer-tags (into [:contributor]
                        (when (:golfing-active config)
@@ -72,23 +73,40 @@
     [:br]
     [:br]]))
 
+(defn follow-url [username follow?]
+  (str "/user/" (if follow? "follow" "unfollow") "/" username))
+
+(defn following-checkbox [current-user-id following user-id user]
+  (when (and current-user-id (not= current-user-id user-id))
+    (let [following? (some #{user-id} following)]
+      (form-to [:post (follow-url user (not following?))]
+               [:input.following {:type "checkbox" :name "following"
+                                  :checked following? :value following?}]))))
+
 (defn generate-user-list [user-set]
-  (list
-   [:br]
-   [:table#user-table.my-table
-    [:thead
-     [:tr
-      [:th {:style "width: 40px;"} "Rank"]
-      [:th "Username"]
-      [:th "Problems Solved"]]]
-    (map-indexed (fn [rownum {:keys [rank user contributor solved]}]
-                   [:tr (row-class rownum)
-                    [:td (rank-class rank) rank]
-                    [:td
-                     (when contributor [:span.contributor "* "])
-                     [:a.user-profile-link {:href (str "/user/" user)} user]]
-                    [:td.centered (count solved)]])
-                 user-set)]))
+  (let [[user-id following] 
+        (if (session/session-get :user)
+          (with-user [{:keys [_id following]}]
+            [_id following])
+          [nil nil])]
+    (list
+     [:br]
+     [:table#user-table.my-table
+      [:thead
+       [:tr
+        [:th {:style "width: 40px;"} "Rank"]
+        [:th "Username"]
+        [:th "Problems Solved"]
+        [:th "Following"]]]
+      (map-indexed (fn [rownum {:keys [_id rank user contributor solved]}]
+                     [:tr (row-class rownum)
+                      [:td (rank-class rank) rank]
+                      [:td
+                       (when contributor [:span.contributor "* "])
+                       [:a.user-profile-link {:href (str "/user/" user)} user]]
+                      [:td.centered (count solved)]
+                      [:td (following-checkbox user-id following _id user)]])
+                   user-set)])))
 
 (def-page all-users-page []
   {:title "All 4Clojure Users"
@@ -170,13 +188,23 @@
          (count (get-solved username)) "/"
          (count (get-problems))]]])}))
 
-(defn follow-user [username operation]
+(defn follow-user [username follow?]
   (with-user [{:keys [_id]}]
-    (let [follow-id (:_id (get-user username))]
+    (let [follow-id (:_id (get-user username))
+          operation (if follow? :$addToSet :$pull)]
       (update! :users
                {:_id _id}
-               {operation {:following follow-id}})))
+               {operation {:following follow-id}}))))
+  
+(defn static-follow-user [username follow?]
+  (follow-user username follow?)
   (response/redirect (str "/user/" username)))
+
+(defn rest-follow-user [username follow?]
+  (follow-user username follow?)
+  (json-str {"following" follow?
+             "next-action" (follow-url username (not follow?))
+             "next-label" (if follow? "Unfollow" "Follow")}))
 
 (defn set-disable-codebox [disable-flag]
   (with-user [{:keys [_id]}]
@@ -196,5 +224,7 @@
   (GET  "/users" [] (top-users-page))
   (GET  "/users/all" [] (all-users-page))
   (GET  "/user/:username" [username] (user-profile username))
-  (POST "/user/follow/:username" [username] (follow-user username :$addToSet))
-  (POST "/user/unfollow/:username" [username] (follow-user username :$pull)))
+  (POST "/user/follow/:username" [username] (static-follow-user username true))
+  (POST "/user/unfollow/:username" [username] (static-follow-user username false))
+  (POST "/rest/user/follow/:username" [username] (rest-follow-user username true))
+  (POST "/rest/user/unfollow/:username" [username] (rest-follow-user username false)))
