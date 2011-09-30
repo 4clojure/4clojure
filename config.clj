@@ -9,6 +9,9 @@
  :advanced-user-count 50
  :pass ""
  :repo-url "https://github.com/4clojure/4clojure"
+ :hosts {;; :static "static.4clojure.com"
+         ;; :dynamic "www.4clojure.com"
+         :redirects ["4clojure.com"]}
  :golfing-active true
  :heartbeat nil ; set to, eg, [1 :hour] for periodic heap information on stdout
  ;; this list is just for bootstrapping - the real DB is authoritative
