@@ -39,9 +39,9 @@ $(document).ready(function() {
       return false;
   });
 
-  $("#user-table").removeClass('javascript-disabled');
+  $("#user-table").addClass("js-enabled");
 
-  $("form input.following").live("click", function(e) {
+  $("#user-table input.following").live("click", function(e) {
     e.preventDefault();
     var $checkbox = $(this)
     var $form = $checkbox.parents("form")
