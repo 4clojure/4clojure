@@ -48,6 +48,7 @@
          identity))
       session/wrap-stateful-session
       wrap-uri-binding
+      handler/site
       wrap-strip-trailing-slash))
 
 (let [canonical-host (or config/dynamic-host "www.4clojure.com")]
@@ -74,7 +75,6 @@
 
 (def app (-> (split-hosts host-handlers)
              wrap-404
-             handler/site
              wrap-gzip))
 
 (defn register-heartbeat []
