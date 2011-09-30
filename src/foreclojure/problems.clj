@@ -339,23 +339,30 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
     [:div.message (session/flash-get :message)]
     [:div#problems-error.error (session/flash-get :error)]
     [:h3 {:style "margin-top: -20px;"} "Solutions:"]
-    (with-user [{:keys [following]}]
-      (if (empty? following)
-        [:p "You can only see solutions of users whom you follow.  Click on any name from the " (link-to "/users" "users") " listing page to see their profile, and click follow from there."]
-        (if (some (complement nil?) (map #(get-solution :public % problem-id) following))
-          (interpose [:hr {:style "margin-top: 20px; margin-bottom: 20px;"}]
-                     (for [f-user-id following
-                           :let [f-user (:user (from-mongo
-                                                (fetch-one :users
-                                                           :where {:_id f-user-id}
-                                                           :only [:user])))
-                                 f-code (get-solution :public
-                                                      f-user-id problem-id)]
-                           :when f-code]
-                       [:div.follower-solution
-                        [:div.follower-username (str f-user "'s solution:")]
-                        [:pre.follower-code f-code]]))
-          [:p "None of the users you follow have solved this problem yet!"]))))})
+    (with-user [{:keys [_id following]}]
+      (list
+       (let [user-code (get-solution :public _id problem-id)]
+         (list
+          [:div.user-solution
+           [:div.solution-username (str "Your solution:")]
+           [:pre.solution-code user-code]]
+          [:hr.solution]))
+       (if (empty? following)
+         [:p "You can only see solutions of users whom you follow.  Click on any name from the " (link-to "/users" "users") " listing page to see their profile, and click follow from there."]
+         (if (some (complement nil?) (map #(get-solution :public % problem-id) following))
+           (interpose [:hr.solution]
+                      (for [f-user-id following
+                            :let [f-user (:user (from-mongo
+                                                 (fetch-one :users
+                                                            :where {:_id f-user-id}
+                                                            :only [:user])))
+                                  f-code (get-solution :public
+                                                       f-user-id problem-id)]
+                            :when f-code]
+                        [:div.follower-solution
+                         [:div.solution-username (str f-user "'s solution:")]
+                         [:pre.solution-code f-code]]))
+           [:p "None of the users you follow have solved this problem yet!"])))))})
 
 (defn show-solutions [id]
   (let [problem-id (Integer. id)
