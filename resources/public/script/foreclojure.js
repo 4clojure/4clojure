@@ -77,7 +77,7 @@ jQuery.fn.dataTableExt.oSort['difficulty-desc'] = function(a, b) {
 function configureDataTables(){
 
     $('#problem-table').dataTable( {
-        "iDisplayLength": 25,
+        "iDisplayLength": 100,
         "aaSorting": [[5, "desc"], [1, "asc"], [4, "desc"]],
         "aoColumns": [
             {"sType": "string"},
@@ -107,7 +107,8 @@ function configureDataTables(){
 	    {"sType": "numeric"},
             {"sType": "string"},
             {"sType": "numeric"},
-            {"sType": "string"}
+            {"sType": "string"},
+	    {"sType": "string"}
         ]
     } );
 }

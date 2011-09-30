@@ -32,12 +32,14 @@
                                   (group-by #(count (or (:solved %) []))
                                             users)))]
     (first
-     (reduce (fn [[user-list rank] new-group]
+     (reduce (fn [[user-list position rank] new-group]
                [(into user-list
                       (for [user (sort-by :user new-group)]
-                        (assoc user :rank rank)))
+                        (into user {:rank     rank
+                                    :position position})))
+                (inc position)
                 (+ rank (count new-group))])
-             [[] 1]
+             [[] 1 1]
              tied-groups))))
 
 (defn get-top-100-and-current-user [username]
@@ -97,13 +99,13 @@
      [:table#user-table.my-table.javascript-disabled
       [:thead
        [:tr
-        [:th {:style "width: 40px;"} "Rank"]
-        [:th "Username"]
-        [:th "Problems Solved"]
+        [:th {:style "width: 40px;" } "Rank"]
+        [:th {:style "width: 200px;"} "Username"]
+        [:th {:style "width: 180px;"} "Problems Solved"]
         [:th "Following"]]]
-      (map-indexed (fn [rownum {:keys [_id rank user contributor solved]}]
+      (map-indexed (fn [rownum {:keys [_id position rank user contributor solved]}]
                      [:tr (row-class rownum)
-                      [:td (rank-class rank) rank]
+                      [:td (rank-class position) rank]
                       [:td
                        (when contributor [:span.contributor "* "])
                        [:a.user-profile-link {:href (str "/user/" user)} user]]

@@ -281,6 +281,7 @@ div#sub-heading {
 }
 
 div#main {
+    width: 100%;
     display: block;
     float: left;
     clear: both;
@@ -393,6 +394,14 @@ table.my-table {
 table.my-table td {
    text-align: left;
    font-size: 12px;
+}
+
+tr.evenrow {
+    background-color: #E2E4FF; 
+}
+
+tr.oddrow {
+    background-color: white;
 }
 
 td.oddrank {
