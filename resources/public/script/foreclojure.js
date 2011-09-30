@@ -22,6 +22,22 @@ $(document).ready(function() {
     $(this).parents("form").attr("action", "/problem/edit").submit();
   });
 
+  $("form input.following").live("click", function(e) {
+    e.preventDefault();
+    var $checkbox = $(this)
+    var $form = $checkbox.parents("form")
+    $.ajax({type: "POST",
+            url: "/rest" + $form.attr("action"),
+            dataType: "json",
+            success: function(data) {
+              if (data) {
+                $checkbox.attr("checked", data["following"]);
+                $form.attr("action", data["next-action"]);
+              }
+             },
+           });
+    return false;
+  });
 });
 
 var difficulty = new Array();
@@ -43,35 +59,36 @@ function configureDataTables(){
 
     $('#problem-table').dataTable( {
         "iDisplayLength": 25,
-        "aaSorting": [[5, "desc"], [ 1, "asc" ], [ 4, "desc" ]],
+        "aaSorting": [[5, "desc"], [1, "asc"], [4, "desc"]],
         "aoColumns": [
-            null,
-            { "sType": "difficulty" },
-            null,
-            null,
-            null,
-            { "sType": "string" }
+            {"sType": "string"},
+            {"sType": "difficulty"},
+            {"sType": "string"},
+            {"sType": "string"},
+            {"sType": "numeric"},
+            {"sType": "string"}
         ]
     } );
 
     $('#unapproved-problems').dataTable( {
         "iDisplayLength": 25,
-        "aaSorting": [[ 3, "desc" ]],
+        "aaSorting": [[3, "desc"]],
         "aoColumns": [
-            null,
-            null,
-            null,
-            null
+            {"sType": "string"},
+            {"sType": "string"},
+            {"sType": "string"},
+            {"sType": "string"}
         ]
     } );
 
     $('#user-table').dataTable( {
         "iDisplayLength":100,
-        "aaSorting": [[ 0, "asc" ]],
+        "aaSorting": [[0, "asc"]],
         "aoColumns": [
-	    null,
-            null,
-            null
+	    {"sType": "numeric"},
+            {"sType": "string"},
+            {"sType": "numeric"},
+            {"sType": "string"}
         ]
     } );
 }

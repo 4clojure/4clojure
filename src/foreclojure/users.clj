@@ -1,13 +1,14 @@
 (ns foreclojure.users
   (:require [ring.util.response       :as response]
             [sandbar.stateful-session :as session])
-  (:use     [foreclojure.utils        :only [from-mongo row-class get-user with-user]]
+  (:use     [foreclojure.utils        :only [from-mongo row-class rank-class get-user with-user]]
             [foreclojure.template     :only [def-page content-page]]
             [foreclojure.config       :only [config repo-url]]
             [somnium.congomongo       :only [fetch-one fetch update!]]
             [compojure.core           :only [defroutes GET POST]]
             [hiccup.form-helpers      :only [form-to hidden-field]]
-            [hiccup.page-helpers      :only [link-to]]))
+            [hiccup.page-helpers      :only [link-to]]
+            [clojure.contrib.json     :only [json-str]]))
 
 (def golfer-tags (into [:contributor]
                        (when (:golfing-active config)
@@ -19,35 +20,33 @@
               :where {:user name}
               :only [:_id])))
 
-(def sort-by-solved-and-date (juxt (comp count :solved) :last-login))
-
-(defn users-sort [users]
-  (reverse (sort-by sort-by-solved-and-date users)))
-
 (defn get-users []
-  (let [users (from-mongo
-               (fetch :users
-                      :only [:user :solved :contributor]))
-        sortfn (comp - count :solved)]
-    (sort-by sortfn users)))
+  (from-mongo
+   (fetch :users
+          :only [:user :solved :contributor])))
 
-(defn get-user-with-ranking [username, users]
-  (when username
-    (let [total (count users)
-          users-with-rankings (map-indexed
-                               (fn [idx itm]
-                                 (assoc itm :rank
-                                        (str (inc idx) " out of " total)))
-                               users)]
-      (first
-       (filter #(= username (% :user)) users-with-rankings)))))
+(defn get-ranked-users []
+  (let [users (get-users)
+        tied-groups (map val
+                         (sort-by #(-> % key -)
+                                  (group-by #(count (or (:solved %) []))
+                                            users)))]
+    (first
+     (reduce (fn [[user-list rank] new-group]
+               [(into user-list
+                      (for [user (sort-by :user new-group)]
+                        (assoc user :rank rank)))
+                (+ rank (count new-group))])
+             [[] 1]
+             tied-groups))))
 
 (defn get-top-100-and-current-user [username]
-  (let [users (get-users)
-        user-ranking (get-user-with-ranking username users)]
-    {:user-ranking user-ranking
-     :top-100 (take 100 users)}))
-
+  (let [ranked-users      (get-ranked-users)
+        this-user         (first (filter (comp #{username} :user)
+                                         ranked-users))
+        this-user-ranking (update-in this-user [:rank] #(str (or % "?") " out of " (count ranked-users)))]
+    {:user-ranking this-user-ranking
+     :top-100 (take 100 ranked-users)}))
 
 (defn golfer? [user]
   (some user golfer-tags))
@@ -77,23 +76,40 @@
     [:br]
     [:br]]))
 
+(defn follow-url [username follow?]
+  (str "/user/" (if follow? "follow" "unfollow") "/" username))
+
+(defn following-checkbox [current-user-id following user-id user]
+  (when (and current-user-id (not= current-user-id user-id))
+    (let [following? (some #{user-id} following)]
+      (form-to [:post (follow-url user (not following?))]
+               [:input.following {:type "checkbox" :name "following"
+                                  :checked following? :value following?}]))))
+
 (defn generate-user-list [user-set]
-  (list
-   [:br]
-   [:table#user-table.my-table
-    [:thead
-     [:tr
-      [:th {:style "width: 40px;"} "Rank"]
-      [:th "Username"]
-      [:th "Problems Solved"]]]
-    (map-indexed (fn [rownum {:keys [user contributor solved]}]
-                   [:tr (row-class rownum)
-                    [:td (inc rownum)]
-                    [:td
-                     (when contributor [:span.contributor "* "])
-                     [:a.user-profile-link {:href (str "/user/" user)} user]]
-                    [:td.centered (count solved)]])
-                 user-set)]))
+  (let [[user-id following]
+        (if (session/session-get :user)
+          (with-user [{:keys [_id following]}]
+            [_id following])
+          [nil nil])]
+    (list
+     [:br]
+     [:table#user-table.my-table
+      [:thead
+       [:tr
+        [:th {:style "width: 40px;"} "Rank"]
+        [:th "Username"]
+        [:th "Problems Solved"]
+        [:th "Following"]]]
+      (map-indexed (fn [rownum {:keys [_id rank user contributor solved]}]
+                     [:tr (row-class rownum)
+                      [:td (rank-class rank) rank]
+                      [:td
+                       (when contributor [:span.contributor "* "])
+                       [:a.user-profile-link {:href (str "/user/" user)} user]]
+                      [:td.centered (count solved)]
+                      [:td (following-checkbox user-id following _id user)]])
+                   user-set)])))
 
 (def-page all-users-page []
   {:title "All 4Clojure Users"
@@ -101,17 +117,17 @@
    (content-page
     {:heading "All 4Clojure Users"
      :sub-heading (list [:span.contributor "*"] "&nbsp;" (link-to repo-url "4clojure contributor"))
-     :main (generate-user-list (get-users))})})
+     :main (generate-user-list (get-ranked-users))})})
 
 (def-page top-users-page []
-  (let [username (session/session-get :user) 
+  (let [username (session/session-get :user)
         {:keys [user-ranking top-100]} (get-top-100-and-current-user username)]
     {:title "Top 100 Users"
      :content
      (content-page
       {:heading "Top 100 Users"
        :heading-note (list "[show " (link-to "/users/all" "all") "]")
-       :sub-heading (list (format-user-ranking user-ranking) 
+       :sub-heading (list (format-user-ranking user-ranking)
                           [:span.contributor "*"] "&nbsp;"
                           (link-to repo-url "4clojure contributor"))
        :main (generate-user-list top-100)})}))
@@ -175,13 +191,23 @@
          (count (get-solved username)) "/"
          (count (get-problems))]]])}))
 
-(defn follow-user [username operation]
+(defn follow-user [username follow?]
   (with-user [{:keys [_id]}]
-    (let [follow-id (:_id (get-user username))]
+    (let [follow-id (:_id (get-user username))
+          operation (if follow? :$addToSet :$pull)]
       (update! :users
                {:_id _id}
-               {operation {:following follow-id}})))
+               {operation {:following follow-id}}))))
+
+(defn static-follow-user [username follow?]
+  (follow-user username follow?)
   (response/redirect (str "/user/" username)))
+
+(defn rest-follow-user [username follow?]
+  (follow-user username follow?)
+  (json-str {"following" follow?
+             "next-action" (follow-url username (not follow?))
+             "next-label" (if follow? "Unfollow" "Follow")}))
 
 (defn set-disable-codebox [disable-flag]
   (with-user [{:keys [_id]}]
@@ -201,5 +227,7 @@
   (GET  "/users" [] (top-users-page))
   (GET  "/users/all" [] (all-users-page))
   (GET  "/user/:username" [username] (user-profile username))
-  (POST "/user/follow/:username" [username] (follow-user username :$addToSet))
-  (POST "/user/unfollow/:username" [username] (follow-user username :$pull)))
+  (POST "/user/follow/:username" [username] (static-follow-user username true))
+  (POST "/user/unfollow/:username" [username] (static-follow-user username false))
+  (POST "/rest/user/follow/:username" [username] (rest-follow-user username true))
+  (POST "/rest/user/unfollow/:username" [username] (rest-follow-user username false)))
