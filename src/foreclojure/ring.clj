@@ -33,11 +33,10 @@
 
 (defn wrap-versioned-expiry [handler]
   (fn [request]
-    (-> request
-        (update-in [:uri] strip-version-number)
-        (handler)
-        (assoc-in [:headers "Cache-control"]
-                  "public, max-age=31536000"))))
+    (when-let [resp (handler
+                     (update-in request [:uri] strip-version-number))]
+      (assoc-in resp [:headers "Cache-control"]
+                "public, max-age=31536000"))))
 
 (defn wrap-debug [handler]
   (fn [request]
