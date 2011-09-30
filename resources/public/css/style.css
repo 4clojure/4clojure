@@ -217,6 +217,30 @@ a.novisited {color: #00e;}
    padding: 15px;
 }
 
+
+/*
+ * By default only show the text label for the "Following" column on
+ * the users page.  If they have javascript turned on (detected
+ * via. the js-enabled class set by our page's javascript) then turn
+ * off the text label and turn on the checkbox.
+ */
+#user-table input.following {
+    display: none;
+}
+
+#user-table span.following {
+    display: inline;
+}
+
+#user-table.js-enabled input.following {
+    display: inline;
+}
+
+#user-table.js-enabled span.following {
+    display: none;
+}
+
+
 span.error, div.error {
    color: red;
 }
