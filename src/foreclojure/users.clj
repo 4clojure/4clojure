@@ -81,20 +81,20 @@
 
 (defn following-checkbox [current-user-id following user-id user]
   (when (and current-user-id (not= current-user-id user-id))
-    (let [following? (some #{user-id} following)]
+    (let [following? (following user-id)]
       (form-to [:post (follow-url user (not following?))]
                [:input.following {:type "checkbox" :name "following"
-                                  :checked following? :value following?}]))))
+                                  :checked following? :value following?}]
+               [:span.following (when following? "yes")]))))
 
 (defn generate-user-list [user-set]
   (let [[user-id following]
-        (if (session/session-get :user)
+        (when (session/session-get :user)
           (with-user [{:keys [_id following]}]
-            [_id following])
-          [nil nil])]
+            [_id (set following)]))]
     (list
      [:br]
-     [:table#user-table.my-table
+     [:table#user-table.my-table.javascript-disabled
       [:thead
        [:tr
         [:th {:style "width: 40px;"} "Rank"]

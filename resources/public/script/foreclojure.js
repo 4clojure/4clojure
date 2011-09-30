@@ -22,6 +22,25 @@ $(document).ready(function() {
     $(this).parents("form").attr("action", "/problem/edit").submit();
   });
 
+  $("button.user-follow-button").live("click", function(e) {
+      e.preventDefault();
+      var $form = $(this).parents("form");
+      var $button = $(this);
+      $.ajax({type: "POST",
+              url: "/rest" + $form.attr("action"),
+              dataType: "json",
+              success: function(data) {
+                if (data) {
+                  $button.text(data["next-label"]);
+                  $form.attr("action", data["next-action"]);
+                }
+              },
+             });
+      return false;
+  });
+
+  $("#user-table").removeClass('javascript-disabled');
+
   $("form input.following").live("click", function(e) {
     e.preventDefault();
     var $checkbox = $(this)

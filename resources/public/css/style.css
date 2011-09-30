@@ -217,6 +217,33 @@ a.novisited {color: #00e;}
    padding: 15px;
 }
 
+/*
+ *  If the user has javascript turned on, show the 
+ *  "following" checkboxes and turn off the "following" 
+ *  text labels.
+ */
+#user-table input.following,  {
+    display: inline;
+}
+
+#user-table span.following {
+    display: none;
+}
+
+/*
+ *  If the user has javascript disabled, hide the 
+ *  "following" checkboxes and fallback to showing
+ *  the "following" text labels.
+ */
+#user-table.javascript-disabled input.following {
+    display: none;
+}
+
+#user-table.javascript-disabled span.following {
+    display: inline;
+}
+
+
 span.error, div.error {
    color: red;
 }
