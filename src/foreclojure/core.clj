@@ -71,7 +71,7 @@
                             (for [[host route] [[config/static-host resource-routes]
                                                 [config/dynamic-host dynamic-routes]]
                                   :when host]
-                              [host (wrap-debug route)])]))
+                              [host route])]))
 
 (def app (-> (split-hosts host-handlers)
              wrap-404

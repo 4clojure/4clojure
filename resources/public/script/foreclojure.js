@@ -104,7 +104,7 @@ function configureDataTables(){
         "iDisplayLength":100,
         "aaSorting": [[0, "asc"]],
         "aoColumns": [
-	    {"sType": "numeric"},
+            {"sType": "numeric"},
             {"sType": "string"},
             {"sType": "numeric"},
             {"sType": "string"},
@@ -116,7 +116,7 @@ function configureDataTables(){
 function setIconColor(element, color, timeOut) {
   timeOut = (typeof timeOut == "undefined") ? 0 : timeOut
   setTimeout (function() {
-      element.src = "/images/"+color+"light.png";
+      element.src = element.src.replace(new RegExp("(.*/images/).*(light.png)"), "$1" + color + "$2");
   }, timeOut);
 }
 

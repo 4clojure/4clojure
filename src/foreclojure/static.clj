@@ -2,6 +2,7 @@
   (:use [compojure.core       :only [defroutes GET]]
         [foreclojure.problems :only [solved-stats]]
         [foreclojure.config   :only [repo-url]]
+        [foreclojure.utils    :only [static-url]]
         [foreclojure.template :only [def-page]]))
 
 (def df
@@ -30,7 +31,7 @@
     [:div
      [:h3 "So wait, I can't buy cheap real estate here?"]
      [:p "At this time, 4clojure.com does not provide information regarding the sale of foreclosed homes, and has no plans of doing so in the future."]]
-    [:img {:src "/images/PoweredMongoDBbeige50.png"
+    [:img {:src (static-url "/images/PoweredMongoDBbeige50.png")
            :alt "Powered by MongoDB"
            :width 129 :height 61}]]})
 

@@ -43,6 +43,7 @@ vaguely like this:
 * [Anthony Grimes](https://github.com/Raynes) (raynes)
 * [Carin Meier](https://github.com/gigasquid) (cmeier)
 * [Clint Harrison](https://github.com/Clinteger) (clinteger)
+* [Darren Austin](https://github.com/darrenaustin) (darren)
 * [David Davis](https://github.com/daviddavis) (daviddavis)
 * [Devin Walters](https://github.com/devn) (devn)
 * [Michael Kohl](https://github.com/citizen428) (citizen428)
