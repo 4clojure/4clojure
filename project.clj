@@ -15,6 +15,7 @@
                  [clj-config "0.1.0"]
                  [incanter/incanter-core "1.2.3"]
                  [incanter/incanter-charts "1.2.3"]
+                 [commons-lang "2.6"]
                  [org.apache.commons/commons-email "1.2"]]
   :dev-dependencies [[lein-ring "0.4.5"]
                      [swank-clojure "1.2.1"]
