@@ -188,7 +188,7 @@
   [data & {:keys [alt src] :or {alt identity, src identity}}]
   (fn [key]
     (let [[src-prop alt-prop] (get data key)]
-      [:img {:src (src (static-url src-prop))
+      [:img {:src (static-url (src src-prop))
              :alt (alt alt-prop)}])))
 
 (defn form-row [[type name info value]]
