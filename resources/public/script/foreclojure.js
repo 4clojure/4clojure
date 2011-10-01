@@ -104,11 +104,10 @@ function configureDataTables(){
         "iDisplayLength":100,
         "aaSorting": [[0, "asc"]],
         "aoColumns": [
-	    {"sType": "numeric"},
-            {"sType": "string"},
             {"sType": "numeric"},
             {"sType": "string"},
-	    {"sType": "string"}
+            {"sType": "numeric"},
+            {"sType": "string"}
         ]
     } );
 }
