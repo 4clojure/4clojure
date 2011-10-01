@@ -29,7 +29,7 @@
          [:div#github-banner [:a {:href repo-url
                                   :alt "Fork 4Clojure on Github!"}]])
        [:div#top
-        (link-to "/" [:img#logo {:src (static-url "images/4clj-logo.png")
+        (link-to "/" [:img#logo {:src (static-url "images/4clj-logo-small.png")
                                  :alt "4clojure.com"}])]
        [:div#content
         [:div#menu

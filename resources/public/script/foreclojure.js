@@ -107,7 +107,8 @@ function configureDataTables(){
             {"sType": "numeric"},
             {"sType": "string"},
             {"sType": "numeric"},
-            {"sType": "string"}
+            {"sType": "string"},
+	    {"sType": "string"}
         ]
     } );
 }
