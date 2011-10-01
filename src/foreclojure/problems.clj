@@ -342,11 +342,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
     (with-user [{:keys [_id following]}]
       (list
        (let [user-code (get-solution :public _id problem-id)]
-         (list
-          [:div.user-solution
-           [:div.solution-username (str "Your solution:")]
-           [:pre.solution-code user-code]]
-          [:hr.solution]))
+         [:pre.solution-code.solution-user-code user-code])
        (if (empty? following)
          [:p "You can only see solutions of users whom you follow.  Click on any name from the " (link-to "/users" "users") " listing page to see their profile, and click follow from there."]
          (if (some (complement nil?) (map #(get-solution :public % problem-id) following))

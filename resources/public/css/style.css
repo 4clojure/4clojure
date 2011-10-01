@@ -562,8 +562,14 @@ a.graph-class :hover {color: #445599;}
     font-weight: bold;
 }
 
+.solution-user-code {
+    background-color: #DDD;
+    padding: 15px;
+    margin-bottom: 25px;
+}
+
 .solution-code {
-    margin-left: 10px;
+    padding-left: 10px;
 }
 
 hr.solution {
