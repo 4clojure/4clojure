@@ -558,5 +558,15 @@ a.graph-class :hover {color: #445599;}
     display: block;
 }
 
+.solution-username {
+    font-weight: bold;
+}
 
+.solution-code {
+    margin-left: 10px;
+}
 
+hr.solution {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
