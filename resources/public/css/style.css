@@ -217,6 +217,30 @@ a.novisited {color: #00e;}
    padding: 15px;
 }
 
+
+/*
+ * By default only show the text label for the "Following" column on
+ * the users page.  If they have javascript turned on (detected
+ * via. the js-enabled class set by our page's javascript) then turn
+ * off the text label and turn on the checkbox.
+ */
+#user-table input.following {
+    display: none;
+}
+
+#user-table span.following {
+    display: inline;
+}
+
+#user-table.js-enabled input.following {
+    display: inline;
+}
+
+#user-table.js-enabled span.following {
+    display: none;
+}
+
+
 span.error, div.error {
    color: red;
 }
@@ -254,6 +278,7 @@ div#sub-heading {
 }
 
 div#main {
+    width: 100%;
     display: block;
     float: left;
     clear: both;
@@ -366,6 +391,14 @@ table.my-table {
 table.my-table td {
    text-align: left;
    font-size: 12px;
+}
+
+tr.evenrow {
+    background-color: #E2E4FF; 
+}
+
+tr.oddrow {
+    background-color: white;
 }
 
 td.oddrank {
@@ -525,5 +558,21 @@ a.graph-class :hover {color: #445599;}
     display: block;
 }
 
+.solution-username {
+    font-weight: bold;
+}
 
+.solution-user-code {
+    background-color: #DDD;
+    padding: 15px;
+    margin-bottom: 25px;
+}
 
+.solution-code {
+    padding-left: 10px;
+}
+
+hr.solution {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}

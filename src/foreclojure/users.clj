@@ -32,12 +32,14 @@
                                   (group-by #(count (or (:solved %) []))
                                             users)))]
     (first
-     (reduce (fn [[user-list rank] new-group]
+     (reduce (fn [[user-list position rank] new-group]
                [(into user-list
                       (for [user (sort-by :user new-group)]
-                        (assoc user :rank rank)))
+                        (into user {:rank     rank
+                                    :position position})))
+                (inc position)
                 (+ rank (count new-group))])
-             [[] 1]
+             [[] 1 1]
              tied-groups))))
 
 (defn get-top-100-and-current-user [username]
@@ -81,29 +83,28 @@
 
 (defn following-checkbox [current-user-id following user-id user]
   (when (and current-user-id (not= current-user-id user-id))
-    (let [following? (some #{user-id} following)]
+    (let [following? (contains? following user-id)]
       (form-to [:post (follow-url user (not following?))]
-               [:input.following {:type "checkbox" :name "following"
-                                  :checked following? :value following?}]))))
+               [:input.following {:type "checkbox" :checked following?}]
+               [:span.following (when following? "yes")]))))
 
 (defn generate-user-list [user-set]
   (let [[user-id following]
-        (if (session/session-get :user)
+        (when (session/session-get :user)
           (with-user [{:keys [_id following]}]
-            [_id following])
-          [nil nil])]
+            [_id (set following)]))]
     (list
      [:br]
      [:table#user-table.my-table
       [:thead
        [:tr
-        [:th {:style "width: 40px;"} "Rank"]
-        [:th "Username"]
-        [:th "Problems Solved"]
+        [:th {:style "width: 40px;" } "Rank"]
+        [:th {:style "width: 200px;"} "Username"]
+        [:th {:style "width: 180px;"} "Problems Solved"]
         [:th "Following"]]]
-      (map-indexed (fn [rownum {:keys [_id rank user contributor solved]}]
+      (map-indexed (fn [rownum {:keys [_id position rank user contributor solved]}]
                      [:tr (row-class rownum)
-                      [:td (rank-class rank) rank]
+                      [:td (rank-class position) rank]
                       [:td
                        (when contributor [:span.contributor "* "])
                        [:a.user-profile-link {:href (str "/user/" user)} user]]
