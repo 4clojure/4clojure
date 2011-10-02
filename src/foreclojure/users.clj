@@ -4,14 +4,15 @@
             [sandbar.stateful-session :as session])
   (:use     [foreclojure.utils        :only [from-mongo row-class rank-class get-user with-user]]
             [foreclojure.template     :only [def-page content-page]]
-            [foreclojure.ring-utils   :only [*http-scheme*]]
+            [foreclojure.ring-utils   :only [*http-scheme* static-url]]
             [foreclojure.config       :only [config repo-url]]
             [somnium.congomongo       :only [fetch-one fetch update!]]
             [compojure.core           :only [defroutes GET POST]]
             [hiccup.form-helpers      :only [form-to hidden-field]]
             [hiccup.page-helpers      :only [link-to]]
             [clojure.contrib.json     :only [json-str]])
-  (:import org.apache.commons.codec.digest.DigestUtils))
+  (:import org.apache.commons.codec.digest.DigestUtils
+           java.net.URLEncoder))
 
 (def golfer-tags (into [:contributor]
                        (when (:golfing-active config)
@@ -69,14 +70,16 @@
   (link-to (str "mailto:" (email-address username))
            username))
 
-
-
 (let [canonical-email (comp string/trim string/lower-case)
-      md5 #(DigestUtils/md5Hex %)]
+      md5 #(DigestUtils/md5Hex %)
+      no-gravatar-url (static-url "images/no-gravatar.png")
+      encoded (URLEncoder/encode no-gravatar-url)]
   (defn gravatar-img [{:keys [email size class] :or {size 24}}]
-    (let [hash (md5 (canonical-email email))
+    (let [hash (if email
+                 (md5 (canonical-email email))
+                 "0000000000000000")
           url (str (name *http-scheme*) "://www.gravatar.com/avatar/"
-                   hash "?s=" size "&d=identicon")]
+                   hash "?s=" size "&d=" encoded)]
       [:img (conj {:src url, :alt "gravatar icon"
                    :width size :height size}
                   (when class {:class class}))])))
