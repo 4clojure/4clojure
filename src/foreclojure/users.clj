@@ -177,7 +177,7 @@
     {:title page-title
      :content
      (list
-      (gravatar-img {:email email, :size 80 :class "user-profile-img"})
+      [:div#profile-pic (gravatar-img {:email email, :size 80 :class "user-profile-img"})]
       [:div.user-profile-name page-title]
       (if (session/session-get :user)
         (with-user [{:keys [_id following]}]

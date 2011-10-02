@@ -139,15 +139,20 @@ td a.user-profile-link {
     margin-top: 5px;
 }
 
-.user-profile-img{
+#profile-pic{
     float: left;
     padding-right: 10px;
+}
+
+#profile-pic img{
+    border: 2px solid black;
 }
 
 img.gravatar{
     float: left;
     display: inline;
     margin-right: 5px;
+    border: 1px solid grey;
 }
 
 #user-info{
