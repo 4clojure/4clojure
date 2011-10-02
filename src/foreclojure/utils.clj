@@ -7,7 +7,8 @@
             [foreclojure.git          :as   git]
             [hiccup.page-helpers      :as   hiccup])
   (:import  [java.net                 URLEncoder]
-            [org.apache.commons.mail  HtmlEmail])
+            (org.apache.commons.lang  StringEscapeUtils)
+            (org.apache.commons.mail  HtmlEmail))
   (:use     [hiccup.core              :only [html]]
             [hiccup.page-helpers      :only [doctype javascript-tag link-to]]
             [hiccup.form-helpers      :only [label]]
@@ -26,6 +27,11 @@
   (if (integer? s) s,
       (try (Integer. s)
            (catch Exception _ nil))))
+
+(defn escape-html [s]
+  (when s (StringEscapeUtils/escapeHtml s)))
+(defn unescape-html [s]
+  (when s (StringEscapeUtils/unescapeHtml s)))
 
 (defmacro assuming
   "Guard body with a series of tests. Each clause is a test-expression
