@@ -1,9 +1,9 @@
 (ns foreclojure.static
-  (:use [compojure.core       :only [defroutes GET]]
-        [foreclojure.problems :only [solved-stats]]
-        [foreclojure.config   :only [repo-url]]
-        [foreclojure.utils    :only [static-url]]
-        [foreclojure.template :only [def-page]]))
+  (:use [compojure.core            :only [defroutes GET]]
+        [foreclojure.problems      :only [solved-stats]]
+        [foreclojure.config        :only [repo-url]]
+        [foreclojure.ring-utils    :only [static-url]]
+        [foreclojure.template      :only [def-page]]))
 
 (def df
   (let [df (java.text.DecimalFormat.)

@@ -134,6 +134,27 @@ a.novisited {color: #00e;}
     color: black;
 }
 
+td a.user-profile-link {
+    display: block;
+    margin-top: 5px;
+}
+
+#profile-pic{
+    float: left;
+    padding-right: 10px;
+}
+
+#profile-pic img{
+    border: 2px solid black;
+}
+
+img.gravatar{
+    float: left;
+    display: inline;
+    margin-right: 5px;
+    border: 1px solid grey;
+}
+
 #user-info{
    float:right;
 }
@@ -216,7 +237,6 @@ a.novisited {color: #00e;}
    width: 100%;
    padding: 15px;
 }
-
 
 /*
  * By default only show the text label for the "Following" column on
@@ -375,12 +395,12 @@ div#problems-error {
   height: 250px;
 }
 
-#editor { 
+#editor {
    margin: 0px;
    float: left;
    width: 50%;
    height: 250px;
-   overflow: hidden 
+   overflow: hidden
 }
 
 table.my-table {
@@ -391,10 +411,11 @@ table.my-table {
 table.my-table td {
    text-align: left;
    font-size: 12px;
+   vertical-align: middle;
 }
 
 tr.evenrow {
-    background-color: #E2E4FF; 
+    background-color: #E2E4FF;
 }
 
 tr.oddrow {
@@ -485,7 +506,7 @@ button:active {
    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#A1CC59', endColorstr='#A7D45C');
 }
 
-#golfgraph{ 
+#golfgraph{
   width: 90%;
 }
 
