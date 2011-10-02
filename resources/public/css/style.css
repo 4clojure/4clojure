@@ -134,6 +134,14 @@ a.novisited {color: #00e;}
     color: black;
 }
 
+.user-profile-img{
+    float:left;
+}
+
+img.gravatar{
+    float:right;
+}
+
 #user-info{
    float:right;
 }
