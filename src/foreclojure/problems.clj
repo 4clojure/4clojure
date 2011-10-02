@@ -4,7 +4,8 @@
             [clojure.string           :as      s]
             [ring.util.response       :as      response])
   (:import  [org.apache.commons.mail  EmailException])
-  (:use     [foreclojure.utils        :only    [from-mongo get-user get-solved login-link *url* flash-msg flash-error row-class approver? can-submit? send-email image-builder with-user as-int maybe-update escape-html]]
+  (:use     [foreclojure.utils        :only    [from-mongo get-user get-solved login-link flash-msg flash-error row-class approver? can-submit? send-email image-builder with-user as-int maybe-update escape-html]]
+            [foreclojure.ring-utils   :only    [*url*]]
             [foreclojure.template     :only    [def-page content-page]]
             [foreclojure.social       :only    [tweet-link gist!]]
             [foreclojure.feeds        :only    [create-feed]]
