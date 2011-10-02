@@ -579,6 +579,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
 
 (defroutes problems-routes
   (GET "/problems" [] (problem-list-page))
+  (GET "/problems/solved" [] (:total @solved-stats))
   (GET "/problem/:id" [id]
     (if-let [id-int (as-int id)]
       (problem-page id-int)
