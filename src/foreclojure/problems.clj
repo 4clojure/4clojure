@@ -212,7 +212,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
 (let [light-img (image-builder {:red   ["red"   "test failed"]
                                 :green ["green" "test passed"]
                                 :blue  ["blue"  "test not run"]}
-                               :src #(str "/images/" % "light.png"))]
+                               :src #(str "images/" % "light.png"))]
   (defn render-test-cases [tests]
     [:table {:class "testcases"}
      (let [fail (session/flash-get :failing-test)]
@@ -374,8 +374,8 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
         (session/session-put! :login-to *url*)
         (flash-error "/login" "You must log in to see solutions!")))))
 
-(let [checkbox-img (image-builder {true ["/images/checkmark.png" "completed"]
-                                   false ["/images/empty-sq.png" "incomplete"]})]
+(let [checkbox-img (image-builder {true ["images/checkmark.png" "completed"]
+                                   false ["images/empty-sq.png" "incomplete"]})]
   (def-page problem-list-page []
     {:title "4clojure - Problem Listing"
      :content
