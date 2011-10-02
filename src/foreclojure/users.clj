@@ -74,7 +74,9 @@
 (let [canonical-email (comp string/trim string/lower-case)
       md5 #(DigestUtils/md5Hex %)]
   (defn gravatar-img [{:keys [email size class] :or {size 24}}]
-    (let [hash (md5 (canonical-email email))
+    (let [hash (if email
+                 (md5 (canonical-email email))
+                 "0000000000000000")
           url (str (name *http-scheme*) "://www.gravatar.com/avatar/"
                    hash "?s=" size "&d=identicon")]
       [:img (conj {:src url, :alt "gravatar icon"
