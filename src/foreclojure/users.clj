@@ -72,14 +72,16 @@
 
 (let [canonical-email (comp string/trim string/lower-case)
       md5 #(DigestUtils/md5Hex %)
-      no-gravatar-url (static-url "images/no-gravatar.png")
-      encoded (URLEncoder/encode no-gravatar-url)]
-  (defn gravatar-img [{:keys [email size class] :or {size 24}}]
+      as-url #(URLEncoder/encode (static-url %))
+      no-gravatar-url (as-url "images/no-gravatar.png")]
+  (defn gravatar-img [{:keys [email size class default] :or {size 24}}]
     (let [hash (if email
                  (md5 (canonical-email email))
                  "0000000000000000")
           url (str (name *http-scheme*) "://www.gravatar.com/avatar/"
-                   hash "?s=" size "&d=" encoded)]
+                   hash "?s=" size "&d=" (if default
+                                           (as-url default)
+                                           no-gravatar-url))]
       [:img (conj {:src url, :alt "gravatar icon"
                    :width size :height size}
                   (when class {:class class}))])))
