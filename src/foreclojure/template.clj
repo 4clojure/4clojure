@@ -1,9 +1,11 @@
 (ns foreclojure.template
-  (:require [sandbar.stateful-session :as   session])
-  (:use     [hiccup.core              :only [html]]
-            [hiccup.page-helpers      :only [doctype javascript-tag link-to]]
-            [foreclojure.config       :only [config repo-url]]
-            [foreclojure.utils        :only [css js page-attributes rendering-info login-url approver? can-submit? static-url]]))
+  (:require [sandbar.stateful-session  :as   session])
+  (:use     [hiccup.core               :only [html]]
+            [hiccup.page-helpers       :only [doctype javascript-tag link-to]]
+            [foreclojure.config        :only [config repo-url]]
+            [foreclojure.utils         :only [page-attributes rendering-info login-url approver? can-submit?]]
+            [foreclojure.ring-utils    :only [static-url]]
+            [foreclojure.version-utils :only [css js]]))
 
 ;; Global wrapping template
 (defn html-doc [body]

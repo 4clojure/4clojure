@@ -134,6 +134,27 @@ a.novisited {color: #00e;}
     color: black;
 }
 
+td a.user-profile-link {
+    display: block;
+    margin-top: 5px;
+}
+
+#profile-pic{
+    float: left;
+    padding-right: 10px;
+}
+
+#profile-pic img{
+    border: 2px solid black;
+}
+
+img.gravatar{
+    float: left;
+    display: inline;
+    margin-right: 5px;
+    border: 1px solid grey;
+}
+
 #user-info{
    float:right;
 }
@@ -216,7 +237,6 @@ a.novisited {color: #00e;}
    width: 100%;
    padding: 15px;
 }
-
 
 /*
  * By default only show the text label for the "Following" column on
@@ -391,6 +411,7 @@ table.my-table {
 table.my-table td {
    text-align: left;
    font-size: 12px;
+   vertical-align: middle;
 }
 
 tr.evenrow {

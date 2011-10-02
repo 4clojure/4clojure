@@ -1,12 +1,13 @@
 (ns foreclojure.ring
-  (:require [clojure.java.io    :as   io]
-            [clojure.string     :as   s]
-            [compojure.route    :as   route])
-  (:import  [java.net           URL])
-  (:use     [compojure.core     :only [GET]]
-            [foreclojure.utils  :only [strip-version-number]]
-            [useful.debug       :only [?]]
-            [ring.util.response :only [response]]))
+  (:require [clojure.java.io           :as   io]
+            [clojure.string            :as   s]
+            [compojure.route           :as   route])
+  (:import  [java.net                  URL])
+  (:use     [compojure.core            :only [GET]]
+            [foreclojure.version-utils :only [strip-version-number]]
+            [foreclojure.ring-utils    :only [get-host]]
+            [useful.debug              :only [?]]
+            [ring.util.response        :only [response]]))
 
 ;; copied from compojure.route, modified to use File instead of Stream
 (defn resources
@@ -45,7 +46,7 @@
 (defn split-hosts [host-handlers]
   (let [default (:default host-handlers)]
     (fn [request]
-      (let [host (get-in request [:headers "host"])
+      (let [host (get-host request)
             handler (or (host-handlers host) default)]
         (handler request)))))
 

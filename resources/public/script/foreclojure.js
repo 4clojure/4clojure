@@ -59,20 +59,38 @@ $(document).ready(function() {
   });
 });
 
-var difficulty = new Array();
-difficulty["Elementary"] = 0;
-difficulty["Easy"]       = 1;
-difficulty["Medium"]     = 2;
-difficulty["Hard"]       = 3;
-difficulty[""]           = 4;
-
-jQuery.fn.dataTableExt.oSort['difficulty-asc'] = function(a, b) {
-    return difficulty[a] - difficulty[b];
+var difficulty = {
+    "Elementary": 0,
+    "Easy": 1,
+    "Medium": 2,
+    "Hard": 3,
+    "": 4
 };
 
-jQuery.fn.dataTableExt.oSort['difficulty-desc'] = function(a, b) {
-    return difficulty[b] - difficulty[a];
-};
+// dataTable will call this function in preparation for sorting a column.
+// We're responsible for giving it the "real" data to sort on, for all the
+// rows at once
+jQuery.fn.dataTableExt.afnSortData['difficulty'] = function(oSettings, iColumn)
+{
+    var aData = [];
+    // fnGetTrNodes returns a context we can use in jquery to iterate over
+    // only the <td> elements for this column. General approach taken from
+    // http://datatables.net/plug-ins/sorting#functions_data_source
+    $('td:eq('+iColumn+')', oSettings.oApi._fnGetTrNodes(oSettings)).each(function () {
+	aData.push(difficulty[$(this).text()]);
+    });
+    return aData;
+}
+
+// See comments for above function to make sense of this mess
+jQuery.fn.dataTableExt.afnSortData['user-name'] = function(oSettings, iColumn)
+{
+    var aData = [];
+    $('td:eq('+iColumn+') a.user-profile-link', oSettings.oApi._fnGetTrNodes(oSettings)).each(function () {
+	aData.push($(this).text());
+    });
+    return aData;
+}
 
 function configureDataTables(){
 
@@ -81,7 +99,7 @@ function configureDataTables(){
         "aaSorting": [[5, "desc"], [1, "asc"], [4, "desc"]],
         "aoColumns": [
             {"sType": "string"},
-            {"sType": "difficulty"},
+            {"sSortDataType": "difficulty", "sType": "numeric"},
             {"sType": "string"},
             {"sType": "string"},
             {"sType": "numeric"},
@@ -105,7 +123,7 @@ function configureDataTables(){
         "aaSorting": [[0, "asc"]],
         "aoColumns": [
             {"sType": "numeric"},
-            {"sType": "string"},
+            {"sSortDataType": "user-name"},
             {"sType": "numeric"},
             {"sType": "string"}
         ]

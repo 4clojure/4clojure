@@ -1,14 +1,17 @@
 (ns foreclojure.users
   (:require [ring.util.response       :as response]
+            [clojure.string           :as string]
             [sandbar.stateful-session :as session])
   (:use     [foreclojure.utils        :only [from-mongo row-class rank-class get-user with-user]]
             [foreclojure.template     :only [def-page content-page]]
+            [foreclojure.ring-utils   :only [*http-scheme*]]
             [foreclojure.config       :only [config repo-url]]
             [somnium.congomongo       :only [fetch-one fetch update!]]
             [compojure.core           :only [defroutes GET POST]]
             [hiccup.form-helpers      :only [form-to hidden-field]]
             [hiccup.page-helpers      :only [link-to]]
-            [clojure.contrib.json     :only [json-str]]))
+            [clojure.contrib.json     :only [json-str]])
+  (:import org.apache.commons.codec.digest.DigestUtils))
 
 (def golfer-tags (into [:contributor]
                        (when (:golfing-active config)
@@ -23,7 +26,7 @@
 (defn get-users []
   (from-mongo
    (fetch :users
-          :only [:user :solved :contributor])))
+          :only [:user :solved :contributor :email])))
 
 (defn get-ranked-users []
   (let [users (get-users)
@@ -66,6 +69,18 @@
   (link-to (str "mailto:" (email-address username))
            username))
 
+
+
+(let [canonical-email (comp string/trim string/lower-case)
+      md5 #(DigestUtils/md5Hex %)]
+  (defn gravatar-img [{:keys [email size class] :or {size 24}}]
+    (let [hash (md5 (canonical-email email))
+          url (str (name *http-scheme*) "://www.gravatar.com/avatar/"
+                   hash "?s=" size "&d=identicon")]
+      [:img (conj {:src url, :alt "gravatar icon"
+                   :width size :height size}
+                  (when class {:class class}))])))
+
 (defn format-user-ranking [{:keys [rank user contributor solved]}]
   (when user
     [:div
@@ -102,12 +117,12 @@
         [:th {:style "width: 200px;"} "Username"]
         [:th {:style "width: 180px;"} "Problems Solved"]
         [:th "Following"]]]
-      (map-indexed (fn [rownum {:keys [_id position rank user contributor solved]}]
+      (map-indexed (fn [rownum {:keys [_id email position rank user contributor solved]}]
                      [:tr (row-class rownum)
                       [:td (rank-class position) rank]
                       [:td
-                       (when contributor [:span.contributor "* "])
-                       [:a.user-profile-link {:href (str "/user/" user)} user]]
+                       (gravatar-img {:email email :class "gravatar"})
+                       [:a.user-profile-link {:href (str "/user/" user)} user (when contributor [:span.contributor " *"])]]
                       [:td.centered (count solved)]
                       [:td (following-checkbox user-id following _id user)]])
                    user-set)])))
@@ -158,10 +173,11 @@
 
 (def-page user-profile [username]
   (let [page-title (str "User: " username)
-        user-id (:_id (get-user username))]
+        {user-id :_id email :email} (get-user username)]
     {:title page-title
      :content
      (list
+      [:div#profile-pic (gravatar-img {:email email, :size 80 :class "user-profile-img"})]
       [:div.user-profile-name page-title]
       (if (session/session-get :user)
         (with-user [{:keys [_id following]}]
