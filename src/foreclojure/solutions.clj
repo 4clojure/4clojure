@@ -20,9 +20,9 @@
                           :only [(keyword (str "scores." problem-id))
                                  :solved])]
            (cond (seq scores) (str "Scored " (first (vals scores))
-                                   ", before 4clojure started storing solutions."),
+                                   ", before 4clojure started saving solutions."),
 
-                 (some #{problem-id} solved) "Solved before 4clojure started saving solutions")))))
+                 (some #{problem-id} solved) "Solved before 4clojure started scoring solutions")))))
 
 (defn save-solution [user-id problem-id code]
   (update! :solutions
