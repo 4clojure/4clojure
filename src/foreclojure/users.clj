@@ -121,9 +121,8 @@
                      [:tr (row-class rownum)
                       [:td (rank-class position) rank]
                       [:td
-                       (when contributor [:span.contributor "* "])
-                       [:a.user-profile-link {:href (str "/user/" user)} user]
-                       (gravatar-img {:email email :class "gravatar"})]
+                       (gravatar-img {:email email :class "gravatar"})
+                       [:a.user-profile-link {:href (str "/user/" user)} user (when contributor [:span.contributor " *"])]]
                       [:td.centered (count solved)]
                       [:td (following-checkbox user-id following _id user)]])
                    user-set)])))
@@ -178,9 +177,8 @@
     {:title page-title
      :content
      (list
-      [:div.user-profile-name (gravatar-img {:email email, :size 80
-                                             :class "user-profile-img"})
-       page-title]
+      (gravatar-img {:email email, :size 80 :class "user-profile-img"})
+      [:div.user-profile-name page-title]
       (if (session/session-get :user)
         (with-user [{:keys [_id following]}]
           (if (not= _id user-id)
