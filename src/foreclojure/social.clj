@@ -31,7 +31,7 @@
   (str "<a href=\"http://twitter.com/share?"
        "text=" (URLEncoder/encode status)
        "&url=" (URLEncoder/encode
-	        (str "https://4clojure.com/problem/" id))
+                (str "https://4clojure.com/problem/" id))
        "&related=4clojure"
        "\">"
        (or anchor-text "Twitter")
@@ -40,8 +40,8 @@
 (defn get-problem-title [id]
   (:title
    (fetch-one :problems
-	      :only [:title]
-	      :where {:_id id})))
+              :only [:title]
+              :where {:_id id})))
 
 (defn gist!
   "Create a new gist containing a user's solution to a problem and
@@ -50,7 +50,7 @@
   (let [[user-name possessive] (if user-name
                                  [user-name "'s"]
                                  ["anonymous" nil])
-	name (get-problem-title problem-num)
+        name (get-problem-title problem-num)
         filename (str user-name "-4clojure-solution" problem-num ".clj")
         text (str ";; " user-name possessive " solution to " name "\n"
                   ";; https://4clojure.com/problem/" problem-num
@@ -65,10 +65,10 @@
 (defn tweet-solution [id gist-url & [link-text]]
   (let [status-msg (str "Check out how I solved "
                         (let [title (get-problem-title id)]
-			  (if (> (count title) 35)
-			    (str "problem " id)
-			    (str "\"" title "\"")))
-			" on #4clojure " (clojure-hashtag) gist-url)]
+                          (if (> (count title) 35)
+                            (str "problem " id)
+                            (str "\"" title "\"")))
+                        " on #4clojure " (clojure-hashtag) gist-url)]
     (tweet-link id status-msg link-text)))
 
 (def-page share-page []
