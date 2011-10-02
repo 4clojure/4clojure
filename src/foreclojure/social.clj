@@ -3,6 +3,7 @@
             [sandbar.stateful-session :as   session])
   (:import  [java.net                 URLEncoder])
   (:use     [foreclojure.template     :only [def-page]]
+            [foreclojure.utils        :only [escape-html]]
             [compojure.core           :only [defroutes GET]]
             [hiccup.page-helpers      :only [link-to]]
             [somnium.congomongo       :only [fetch-one]]))
@@ -80,7 +81,7 @@
                        [:div {:id "shared-code-box"}
                         [:div.code
                          [:h3 "Your Solution"]
-                         [:pre {:class "brush: clojure;gutter: false;toolbar: false;light: true"} code]]
+                         [:pre {:class "brush: clojure;gutter: false;toolbar: false;light: true"} (escape-html code)]]
                         [:br]
                         [:div.share
                          "Share this " (link-to gist-url "solution")
