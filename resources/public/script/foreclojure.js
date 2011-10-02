@@ -67,15 +67,22 @@ var difficulty = {
     "": 4
 };
 
+// dataTable will call this function in preparation for sorting a column.
+// We're responsible for giving it the "real" data to sort on, for all the
+// rows at once
 jQuery.fn.dataTableExt.afnSortData['difficulty'] = function(oSettings, iColumn)
 {
     var aData = [];
+    // fnGetTrNodes returns a context we can use in jquery to iterate over
+    // only the <td> elements for this column. General approach taken from
+    // http://datatables.net/plug-ins/sorting#functions_data_source
     $('td:eq('+iColumn+')', oSettings.oApi._fnGetTrNodes(oSettings)).each(function () {
 	aData.push(difficulty[$(this).text()]);
     });
     return aData;
 }
 
+// See comments for above function to make sense of this mess
 jQuery.fn.dataTableExt.afnSortData['user-name'] = function(oSettings, iColumn)
 {
     var aData = [];
