@@ -375,12 +375,12 @@ div#problems-error {
   height: 250px;
 }
 
-#editor { 
+#editor {
    margin: 0px;
    float: left;
    width: 50%;
    height: 250px;
-   overflow: hidden 
+   overflow: hidden
 }
 
 table.my-table {
@@ -394,7 +394,7 @@ table.my-table td {
 }
 
 tr.evenrow {
-    background-color: #E2E4FF; 
+    background-color: #E2E4FF;
 }
 
 tr.oddrow {
@@ -485,7 +485,7 @@ button:active {
    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#A1CC59', endColorstr='#A7D45C');
 }
 
-#golfgraph{ 
+#golfgraph{
   width: 90%;
 }
 
