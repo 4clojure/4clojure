@@ -16,7 +16,7 @@
             [foreclojure.version        :only [version-routes]]
             [foreclojure.graphs         :only [graph-routes]]
             [foreclojure.mongo          :only [prepare-mongo]]
-            [foreclojure.utils          :only [wrap-uri-binding]]
+            [foreclojure.ring-utils     :only [wrap-request-bindings]]
             [foreclojure.periodic       :only [schedule-task]]
             [ring.adapter.jetty         :only [run-jetty]]
             [ring.middleware.reload     :only [wrap-reload]]
@@ -47,7 +47,7 @@
          #(wrap-reload % '(foreclojure.core))
          identity))
       session/wrap-stateful-session
-      wrap-uri-binding
+      wrap-request-bindings
       handler/site
       wrap-strip-trailing-slash))
 

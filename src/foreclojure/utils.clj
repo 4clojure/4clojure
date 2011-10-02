@@ -14,14 +14,8 @@
             [hiccup.form-helpers      :only [label]]
             [useful.fn                :only [to-fix]]
             [somnium.congomongo       :only [fetch-one]]
+            [foreclojure.ring-utils   :only [*url* static-url]]
             [foreclojure.config       :only [config repo-url]]))
-
-(def ^{:dynamic true} *url* nil)
-
-(defn wrap-uri-binding [handler]
-  (fn [req]
-    (binding [*url* (:uri req)]
-      (handler req))))
 
 (defn as-int [s]
   (if (integer? s) s,
@@ -157,29 +151,6 @@
       (and (:problem-submission config)
            (>= (count (get-solved username))
                (:advanced-user-count config)))))
-
-(let [prefix (str (when-let [host config/static-host]
-                    (str "http://" host))
-                  "/")]
-  (defn static-url [url]
-    (str prefix url)))
-
-(let [version-suffix (str "__" git/tag)]
-  (defn add-version-number [file]
-    (let [[_ path ext] (re-find #"(.*)\.(.*)$" file)]
-      (str path version-suffix "." ext)))
-
-  (defn strip-version-number [file]
-    (string/replace file version-suffix "")))
-
-(letfn [(wrap-versioning [f]
-          (fn [& files]
-            (for [file files]
-              (f (static-url (add-version-number file))))))]
-  (def js  (wrap-versioning hiccup/include-js))
-  (def css (wrap-versioning hiccup/include-css)))
-
-
 
 (defn image-builder
   "Return a function for constructing an [:img] element from a keyword.
