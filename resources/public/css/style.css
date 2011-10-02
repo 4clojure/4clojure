@@ -134,12 +134,20 @@ a.novisited {color: #00e;}
     color: black;
 }
 
+td a.user-profile-link {
+    display: block;
+    margin-top: 5px;
+}
+
 .user-profile-img{
-    float:left;
+    float: left;
+    padding-right: 10px;
 }
 
 img.gravatar{
-    float:right;
+    float: left;
+    display: inline;
+    margin-right: 5px;
 }
 
 #user-info{
@@ -224,7 +232,6 @@ img.gravatar{
    width: 100%;
    padding: 15px;
 }
-
 
 /*
  * By default only show the text label for the "Following" column on
@@ -399,6 +406,7 @@ table.my-table {
 table.my-table td {
    text-align: left;
    font-size: 12px;
+   vertical-align: middle;
 }
 
 tr.evenrow {
