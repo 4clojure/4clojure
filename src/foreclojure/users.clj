@@ -182,7 +182,9 @@
     {:title page-title
      :content
      (list
-      [:div#profile-pic (gravatar-img {:email email, :size 80 :class "user-profile-img"})]
+      [:div#profile-pic (gravatar-img {:email email, :size 80
+                                       :class "user-profile-img"
+                                       :default "images/gus-of-disapproval.png"})]
       [:div.user-profile-name page-title]
       (if (session/session-get :user)
         (with-user [{:keys [_id following]}]
