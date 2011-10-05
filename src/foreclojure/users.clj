@@ -1,7 +1,8 @@
 (ns foreclojure.users
   (:require [ring.util.response       :as response]
             [clojure.string           :as string]
-            [sandbar.stateful-session :as session])
+            [sandbar.stateful-session :as session]
+            [cheshire.core            :as json])
   (:use     [foreclojure.utils        :only [from-mongo row-class rank-class get-user with-user]]
             [foreclojure.template     :only [def-page content-page]]
             [foreclojure.ring-utils   :only [*http-scheme* static-url]]
@@ -9,8 +10,7 @@
             [somnium.congomongo       :only [fetch-one fetch update!]]
             [compojure.core           :only [defroutes GET POST]]
             [hiccup.form-helpers      :only [form-to hidden-field]]
-            [hiccup.page-helpers      :only [link-to]]
-            [clojure.contrib.json     :only [json-str]])
+            [hiccup.page-helpers      :only [link-to]])
   (:import org.apache.commons.codec.digest.DigestUtils
            java.net.URLEncoder))
 
@@ -229,9 +229,9 @@
 
 (defn rest-follow-user [username follow?]
   (follow-user username follow?)
-  (json-str {"following" follow?
-             "next-action" (follow-url username (not follow?))
-             "next-label" (if follow? "Unfollow" "Follow")}))
+  (json/generate-string {"following" follow?
+                         "next-action" (follow-url username (not follow?))
+                         "next-label" (if follow? "Unfollow" "Follow")}))
 
 (defn set-disable-codebox [disable-flag]
   (with-user [{:keys [_id]}]
