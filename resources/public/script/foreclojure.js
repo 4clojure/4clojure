@@ -131,14 +131,7 @@ function configureDataTables(){
 
     
     $('#server-user-table').dataTable( {
-        "iDisplayLength":3,
-        "aaSorting": [[0, "asc"]],
-        "aoColumns": [
-            {"sType": "numeric"},
-            {"sSortDataType": "user-name"},
-            {"sType": "numeric"},
-            {"sType": "string"}
-        ],
+        "iDisplayLength":10,
         "bProcessing": true,
         "bServerSide": true,
         "sAjaxSource": "/datatable/users"

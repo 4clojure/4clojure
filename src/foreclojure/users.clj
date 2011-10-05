@@ -153,7 +153,7 @@
    (content-page
     {:heading "All 4Clojure Users"
      :sub-heading (list [:span.contributor "*"] "&nbsp;" (link-to repo-url "4clojure contributor"))
-     :main (generate-user-list (get-ranked-users) "server-user-table")})})
+     :main (generate-user-list [] "server-user-table")})})
 
 (def-page top-users-page []
   (let [username (session/session-get :user)
@@ -266,16 +266,18 @@
   (take length (drop start coll)))
 
 (defn user-datatable-query [params]
-  (println params)
-  (println (params :iDisplayStart))
-  (println (generate-datatable-users-list (get-ranked-users)))
-  {:sEcho 1
-   :iTotalRecords "2"
-   :iTotalDisplayRecords "2"
-   :aaData  (datatable-paging
-             (Integer. (params :iDisplayStart))
-             (Integer. (params :iDisplayLength))
-             (generate-datatable-users-list (get-ranked-users)))})
+  (let [display-start (Integer. (params :iDisplayStart))
+        display-length (Integer. (params :iDisplayLength))
+        ranked-users (get-ranked-users)
+        page-users (datatable-paging display-start
+                                     display-length
+                                     (generate-datatable-users-list ranked-users))]
+   (println params)
+   (println page-users)
+   {:sEcho (params :sEcho)
+    :iTotalRecords (str (count ranked-users))
+    :iTotalDisplayRecords (str (count ranked-users))
+    :aaData page-users}))
 
 
 (defroutes users-routes
