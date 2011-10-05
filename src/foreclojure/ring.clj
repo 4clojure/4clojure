@@ -61,6 +61,5 @@
         (handler request)))))
 
 (defn wrap-404 [handler]
-  (fn [request]
-    (or (handler request)
-        (route/not-found "Page not found"))))
+  (routes handler
+          (route/not-found "Page not found")))
