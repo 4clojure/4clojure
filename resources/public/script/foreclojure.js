@@ -128,6 +128,21 @@ function configureDataTables(){
             {"sType": "string"}
         ]
     } );
+
+    
+    $('#server-user-table').dataTable( {
+        "iDisplayLength":3,
+        "aaSorting": [[0, "asc"]],
+        "aoColumns": [
+            {"sType": "numeric"},
+            {"sSortDataType": "user-name"},
+            {"sType": "numeric"},
+            {"sType": "string"}
+        ],
+        "bProcessing": true,
+        "bServerSide": true,
+        "sAjaxSource": "/datatable/users"
+    } );
 }
 
 function setIconColor(element, color, timeOut) {
