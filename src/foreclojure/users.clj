@@ -262,18 +262,41 @@
              {:$set {:hide-solutions (boolean hide-flag)}})
     (response/redirect "/problems")))
 
-(defn datatable-paging [start length coll]
-  (take length (drop start coll)))
+(defn datatable-paging [users start length]
+  (take length (drop start users)))
 
-(defn user-datatable-query [params]
+(defn datatable-sort-cols [users sort-col]
+  (case sort-col
+        0 (sort-by :rank users)
+        1 (sort-by :user users)
+        2 (sort-by (comp :solved count) users)
+        users))
+
+(defn datatable-sort-dir [users sort-dir]
+  (if (= sort-dir "asc")
+    users
+    (reverse users)))
+
+(defn datatable-sort [users sort-col sort-dir]
+  (-> users (datatable-sort-cols sort-col) (datatable-sort-dir sort-dir)))
+
+(defn datatable-process [users params]
   (let [display-start (Integer. (params :iDisplayStart))
         display-length (Integer. (params :iDisplayLength))
+        sort-col (Integer. (params :iSortCol_0))
+        sort-dir (params :sSortDir_0)]
+    (-> users
+        (datatable-sort sort-col sort-dir)
+        (datatable-paging display-start display-length))))
+
+(defn user-datatable-query [params]
+  (let [
         ranked-users (get-ranked-users)
-        page-users (datatable-paging display-start
-                                     display-length
-                                     (generate-datatable-users-list ranked-users))]
-   (println params)
-   (println page-users)
+        page-users (datatable-process
+                    (generate-datatable-users-list ranked-users)
+                    params)]
+    (println params)
+    (println page-users)
    {:sEcho (params :sEcho)
     :iTotalRecords (str (count ranked-users))
     :iTotalDisplayRecords (str (count ranked-users))
