@@ -41,3 +41,8 @@
          (:user (first (datatable-sort users 1 "asc"))) => "user1"
          (:user (first (datatable-sort users 1 "desc"))) => "user9"))
 
+(deftest user-datatables-filter
+  (facts "about filtering the username by text"
+         (:user (first (datatable-filter users "4"))) => "user4"
+         (:user (second (datatable-filter users "1"))) => "user10"
+         (count (datatable-filter users nil)) => 10))

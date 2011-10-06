@@ -238,6 +238,13 @@ img.gravatar{
    padding: 15px;
 }
 
+#server-user-table{
+   float: left;
+   width: 100%;
+   padding: 15px;
+}
+
+
 /*
  * By default only show the text label for the "Following" column on
  * the users page.  If they have javascript turned on (detected

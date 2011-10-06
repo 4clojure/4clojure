@@ -162,7 +162,7 @@
      :content
      (content-page
       {:heading "Top 100 Users"
-       :heading-note (list "[show " (link-to "/users/all" "all") "]")
+       :heading-note [:span#all-users-link]
        :sub-heading (list (format-user-ranking user-ranking)
                           [:span.contributor "*"] "&nbsp;"
                           (link-to repo-url "4clojure contributor"))
@@ -280,28 +280,34 @@
 (defn datatable-sort [users sort-col sort-dir]
   (-> users (datatable-sort-cols sort-col) (datatable-sort-dir sort-dir)))
 
+(defn datatable-filter [users str]
+  (if str
+    (filter #(< -1 (.indexOf (if (:user %) (:user %) "") str)) users)
+    users))
+
 (defn datatable-process [users params]
   (let [display-start (Integer. (params :iDisplayStart))
         display-length (Integer. (params :iDisplayLength))
         sort-col (Integer. (params :iSortCol_0))
-        sort-dir (params :sSortDir_0)]
+        sort-dir (params :sSortDir_0)
+        search-str (params :sSearch)]
     (-> users
         (datatable-sort sort-col sort-dir)
-        (datatable-paging display-start display-length))))
+        (datatable-paging display-start display-length)
+        generate-datatable-users-list)))
 
 (defn user-datatable-query [params]
   (let [
         ranked-users (get-ranked-users)
+        search-str (params :sSearch)
+        filtered-users (datatable-filter ranked-users search-str)
         page-users (datatable-process
-                    (generate-datatable-users-list ranked-users)
+                    filtered-users
                     params)]
-    (println params)
-    (println page-users)
    {:sEcho (params :sEcho)
     :iTotalRecords (str (count ranked-users))
-    :iTotalDisplayRecords (str (count ranked-users))
+    :iTotalDisplayRecords (str (count filtered-users))
     :aaData page-users}))
-
 
 (defroutes users-routes
   (GET  "/users" [] (top-users-page))
