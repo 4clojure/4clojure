@@ -6,6 +6,7 @@
   (:use     [compojure.core             :only [defroutes routes GET]]
             [foreclojure.static         :only [static-routes welcome-page]]
             [foreclojure.api            :only [api-routes]]
+            [foreclojure.datatable      :only [datatable-routes]]
             [foreclojure.problems       :only [problems-routes]]
             [foreclojure.login          :only [login-routes]]
             [foreclojure.register       :only [register-routes]]
@@ -44,6 +45,7 @@
               version-routes
               graph-routes
               api-routes
+              datatable-routes
               golf-routes)
       ((if (:wrap-reload config)
          #(wrap-reload % '(foreclojure.core))
