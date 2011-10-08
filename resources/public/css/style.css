@@ -260,6 +260,14 @@ img.gravatar{
     display: none;
 }
 
+/*
+ * If datatables is fetching stuff from the server, we definitely have
+ * javascript enabled, so hide the span to begin with.
+ */
+#server-user-table span.following {
+    display: none;
+}
+
 
 span.error, div.error {
    color: red;
