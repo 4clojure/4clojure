@@ -267,7 +267,7 @@
 (defn datatable-paging [start length users]
   (take length (drop start users)))
 
-(let [column-sorts [:rank :user (comp :solved count)]]
+(let [column-sorts [:rank :user (comp count :solved)]]
   (defn datatable-sort-cols [sort-col users]
     (if-let [sort-fn (get column-sorts sort-col)]
       (sort-by sort-fn users)
