@@ -267,12 +267,11 @@
 (defn datatable-paging [users start length]
   (take length (drop start users)))
 
-(defn datatable-sort-cols [users sort-col]
-  (case sort-col
-        0 (sort-by :rank users)
-        1 (sort-by :user users)
-        2 (sort-by (comp :solved count) users)
-        users))
+(let [column-sorts [:rank :user (comp :solved count)]]
+  (defn datatable-sort-cols [users sort-col]
+    (if-let [sort-fn (get column-sorts sort-col)]
+      (sort-by sort-fn users)
+      users)))
 
 (defn datatable-sort-dir [users sort-dir]
   (if (= sort-dir "asc")
@@ -282,9 +281,9 @@
 (defn datatable-sort [users sort-col sort-dir]
   (-> users (datatable-sort-cols sort-col) (datatable-sort-dir sort-dir)))
 
-(defn datatable-filter [users str]
-  (if str
-    (filter #(< -1 (.indexOf (if (:user %) (:user %) "") str)) users)
+(defn datatable-filter [users search]
+  (if search
+    (filter #(.contains (:user % "") search) users)
     users))
 
 (defn datatable-process [users params]
