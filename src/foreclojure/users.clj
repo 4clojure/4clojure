@@ -264,35 +264,35 @@
              {:$set {:hide-solutions (boolean hide-flag)}})
     (response/redirect "/problems")))
 
-(defn datatable-paging [users start length]
+(defn datatable-paging [start length users]
   (take length (drop start users)))
 
 (let [column-sorts [:rank :user (comp :solved count)]]
-  (defn datatable-sort-cols [users sort-col]
+  (defn datatable-sort-cols [sort-col users]
     (if-let [sort-fn (get column-sorts sort-col)]
       (sort-by sort-fn users)
       users)))
 
-(defn datatable-sort-dir [users sort-dir]
+(defn datatable-sort-dir [sort-dir users]
   (if (= sort-dir "asc")
     users
     (reverse users)))
 
-(defn datatable-sort [users sort-col sort-dir]
-  (-> users (datatable-sort-cols sort-col) (datatable-sort-dir sort-dir)))
+(defn datatable-sort [sort-col sort-dir users]
+  (->> users (datatable-sort-cols sort-col) (datatable-sort-dir sort-dir)))
 
-(defn datatable-filter [users search]
+(defn datatable-filter [search users]
   (if search
     (filter #(.contains (:user % "") search) users)
     users))
 
-(defn datatable-process [users params]
+(defn datatable-process [params users]
   (let [display-start (Integer. (params :iDisplayStart))
         display-length (Integer. (params :iDisplayLength))
         sort-col (Integer. (params :iSortCol_0))
         sort-dir (params :sSortDir_0)
         search-str (params :sSearch)]
-    (-> users
+    (->> users
         (datatable-sort sort-col sort-dir)
         (datatable-paging display-start display-length)
         generate-datatable-users-list)))
@@ -300,10 +300,10 @@
 (defn user-datatable-query [params]
   (let [ranked-users (get-ranked-users)
         search-str (params :sSearch)
-        filtered-users (datatable-filter ranked-users search-str)
+        filtered-users (datatable-filter search-str ranked-users)
         page-users (datatable-process
-                    filtered-users
-                    params)]
+                    params
+                    filtered-users)]
    {:sEcho (params :sEcho)
     :iTotalRecords (str (count ranked-users))
     :iTotalDisplayRecords (str (count filtered-users))
