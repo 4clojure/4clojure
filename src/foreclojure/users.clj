@@ -138,16 +138,16 @@
         (when (session/session-get :user)
           (with-user [{:keys [_id following]}]
             [_id (set following)]))]
-    (into [] (map-indexed
-              (fn [rownum {:keys [_id email position rank user contributor solved]}]
-                [rank
-                 (html (list
-                        (gravatar-img {:email email :class "gravatar"})
-                        [:a.user-profile-link {:href (str "/user/" user)}
-                         user (when contributor [:span.contributor " *"])]))
-                 (count solved)
-                 (html (following-checkbox user-id following _id user))])
-              user-set))))
+    (map-indexed
+     (fn [rownum {:keys [_id email position rank user contributor solved]}]
+       [rank
+        (html (list
+               (gravatar-img {:email email :class "gravatar"})
+               [:a.user-profile-link {:href (str "/user/" user)}
+                user (when contributor [:span.contributor " *"])]))
+        (count solved)
+        (html (following-checkbox user-id following _id user))])
+     user-set)))
 
 (def-page all-users-page []
   {:title "All 4Clojure Users"
@@ -299,8 +299,7 @@
         generate-datatable-users-list)))
 
 (defn user-datatable-query [params]
-  (let [
-        ranked-users (get-ranked-users)
+  (let [ranked-users (get-ranked-users)
         search-str (params :sSearch)
         filtered-users (datatable-filter ranked-users search-str)
         page-users (datatable-process
