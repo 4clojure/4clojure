@@ -138,14 +138,16 @@
         (when (session/session-get :user)
           (with-user [{:keys [_id following]}]
             [_id (set following)]))]
-    (into [] (map-indexed (fn [rownum {:keys [_id email position rank user contributor solved]}]
-                    [rank
-                     (str
-                      (html (gravatar-img {:email email :class "gravatar"}))
-                      (html [:a.user-profile-link {:href (str "/user/" user)} user (when contributor [:span.contributor " *"])]))
-                     (count solved)
-                     (html (following-checkbox user-id following _id user))])
-                          user-set))))
+    (into [] (map-indexed
+              (fn [rownum {:keys [_id email position rank user contributor solved]}]
+                [rank
+                 (html (list
+                        (gravatar-img {:email email :class "gravatar"})
+                        [:a.user-profile-link {:href (str "/user/" user)}
+                         user (when contributor [:span.contributor " *"])]))
+                 (count solved)
+                 (html (following-checkbox user-id following _id user))])
+              user-set))))
 
 (def-page all-users-page []
   {:title "All 4Clojure Users"

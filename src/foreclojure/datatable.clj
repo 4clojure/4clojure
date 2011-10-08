@@ -6,5 +6,7 @@
 
 (def datatable-routes
   (-> (routes
-       (GET "/datatable/users" [& more] {:body (user-datatable-query more)}))
+       (GET "/datatable/users" [& more]
+         {:body (user-datatable-query more)
+          :status 200}))
       (wrap-json)))
