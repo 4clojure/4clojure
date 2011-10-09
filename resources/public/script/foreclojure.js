@@ -39,6 +39,8 @@ $(document).ready(function() {
       return false;
   });
 
+  $("#all-users-link").html("[show <a href=\"/users/all\">all</a>]");
+
   $("#user-table").addClass("js-enabled");
 
   $("#user-table input.following").live("click", function(e) {
@@ -127,6 +129,14 @@ function configureDataTables(){
             {"sType": "numeric"},
             {"sType": "string"}
         ]
+    } );
+
+    
+    $('#server-user-table').dataTable( {
+        "iDisplayLength":10,
+        "bProcessing": true,
+        "bServerSide": true,
+        "sAjaxSource": "/datatable/users"
     } );
 }
 

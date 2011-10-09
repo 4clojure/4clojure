@@ -2,7 +2,8 @@
   (:require [foreclojure.users        :as      users]
             [sandbar.stateful-session :as      session]
             [clojure.string           :as      s]
-            [ring.util.response       :as      response])
+            [ring.util.response       :as      response]
+            [cheshire.core            :as      json])
   (:import  [org.apache.commons.mail  EmailException])
   (:use     [foreclojure.utils        :only    [from-mongo get-user get-solved login-link flash-msg flash-error row-class approver? can-submit? send-email image-builder with-user as-int maybe-update escape-html]]
             [foreclojure.ring-utils   :only    [*url*]]
@@ -19,8 +20,7 @@
             [hiccup.core              :only    [html]]
             [useful.debug             :only    [?]]
             [amalloy.utils            :only    [defcomp]]
-            [compojure.core           :only    [defroutes GET POST]]
-            [clojure.contrib.json     :only    [json-str]]))
+            [compojure.core           :only    [defroutes GET POST]]))
 
 (def solved-stats (agent {:total 0}))
 
@@ -249,11 +249,11 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
 
 (defn rest-run-code [id raw-code]
   (let [{:keys [message error url num-tests-passed]} (run-code id raw-code)]
-    (json-str {:failingTest num-tests-passed
-               :message message
-               :error error
-               :golfScore (html (render-golf-score))
-               :golfChart (html (render-golf-chart))})))
+    (json/generate-string {:failingTest num-tests-passed
+                           :message message
+                           :error error
+                           :golfScore (html (render-golf-score))
+                           :golfChart (html (render-golf-chart))})))
 
 (defn wants-no-javascript-codebox? []
   (when (session/session-get :user)

@@ -56,7 +56,7 @@
         (when user
           [:div#lower-menu
            [:span
-            (link-to "/login/update" "Account Settings")]
+            (link-to "/settings" "Account Settings")]
            (when (:golfing-active config)
              [:span ; deserves its own page, but just make it discoverable for now
               (link-to "/league" "Leagues")])

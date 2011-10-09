@@ -232,7 +232,7 @@ img.gravatar{
    padding-bottom: 5px;;
 }
 
-#user-table{
+#user-table, #server-user-table{
    float: left;
    width: 100%;
    padding: 15px;
@@ -257,6 +257,14 @@ img.gravatar{
 }
 
 #user-table.js-enabled span.following {
+    display: none;
+}
+
+/*
+ * If datatables is fetching stuff from the server, we definitely have
+ * javascript enabled, so hide the span to begin with.
+ */
+#server-user-table span.following {
     display: none;
 }
 
@@ -305,7 +313,9 @@ div#main {
 }
 
 div.message #flash-text {}
-div.message #error-text {}
+div.message #error-text {
+    color: red;
+}
 
 div#prob-title {
    font-size: 15pt;
