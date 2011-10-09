@@ -5,7 +5,6 @@
   (:use     [hiccup.form-helpers      :only [form-to label text-field password-field check-box]]
             [foreclojure.utils        :only [from-mongo flash-error flash-msg with-user form-row assuming send-email login-url]]
             [foreclojure.template     :only [def-page content-page]]
-            [foreclojure.users        :only [disable-codebox? set-disable-codebox hide-solutions? set-hide-solutions]]
             [compojure.core           :only [defroutes GET POST]]
             [useful.map               :only [keyed]]
             [clojail.core             :only [thunk-timeout]]
@@ -49,84 +48,6 @@
           (session/session-delete-key! :login-to)
           (response/redirect (or location "/problems")))
       (flash-error "/login" "Error logging in."))))
-
-(defn account-settings-box [user]
-  [:table
-   (form-to [:post "/login/update"]
-     (map form-row
-          [[text-field :new-username "Username" user]
-           [password-field :old-pwd "Current password"]
-           [password-field :pwd "New password"]
-           [password-field :repeat-pwd "Repeat password"]])
-     [:tr
-      [:td [:button {:type "submit"} "Reset now"]]])])
-
-(defn js-settings-box [user-obj]
-  (list
-   [:p "Selecting this will disable the JavaScript code entry box and just give you plain text entry"]
-   (form-to [:post "/users/set-disable-codebox"]
-     (check-box :disable-codebox
-                (disable-codebox? user-obj))
-     [:label {:for "disable-codebox"}
-      "Disable JavaScript in code entry box"]
-     [:br]
-     [:div#button-div
-      [:button {:type "submit"} "Submit"]])))
-
-(defn hide-settings-box [user-obj]
-  (list
-   [:p "When you solve a problem, we allow any user who has solved a problem to view your solutions to that problem. Check this box to keep your solutions private."]
-   (form-to [:post "/users/set-hide-solutions"]
-     (check-box :hide-solutions
-                (hide-solutions? user-obj))
-     [:label {:for "hide-solutions"}
-      "Hide my solutions"]
-     [:br]
-     [:div#button-div
-      [:button {:type "submit"} "Submit"]])))
-
-(def-page update-credentials-page []
-  (with-user [{:keys [user] :as user-obj}]
-    {:title "Change password"
-     :content
-     (content-page
-      {:main
-       (list
-        [:h2 "Change password for " user]
-        [:div#account-settings (account-settings-box user)]
-        [:hr]
-        [:h2 "Disable JavaScript Code Box"]
-        [:div#settings-codebox (js-settings-box user-obj)]
-        [:hr]
-        [:h2 "Hide My Solutions"]
-        [:div#settings-follow (hide-settings-box user-obj)])})}))
-
-(defn do-update-credentials! [new-username old-pwd new-pwd repeat-pwd]
-  (with-user [{:keys [user pwd]}]
-    (let [encryptor (StrongPasswordEncryptor.)
-          new-pwd-hash (.encryptPassword encryptor new-pwd)
-          new-lower-user (.toLowerCase new-username)]
-      (assuming [(or (= new-lower-user user) (nil? (fetch-one :users :where {:user new-lower-user})))
-                 "User already exists",
-                 (< 3 (.length new-lower-user) 14)
-                 "Username must be 4-13 characters long",
-                 (= new-lower-user
-                    (first (re-seq #"[A-Za-z0-9_]+" new-lower-user)))
-                 "Username must be alphanumeric"
-                 (or (empty? new-pwd) (< 6 (.length new-pwd)))
-                 "New password must be at least seven characters long",
-                 (= new-pwd repeat-pwd)
-                 "New password was not entered identically twice"
-                 (.checkPassword encryptor old-pwd pwd)
-                 "Old password incorrect"]
-          (do
-            (update! :users {:user user}
-                     {:$set {:pwd (if (not-empty new-pwd) new-pwd-hash pwd) :user new-lower-user}}
-                     :upsert false)
-            (session/session-put! :user new-lower-user)
-            (flash-msg "/problems"
-              (str "Account for " new-lower-user " updated successfully")))
-          (flash-error "/login/update" why)))))
 
 (def-page reset-password-page []
   {:title "Reset password"
@@ -196,20 +117,10 @@
   (POST "/login" {{:strs [user pwd]} :form-params}
     (do-login user pwd))
 
-  (GET  "/login/update" [] (update-credentials-page))
-  (POST "/login/update" {{:strs [new-username old-pwd pwd repeat-pwd]} :form-params}
-    (do-update-credentials! new-username old-pwd pwd repeat-pwd))
-
   (GET  "/login/reset" [] (reset-password-page))
   (POST "/login/reset" [email]
     (do-reset-password! email))
 
   (GET "/logout" []
     (do (session/session-delete-key! :user)
-        (response/redirect "/")))
-
-  (POST "/users/set-disable-codebox" [disable-codebox]
-        (set-disable-codebox disable-codebox))
-
-  (POST "/users/set-hide-solutions" [hide-solutions]
-    (set-hide-solutions hide-solutions)))
+        (response/redirect "/"))))

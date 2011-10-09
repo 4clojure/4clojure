@@ -9,6 +9,7 @@
             [foreclojure.datatable      :only [datatable-routes]]
             [foreclojure.problems       :only [problems-routes]]
             [foreclojure.login          :only [login-routes]]
+            [foreclojure.settings       :only [settings-routes]]
             [foreclojure.register       :only [register-routes]]
             [foreclojure.golf           :only [golf-routes]]
             [foreclojure.ring           :only [resources wrap-strip-trailing-slash wrap-url-as-file wrap-versioned-expiry split-hosts wrap-404 wrap-debug]]
@@ -46,7 +47,8 @@
               graph-routes
               api-routes
               datatable-routes
-              golf-routes)
+              golf-routes
+              settings-routes)
       ((if (:wrap-reload config)
          #(wrap-reload % '(foreclojure.core))
          identity))
