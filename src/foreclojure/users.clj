@@ -250,20 +250,6 @@
                          "next-action" (follow-url username (not follow?))
                          "next-label" (if follow? "Unfollow" "Follow")}))
 
-(defn set-disable-codebox [disable-flag]
-  (with-user [{:keys [_id]}]
-    (update! :users
-             {:_id _id}
-             {:$set {:disable-code-box (boolean disable-flag)}})
-    (response/redirect "/problems")))
-
-(defn set-hide-solutions [hide-flag]
-  (with-user [{:keys [_id]}]
-    (update! :users
-             {:_id _id}
-             {:$set {:hide-solutions (boolean hide-flag)}})
-    (response/redirect "/problems")))
-
 (defn datatable-paging [start length users]
   (take length (drop start users)))
 
