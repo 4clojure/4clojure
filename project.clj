@@ -1,9 +1,9 @@
-(defproject foreclojure "1.5.1"
+(defproject foreclojure "1.5.1.1"
   :description "4clojure - a website for learning Clojure"
   :dependencies [[clojure "1.2.1"]
                  [clojure-contrib "1.2.0"]
                  [compojure "0.6.2"]
-                 [hiccup "0.2.4"]
+                 [hiccup "0.3.6"]
                  [clojail "0.4.0-SNAPSHOT"]
                  [sandbar "0.4.0-SNAPSHOT"]
                  [org.clojars.christophermaier/congomongo "0.1.4-SNAPSHOT"]
