@@ -313,7 +313,9 @@ div#main {
 }
 
 div.message #flash-text {}
-div.message #error-text {}
+div.message #error-text {
+    color: red;
+}
 
 div#prob-title {
    font-size: 15pt;

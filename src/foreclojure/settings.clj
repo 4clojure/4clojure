@@ -80,7 +80,8 @@
                  "New password must be at least seven characters long",
                  (= new-pwd repeat-pwd)
                  "New password was not entered identically twice"
-                 (.checkPassword encryptor old-pwd pwd)
+                 (or (empty? new-pwd)
+                     (.checkPassword encryptor old-pwd pwd))
                  "Current password incorrect"
                  (not (empty? email))
                  "Please enter a valid email address"]
