@@ -1,5 +1,5 @@
-(defproject foreclojure "1.5.0.2"
-  :description "4clojure - a website for lisp beginners"
+(defproject foreclojure "1.5.1"
+  :description "4clojure - a website for learning Clojure"
   :dependencies [[clojure "1.2.1"]
                  [clojure-contrib "1.2.0"]
                  [compojure "0.6.2"]
