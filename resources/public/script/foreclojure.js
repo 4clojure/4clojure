@@ -147,6 +147,12 @@ function configureDataTables(){
 
     
     $('#server-user-table').dataTable( {
+        "aoColumns": [
+            null,
+            null,
+            null,
+            {"bSortable": false}
+        ],
         "iDisplayLength":10,
         "bProcessing": true,
         "bServerSide": true,
