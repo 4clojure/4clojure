@@ -95,6 +95,19 @@ jQuery.fn.dataTableExt.afnSortData['user-name'] = function(oSettings, iColumn)
     return aData;
 }
 
+// See comments for above function to make sense of this mess
+jQuery.fn.dataTableExt.afnSortData['following'] = function(oSettings, iColumn)
+{
+    var aData = [];
+    $('td:eq('+iColumn+') span.following', oSettings.oApi._fnGetTrNodes(oSettings)).each(function () {
+        var followingText = $(this).text();
+        if (!followingText || followingText == "") { followingText = "no" }
+	aData.push(followingText);
+    });
+    return aData;
+}
+
+
 function configureDataTables(){
 
     $('#problem-table').dataTable( {
@@ -128,7 +141,7 @@ function configureDataTables(){
             {"sType": "numeric"},
             {"sSortDataType": "user-name"},
             {"sType": "numeric"},
-            {"sType": "string"}
+            {"sSortDataType": "following"}
         ]
     } );
 
