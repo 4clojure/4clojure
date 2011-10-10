@@ -103,11 +103,12 @@
   (str "/user/" (if follow? "follow" "unfollow") "/" username))
 
 (defn following-checkbox [current-user-id following user-id user]
-  (when (and current-user-id (not= current-user-id user-id))
+  (if (and current-user-id (not= current-user-id user-id))
     (let [following? (contains? following user-id)]
       (form-to [:post (follow-url user (not following?))]
                [:input.following {:type "checkbox" :checked following?}]
-               [:span.following (when following? "yes")]))))
+               [:span.following (when following? "yes")]))
+    [:span.following "me"]))
 
 (defn generate-user-list [user-set table-name]
   (let [[user-id following]
