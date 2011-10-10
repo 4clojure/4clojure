@@ -153,7 +153,7 @@ function configureDataTables(){
             null,
             {"bSortable": false}
         ],
-        "iDisplayLength":10,
+        "iDisplayLength":100,
         "bProcessing": true,
         "bServerSide": true,
         "sAjaxSource": "/datatable/users"
