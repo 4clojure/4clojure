@@ -41,9 +41,9 @@ $(document).ready(function() {
 
   $("#all-users-link").html("[show <a href=\"/users/all\">all</a>]");
 
-  $("#user-table").addClass("js-enabled");
+  $("[id*=user-table]").addClass("js-enabled");
 
-  $("#user-table input.following").live("click", function(e) {
+  $("[id*=user-table] input.following").live("click", function(e) {
     e.preventDefault();
     var $checkbox = $(this)
     var $form = $checkbox.parents("form")
@@ -59,6 +59,7 @@ $(document).ready(function() {
            });
     return false;
   });
+
 });
 
 var difficulty = {
