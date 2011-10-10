@@ -41,9 +41,9 @@ $(document).ready(function() {
 
   $("#all-users-link").html("[show <a href=\"/users/all\">all</a>]");
 
-  $("[id*=user-table]").addClass("js-enabled");
+  $("#user-table,#server-user-table").addClass("js-enabled");
 
-  $("[id*=user-table] input.following").live("click", function(e) {
+  $("#user-table,#server-user-table input.following").live("click", function(e) {
     e.preventDefault();
     var $checkbox = $(this)
     var $form = $checkbox.parents("form")
