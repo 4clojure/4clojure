@@ -122,10 +122,27 @@
   (from-mongo
    (fetch-one :users :where {:user username})))
 
-(defmacro with-user [[user-binding] & body]
-  `(if-let [username# (session/session-get :user)]
-     (let [~user-binding (get-user username#)]
-       ~@body)
+(defmacro if-user
+  "Look for a user with the given username in the database, let-ing it
+  to the supplied binding and executing the then clause. If no such user
+  can be found, evaluate the else clause.
+
+  username defaults to the current value of (session-get :user) if not
+  specified. Callers need not verify that username is non-nil: that is
+  done for you before consulting the database."
+  ([[user-binding username] then]
+     `(if-user ~[user-binding username] ~then nil))
+  ([[user-binding username] then else]
+     (let [userexpr (or username `(session/session-get :user))]
+       `(let [username# ~userexpr]
+          (if-let [~user-binding (and username#
+                                      (get-user username#))]
+            ~then
+            ~else)))))
+
+(defmacro with-user [[binding expr] & body]
+  `(if-user [~binding ~expr]
+     (do ~@body)
      [:span.error "You must " (login-link) " to do this."]))
 
 (defn flash-fn [type]

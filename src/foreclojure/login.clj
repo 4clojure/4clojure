@@ -3,7 +3,7 @@
             [ring.util.response       :as   response])
   (:import  [org.jasypt.util.password StrongPasswordEncryptor])
   (:use     [hiccup.form-helpers      :only [form-to label text-field password-field check-box]]
-            [foreclojure.utils        :only [from-mongo flash-error flash-msg with-user form-row assuming send-email login-url]]
+            [foreclojure.utils        :only [from-mongo flash-error flash-msg form-row assuming send-email login-url]]
             [foreclojure.template     :only [def-page content-page]]
             [compojure.core           :only [defroutes GET POST]]
             [useful.map               :only [keyed]]
