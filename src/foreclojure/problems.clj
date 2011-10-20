@@ -5,7 +5,7 @@
             [ring.util.response       :as      response]
             [cheshire.core            :as      json])
   (:import  [org.apache.commons.mail  EmailException])
-  (:use     [foreclojure.utils        :only    [from-mongo get-user get-solved login-link flash-msg flash-error row-class approver? can-submit? send-email image-builder with-user as-int maybe-update escape-html]]
+  (:use     [foreclojure.utils        :only    [from-mongo get-user get-solved login-link flash-msg flash-error row-class approver? can-submit? send-email image-builder if-user with-user as-int maybe-update escape-html]]
             [foreclojure.ring-utils   :only    [*url*]]
             [foreclojure.template     :only    [def-page content-page]]
             [foreclojure.social       :only    [tweet-link gist!]]
@@ -256,15 +256,13 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
                            :golfChart (html (render-golf-chart))})))
 
 (defn wants-no-javascript-codebox? []
-  (when (session/session-get :user)
-    (with-user [{:keys [user] :as user-obj}]
-      (disable-codebox? user-obj))))
+  (if-user [{:keys [user] :as user-obj}]
+    (disable-codebox? user-obj)))
 
 (def-page code-box [id]
   (let [{:keys [_id title difficulty tags description
                 restricted tests approved user]}
         (get-problem (Integer. id)),
-        session-user (session/session-get :user)
         title (str (when-not approved
                      "Unapproved: ")
                    title)]
@@ -273,12 +271,11 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
      :content
      [:div
       [:div#prob-title title]
-      (if session-user
-        (with-user [{:keys [solved]}]
-          (if (some #{(Integer. id)} solved)
-            (link-to (str "/problem/solutions/" id)
-                     [:button#solutions-link {:type "submit"} "Solutions"])
-            [:div {:style "clear: right; margin-bottom: 15px;"} "&nbsp;"]))
+      (if-user [{:keys [solved]}]
+        (if (some #{(Integer. id)} solved)
+          (link-to (str "/problem/solutions/" id)
+                   [:button#solutions-link {:type "submit"} "Solutions"])
+          [:div {:style "clear: right; margin-bottom: 15px;"} "&nbsp;"])
         [:div {:style "clear: right; margin-bottom: 15px;"} "&nbsp;"])
       [:hr]
       [:table#tags
@@ -306,7 +303,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
         [:br]
         [:br]
         [:p#instruct "Code which fills in the blank: "]
-       (when (wants-no-javascript-codebox?) [:span#disable-javascript-codebox])
+        (when (wants-no-javascript-codebox?) [:span#disable-javascript-codebox])
         (text-area {:id "code-box"
                     :spellcheck "false"}
                    :code (escape-html
@@ -365,12 +362,11 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
 (defn show-solutions [id]
   (let [problem-id (Integer. id)
         user (session/session-get :user)]
-    (if user
-      (with-user [{:keys [solved]}]
-        (if (some #{problem-id} solved)
-          (show-solutions-page problem-id)
-          (flash-error (str "/problem/" problem-id)
-            "You must solve this problem before you can see others' solutions!")))
+    (if-user [{:keys [solved]}]
+      (if (some #{problem-id} solved)
+        (show-solutions-page problem-id)
+        (flash-error (str "/problem/" problem-id)
+          "You must solve this problem before you can see others' solutions!"))
       (do
         (session/session-put! :login-to *url*)
         (flash-error "/login" "You must log in to see solutions!")))))

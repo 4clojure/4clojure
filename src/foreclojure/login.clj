@@ -3,13 +3,15 @@
             [ring.util.response       :as   response])
   (:import  [org.jasypt.util.password StrongPasswordEncryptor])
   (:use     [hiccup.form-helpers      :only [form-to label text-field password-field check-box]]
-            [foreclojure.utils        :only [from-mongo flash-error flash-msg with-user form-row assuming send-email login-url]]
+            [foreclojure.utils        :only [from-mongo flash-error flash-msg form-row assuming send-email login-url]]
             [foreclojure.template     :only [def-page content-page]]
             [compojure.core           :only [defroutes GET POST]]
             [useful.map               :only [keyed]]
             [clojail.core             :only [thunk-timeout]]
             [clojure.stacktrace       :only [print-cause-trace]]
             [somnium.congomongo       :only [update! fetch-one]]))
+
+(def password-reset-url "https://www.4clojure.com/settings")
 
 (def login-box
   (form-to [:post "/login"]
@@ -85,7 +87,7 @@
            :text
            (str "The password for your 4clojure.com account "
                 name " has been reset to " pw ". Make sure to change it"
-                " soon at https://4clojure.com/login/update - pick"
+                " soon at " password-reset-url " - pick"
                 " something you'll remember!")})
          {:success true})
        10 :sec)
@@ -103,8 +105,8 @@
                                             :only [:_id :user])]
     (let [{:keys [success] :as diagnostics} (try-to-email email name id)]
       (if success
-        (do (session/session-put! :login-to "/login/update")
-            (flash-msg (login-url "/login/update")
+        (do (session/session-put! :login-to password-reset-url)
+            (flash-msg (login-url password-reset-url)
               "Your password has been reset! You should receive an email soon."))
         (do (spit (str name ".pwd") diagnostics)
             (flash-error "/login/reset"

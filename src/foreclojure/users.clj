@@ -3,7 +3,7 @@
             [clojure.string           :as string]
             [sandbar.stateful-session :as session]
             [cheshire.core            :as json])
-  (:use     [foreclojure.utils        :only [from-mongo row-class rank-class get-user with-user]]
+  (:use     [foreclojure.utils        :only [from-mongo row-class rank-class get-user if-user with-user]]
             [foreclojure.template     :only [def-page content-page]]
             [foreclojure.ring-utils   :only [*http-scheme* static-url]]
             [foreclojure.config       :only [config repo-url]]
@@ -103,17 +103,16 @@
   (str "/user/" (if follow? "follow" "unfollow") "/" username))
 
 (defn following-checkbox [current-user-id following user-id user]
-  (when (and current-user-id (not= current-user-id user-id))
+  (if (and current-user-id (not= current-user-id user-id))
     (let [following? (contains? following user-id)]
       (form-to [:post (follow-url user (not following?))]
                [:input.following {:type "checkbox" :checked following?}]
-               [:span.following (when following? "yes")]))))
+               [:span.following (when following? "yes")]))
+    [:span.following "me"]))
 
 (defn generate-user-list [user-set table-name]
-  (let [[user-id following]
-        (when (session/session-get :user)
-          (with-user [{:keys [_id following]}]
-            [_id (set following)]))]
+  (let [[user-id following] (if-user [{:keys [_id following]}]
+                              [_id (set following)])]
     (list
      [:br]
      [:table.my-table {:id table-name}
@@ -134,10 +133,8 @@
                    user-set)])))
 
 (defn generate-datatable-users-list [user-set]
-  (let [[user-id following]
-        (when (session/session-get :user)
-          (with-user [{:keys [_id following]}]
-            [_id (set following)]))]
+  (let [[user-id following] (if-user [{:keys [_id following]}]
+                              [_id (set following)])]
     (map-indexed
      (fn [rownum {:keys [_id email position rank user contributor solved]}]
        [rank
@@ -203,15 +200,14 @@
                                        :class "user-profile-img"
                                        :default "images/gus-of-disapproval.png"})]
       [:div.user-profile-name page-title]
-      (if (session/session-get :user)
-        (with-user [{:keys [_id following]}]
-          (if (not= _id user-id)
-            (let [[url label] (if (some #{user-id} following)
-                                ["unfollow" "Unfollow"]
-                                ["follow"   "Follow"])]
-              (form-to [:post (str "/user/" url "/" username)]
-                [:button.user-follow-button {:type "submit"} label]))
-            [:div {:style "clear: right; margin-bottom: 10px;"} "&nbsp;"]))
+      (if-user [{:keys [_id following]}]
+        (if (not= _id user-id)
+          (let [[url label] (if (some #{user-id} following)
+                              ["unfollow" "Unfollow"]
+                              ["follow"   "Follow"])]
+            (form-to [:post (str "/user/" url "/" username)]
+              [:button.user-follow-button {:type "submit"} label]))
+          [:div {:style "clear: right; margin-bottom: 10px;"} "&nbsp;"])
         [:div {:style "clear: right; margin-bottom: 10px;"} "&nbsp;"])
       [:hr]
       [:table
