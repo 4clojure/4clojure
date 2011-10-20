@@ -303,7 +303,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
         [:br]
         [:br]
         [:p#instruct "Code which fills in the blank: "]
-       (when (wants-no-javascript-codebox?) [:span#disable-javascript-codebox])
+        (when (wants-no-javascript-codebox?) [:span#disable-javascript-codebox])
         (text-area {:id "code-box"
                     :spellcheck "false"}
                    :code (escape-html
