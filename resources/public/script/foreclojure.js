@@ -43,7 +43,7 @@ $(document).ready(function() {
 
   $("#user-table,#server-user-table").addClass("js-enabled");
 
-  $("#user-table,#server-user-table input.following").live("click", function(e) {
+  $("#user-table input.following, #server-user-table input.following").live("click", function(e) {
     e.preventDefault();
     var $checkbox = $(this)
     var $form = $checkbox.parents("form")
