@@ -3,7 +3,7 @@
             [clojure.string           :as string]
             [sandbar.stateful-session :as session]
             [cheshire.core            :as json])
-  (:use     [foreclojure.utils        :only [from-mongo row-class rank-class get-user if-user with-user flash-error ]]
+  (:use     [foreclojure.utils        :only [from-mongo row-class rank-class get-user if-user with-user]]
             [foreclojure.template     :only [def-page content-page]]
             [foreclojure.ring-utils   :only [*http-scheme* static-url]]
             [foreclojure.config       :only [config repo-url]]
@@ -164,7 +164,7 @@
        :heading-note [:span#all-users-link]
        :sub-heading (list (format-user-ranking user-ranking)
                           [:span.contributor "*"] "&nbsp;"
-                          (link-to repo-url "4clojure contributor") [:br])
+                          (link-to repo-url "4clojure contributor"))
        :main (generate-user-list top-100 "user-table")})}))
 
 ;; TODO: this is snagged from problems.clj but can't be imported due to cyclic dependency, must refactor this out.
