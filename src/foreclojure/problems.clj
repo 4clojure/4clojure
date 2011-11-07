@@ -545,7 +545,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
          {:from "team@4clojure.com"
           :to [(users/email-address user)]
           :subject (format "Problem #%d: submission accepted" id)
-          :html (html (link-to url title))
+          :html (html (link-to (str "http://www.4clojure.com/" url) title))
           :text (str title ": " url)})
         ;; TODO: dump this in a proper log
         (catch EmailException e (println (str "email failed to send on approved problem #" id))))

@@ -294,7 +294,10 @@
 (defroutes users-routes
   (GET  "/users" [] (top-users-page))
   (GET  "/users/all" [] (all-users-page))
-  (GET  "/user/:username" [username] (user-profile username))
+  (GET  "/user/:username" [username] 
+    (if (nil? (get-user username)) 
+      {:status 404 :headers {"Content-Type" "text/plain"} :body "Error: This user does not exist, nice try though."}
+      (user-profile username)))
   (POST "/user/follow/:username" [username] (static-follow-user username true))
   (POST "/user/unfollow/:username" [username] (static-follow-user username false))
   (POST "/rest/user/follow/:username" [username] (rest-follow-user username true))
