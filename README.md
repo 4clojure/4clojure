@@ -49,6 +49,7 @@ vaguely like this:
 * [Michael Kohl](https://github.com/citizen428) (citizen428)
 * [Martin Sander](https://github.com/marvinthepa) (0x89)
 * [Alex McNamara](https://github.com/amcnamara) (amcnamara)
+* [Ara Jeknavorian](https://github.com/arajek) (arajek)
 
 
 Problem sources:
