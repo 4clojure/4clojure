@@ -270,18 +270,19 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
     {:title (str _id ". " title)
      :content
      [:div
+      [:div {:id "right-title"}
+       [:table#tags
+        [:tr [:th "Difficulty:"] [:td (or difficulty "N/A")]]
+        [:tr [:th "Topics:"]     [:td (s/join " " tags)]]]
+       ]
       [:div#prob-title title]
       (if-user [{:keys [solved]}]
         (if (some #{(Integer. id)} solved)
-          (link-to (str "/problem/solutions/" id)
-                   [:button#solutions-link {:type "submit"} "Solutions"])
-          [:div {:style "clear: right; margin-bottom: 15px;"} "&nbsp;"])
-        [:div {:style "clear: right; margin-bottom: 15px;"} "&nbsp;"])
-      [:hr]
-      [:table#tags
-       [:tr [:td "Difficulty:"] [:td (or difficulty "N/A")]]
-       [:tr [:td "Topics:"]     [:td (s/join " " tags)]]]
-      [:br]
+          [:div
+           (link-to (str "/problem/solutions/" id)
+                    [:button#solutions-link {:type "submit"} "Solutions"])
+           "Or go to "[:a {:href "#instruct"} "your solution"]]))
+      [:div {:id "title-rule"}]
       (when-not approved
         [:div#submitter "Submitted by: "
          (users/mailto user)])
