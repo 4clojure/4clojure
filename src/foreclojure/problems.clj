@@ -578,9 +578,12 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
       (flash-msg "/problems" (str "Problem " id " was rejected and deleted.")))
     (flash-error "/problems" "You do not have permission to access this page")))
 
+(defn total-solved-count []
+  (html (:total @solved-stats)))
+
 (defroutes problems-routes
   (GET "/problems" [] (problem-list-page))
-  (GET "/problems/solved" [] (:total @solved-stats))
+  (GET "/problems/solved" [] (total-solved-count))
   (GET "/problem/:id" [id]
     (if-let [id-int (as-int id)]
       (problem-page id-int)

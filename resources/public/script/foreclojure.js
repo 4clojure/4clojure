@@ -1,8 +1,13 @@
+var updateProblemCountDelay = 4000; // milliseconds
+
 $(document).ready(function() {
 
   configureDataTables();
   configureCodeBox();
   configureGolf();
+
+  if($("#totalcount").length > 0)
+    configureCounter();
 
   $("form#run-code button#approve-button").live("click", function(e) {
     e.preventDefault();
@@ -284,4 +289,36 @@ function configureGolf(){
     }
   });
 
+}
+
+function configureCounter() {
+  $("#totalcounter").flipCounter({
+    number:parseInt($('#counter-value').val()),
+    numIntegralDigits:6,
+    numFractionalDigits:0,
+    digitClass:"counter-digit",
+    digitHeight:40,
+    digitWidth:22.5,
+    imagePath:"images/flipCounter-medium.png",
+    easing: jQuery.easing.easeOutCubic
+  });
+  setTimeout("updateProblemCount()", updateProblemCountDelay);
+}
+
+function updateProblemCount() {
+  var updateDuration = updateProblemCountDelay > 2500 ? 2500 : (updateProblemCountDelay - 500);
+
+  if($("#totalcount").length > 0) {
+    $.get("/problems/solved", function(data) {
+      if($("#totalcounter").flipCounter("getNumber") != data) {
+        $("#totalcounter").flipCounter("stopAnimation")
+        $("#totalcounter").flipCounter("startAnimation", {
+            number: parseInt(data),
+            duration: updateDuration,
+            easing: jQuery.easing.easeOutCubic
+          });
+      }
+    });
+    setTimeout("updateProblemCount()", updateProblemCountDelay);
+  }
 }
