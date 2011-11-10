@@ -3,7 +3,8 @@
         [foreclojure.problems      :only [solved-stats]]
         [foreclojure.config        :only [repo-url]]
         [foreclojure.ring-utils    :only [static-url]]
-        [foreclojure.template      :only [def-page]]))
+        [foreclojure.template      :only [def-page]]
+        [hiccup.form-helpers       :only [hidden-field]]))
 
 (def df
   (let [df (java.text.DecimalFormat.)
@@ -18,7 +19,9 @@
    :content
    [:div#welcome
     [:div#totalcount
-     (.format df (:total @solved-stats)) " problems solved and counting!"]
+      (hidden-field :counter-value (:total @solved-stats))
+      [:p
+        [:span#totalcounter (.format df (:total @solved-stats))] " problems solved and counting!"]]
     [:div
      [:h3 "What is 4Clojure?"]
      [:p "4Clojure is a resource to help fledgling clojurians learn the language through interactive problems.  The first few problems are easy enough that even someone with no prior experience should find the learning curve forgiving.  See 'Help' for more information."]]
