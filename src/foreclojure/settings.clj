@@ -83,7 +83,7 @@
                  (or (empty? new-pwd)
                      (.checkPassword encryptor old-pwd pwd))
                  "Current password incorrect"
-                 (re-find #"^\S+@\S+\.\S{2,4}$" email)  
+                 (re-find #"^\.+@\S+\.\S{2,4}$" email)  
                  "Please enter a valid email address"
                  (nil? (fetch-one :users :where {:email email :user {:$ne user}}))
                  "User with this email address already exists"]
