@@ -87,7 +87,7 @@ var CodeBox = {
       setIconColor(element, "blue");
     });
     setTimeout(changeToCodeView,0);
-    setTimeout(anim,0);
+    setTimeout($.proxy(anim, this),0);
   },
 
   successCallback: function(data) {
@@ -106,6 +106,7 @@ var CodeBox = {
         setIconColor(element, color, waitTime);
       },
       setMessages = function() {
+        alert("setting messages");
         $("#message-text").html(data.message);
         $("#error-message-text").html(data.error);
         $("#golfgraph").html(data.golfChart);
