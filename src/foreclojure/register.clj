@@ -36,8 +36,10 @@
                "Password must be at least seven characters long",
                (= pwd repeat-pwd)
                "Passwords don't match",
-               (not (empty? email))
-               "Please enter a valid email address"]
+               (re-find #"^\.+@\S+\.\S{2,4}$" email)  
+               "Please enter a valid email address"
+               (nil? (fetch-one :users :where {:email email}))
+               "User with this email address already exists"]
       (do
         (insert! :users
                  {:user lower-user
