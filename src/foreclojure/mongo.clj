@@ -31,6 +31,7 @@
 (defn prepare-users []
   (add-index! :users [:user] :unique true)
   (add-index! :users [[:solved -1]])
+  (add-index! :users [:email])
   (update! :users
            {:user {:$in (:contributors config)}}
            {:$set {:contributor true}}
