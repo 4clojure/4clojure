@@ -3,7 +3,7 @@
             [ring.util.response       :as   response])
   (:import  [org.jasypt.util.password StrongPasswordEncryptor])
   (:use     [hiccup.form-helpers      :only [form-to label text-field password-field check-box]]
-            [foreclojure.utils        :only [from-mongo flash-error flash-msg with-user form-row assuming send-email login-url]]
+            [foreclojure.utils        :only [from-mongo flash-error flash-msg with-user form-row assuming send-email login-url plausible-email?]]
             [foreclojure.template     :only [def-page content-page]]
             [foreclojure.users        :only [disable-codebox? hide-solutions? gravatar-img]]
             [compojure.core           :only [defroutes GET POST]]
@@ -83,8 +83,10 @@
                  (or (empty? new-pwd)
                      (.checkPassword encryptor old-pwd pwd))
                  "Current password incorrect"
-                 (not (empty? email))
-                 "Please enter a valid email address"]
+                 (plausible-email? email)
+                 "Please enter a valid email address"
+                 (nil? (fetch-one :users :where {:email email :user {:$ne user}}))
+                 "User with this email address already exists"]
           (do
             (update! :users {:user user}
                      {:$set {:pwd (if (not-empty new-pwd) new-pwd-hash pwd) :user new-lower-user :email email

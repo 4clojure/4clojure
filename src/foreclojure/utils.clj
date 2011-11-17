@@ -95,6 +95,9 @@
       (link-to (login-url location)
                text))))
 
+(defn plausible-email? [address]
+  (re-find #"^.+@\S+\.\S{2,4}$" address))
+
 ;; Assuming that it will always need SSL. Will make it more flexible later.
 (defn send-email [{:keys [from to subject html text reply-to]}]
   (let [{:keys [host port user pass]} config
