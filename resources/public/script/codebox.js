@@ -106,7 +106,6 @@ var CodeBox = {
         setIconColor(element, color, waitTime);
       },
       setMessages = function() {
-        alert("setting messages");
         $("#message-text").html(data.message);
         $("#error-message-text").html(data.error);
         $("#golfgraph").html(data.golfChart);
