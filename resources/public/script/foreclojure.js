@@ -188,6 +188,7 @@ function configureCodeBox(){
     if ($("#run-button").length || $("#submission-button").length){
        var editor = ace.edit("editor");
        editor.setTheme("ace/theme/textmate");
+       editor.setShowPrintMargin(false);
 
        var ClojureMode = require("ace/mode/clojure").Mode;
        var session = editor.getSession();
