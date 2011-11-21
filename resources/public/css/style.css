@@ -419,7 +419,8 @@ div#problems-error {
    float: left;
    width: 50%;
    height: 250px;
-   overflow: hidden
+   overflow: hidden;
+   border: 1px solid #aaa;
 }
 
 table.my-table {
