@@ -49,6 +49,13 @@ var CodeBox = {
       return this.editorSession.getValue();
   },
 
+  toggle: function() {
+    if(this.disableJavascript)
+      $("#code-box").toggle('fast');
+    else
+      $("#code-div").toggle('fast');
+  },
+
   run: function(e) {
     e.preventDefault();
 
