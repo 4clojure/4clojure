@@ -2,7 +2,7 @@
   (:require [sandbar.stateful-session :as   session]
             [ring.util.response       :as   response])
   (:import  [org.jasypt.util.password StrongPasswordEncryptor])
-  (:use [foreclojure.settings] :reload)
+  (:use [foreclojure.settings])
   (:use [clojure.test])
   (:use [midje.sweet])
   (:use [foreclojure.utils :only [get-user assuming flash-error flash-msg]])
