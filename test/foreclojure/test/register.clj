@@ -1,7 +1,7 @@
 (ns foreclojure.test.register
   (:require [sandbar.stateful-session :as   session]
             [ring.util.response       :as   response])
-  (:use [foreclojure.register] :reload)
+  (:use [foreclojure.register])
   (:use [clojure.test])
   (:use [midje.sweet])
   (:use [foreclojure.utils :only [form-row assuming flash-error]])

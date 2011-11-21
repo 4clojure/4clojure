@@ -1,5 +1,5 @@
 (ns foreclojure.test.users
-  (:use [foreclojure.users] :reload)
+  (:use [foreclojure.users])
   (:use [clojure.test])
   (:use [midje.sweet]))
 
