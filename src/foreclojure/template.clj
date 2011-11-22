@@ -25,6 +25,7 @@
        (js "script/codebox.js" "script/foreclojure.js")
        (js "vendor/script/xregexp.js" "vendor/script/shCore.js" "vendor/script/shBrushClojure.js")
        (js "vendor/script/ace/ace.js" "vendor/script/ace/mode-clojure.js")
+       (js "vendor/script/detectmobilebrowser.js")
        [:script {:type "text/javascript"} "SyntaxHighlighter.all()"]]
       [:body
        (when (:fork-banner attrs)

@@ -13,7 +13,8 @@ var CodeBox = {
   images:             null,
 
   initialize: function() {
-    this.disableJavascript = $('#disable-javascript-codebox').length > 0;
+    this.disableJavascript = $('#disable-javascript-codebox').length > 0
+                                || $.browser.mobile;
     this.element = $("#code-box");
     this.submitButtons = $("#run-button, #submission-button");
 
