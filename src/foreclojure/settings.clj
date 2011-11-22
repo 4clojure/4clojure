@@ -6,6 +6,7 @@
             [foreclojure.utils        :only [from-mongo flash-error flash-msg with-user form-row assuming send-email login-url plausible-email?]]
             [foreclojure.template     :only [def-page content-page]]
             [foreclojure.users        :only [disable-codebox? hide-solutions? gravatar-img]]
+            [foreclojure.messages     :only [err-msgs]]
             [compojure.core           :only [defroutes GET POST]]
             [useful.map               :only [keyed]]
             [clojail.core             :only [thunk-timeout]]
@@ -70,23 +71,23 @@
           new-pwd-hash (.encryptPassword encryptor new-pwd)
           new-lower-user (.toLowerCase new-username)]
       (assuming [(or (= new-lower-user user) (nil? (fetch-one :users :where {:user new-lower-user})))
-                 "User already exists",
+                 (err-msgs "settings.user-exists"),
                  (< 3 (.length new-lower-user) 14)
-                 "Username must be 4-13 characters long",
+                 (err-msgs "settings.uname-size"),
                  (= new-lower-user
                     (first (re-seq #"[A-Za-z0-9_]+" new-lower-user)))
-                 "Username must be alphanumeric"
+                 (err-msgs "settings.uname-alphanum")
                  (or (empty? new-pwd) (< 6 (.length new-pwd)))
-                 "New password must be at least seven characters long",
+                 (err-msgs "settings.npwd-size"),
                  (= new-pwd repeat-pwd)
-                 "New password was not entered identically twice"
+                 (err-msgs "settings.npwd-match")
                  (or (empty? new-pwd)
                      (.checkPassword encryptor old-pwd pwd))
-                 "Current password incorrect"
+                 (err-msgs "settings.pwd-incorrect")                           
                  (plausible-email? email)
-                 "Please enter a valid email address"
+                 (err-msgs "settings.email-invalid")
                  (nil? (fetch-one :users :where {:email email :user {:$ne user}}))
-                 "User with this email address already exists"]
+                 (err-msgs "settings.email-exists")]
           (do
             (update! :users {:user user}
                      {:$set {:pwd (if (not-empty new-pwd) new-pwd-hash pwd) :user new-lower-user :email email
