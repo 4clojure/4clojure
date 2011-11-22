@@ -52,7 +52,7 @@
           (do-register uname pwd shpwd email) => truthy
             (provided
               (flash-error "/register" (err-msgs "settings.pwd-match")) => 1))
-      (fact "about do-register - bad emal"
+      (fact "about do-register - bad email"
           (do-register uname pwd pwd bemail) => truthy
             (provided
               (flash-error "/register" (err-msgs "settings.email-invalid")) => 1))
