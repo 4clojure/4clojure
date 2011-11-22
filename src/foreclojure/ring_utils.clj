@@ -15,5 +15,9 @@
               *http-scheme* (:scheme req)]
       (handler req))))
 
-(def static-url (let [host (or config/static-host config/canonical-host)]
-                  #(str (name (or *http-scheme* :http)) "://" host "/" %)))
+(letfn [(url-fn [host]
+          (if host
+            #(str (name (or *http-scheme* :http)) "://" host "/" %)
+            #(str "/" %)))]
+  (def universal-url (url-fn (or config/static-host config/canonical-host)))
+  (def static-url    (url-fn config/static-host)))
