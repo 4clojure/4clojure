@@ -19,7 +19,6 @@
             [hiccup.page-helpers      :only    [link-to]]
             [hiccup.core              :only    [html]]
             [useful.debug             :only    [?]]
-            [amalloy.utils            :only    [defcomp]]
             [compojure.core           :only    [defroutes GET POST]]))
 
 (def solved-stats (agent {:total 0}))
