@@ -90,7 +90,7 @@
                  (err-msgs "settings.email-exists")]
           (do
             (update! :users {:user user}
-                     {:$set {:pwd (if (not-empty new-pwd) new-pwd-hash pwd) :user new-lower-user :email email
+                     {:$set {:pwd (if (seq new-pwd) new-pwd-hash pwd) :user new-lower-user :email email
                              :disable-code-box (boolean disable-codebox) :hide-solutions (boolean hide-solutions)}}
                      :upsert false)
             (session/session-put! :user new-lower-user)
