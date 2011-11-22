@@ -11,10 +11,9 @@
 (defn wrap-request-bindings [handler]
   (fn [req]
     (binding [*url* (:uri req)
-              *host* (or (get-host req) "www.4clojure.com")
+              *host* (or (get-host req) config/canonical-host)
               *http-scheme* (:scheme req)]
       (handler req))))
 
-(def static-url (if-let [host config/static-host]
-                  #(str (name (or *http-scheme* :http)) "://" host "/" %)
-                  #(str "/" %)))
+(def static-url (let [host (or config/static-host config/canonical-host)]
+                  #(str (name (or *http-scheme* :http)) "://" host "/" %)))

@@ -14,4 +14,5 @@
           (get-in config [:hosts key]))]
   (def static-host (host :static))
   (def dynamic-host (host :dynamic))
-  (def redirect-hosts (host :redirects)))
+  (def redirect-hosts (host :redirects))
+  (def canonical-host (or dynamic-host "www.4clojure.com")))
