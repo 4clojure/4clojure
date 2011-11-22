@@ -6,6 +6,7 @@
             [compojure.core           :only [defroutes GET POST]]
             [foreclojure.utils        :only [form-row assuming flash-error plausible-email?]]
             [foreclojure.template     :only [def-page]]
+            [foreclojure.messages     :only [err-msgs]]
             [somnium.congomongo       :only [insert! fetch-one]]))
 
 (def-page register-page []
@@ -26,20 +27,20 @@
 (defn do-register [user pwd repeat-pwd email]
   (let [lower-user (.toLowerCase user)]
     (assuming [(nil? (fetch-one :users :where {:user lower-user}))
-               "User already exists",
+               (err-msgs "settings.user-exists"),
                (< 3 (.length lower-user) 14)
-               "Username must be 4-13 characters long",
+               (err-msgs "settings.uname-size"),
                (= lower-user
                   (first (re-seq #"[A-Za-z0-9_]+" lower-user)))
-               "Username must be alphanumeric"
+               (err-msgs "settings.uname-alphanum")
                (< 6 (.length pwd))
-               "Password must be at least seven characters long",
+               (err-msgs "settings.pwd-size"),
                (= pwd repeat-pwd)
-               "Passwords don't match",
+               (err-msgs "settings.pwd-match"),
                (plausible-email? email)
-               "Please enter a valid email address"
+               (err-msgs "settings.email-invalid")
                (nil? (fetch-one :users :where {:email email}))
-               "User with this email address already exists"]
+               (err-msgs "settings.email-exists")]
       (do
         (insert! :users
                  {:user lower-user
