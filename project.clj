@@ -4,7 +4,7 @@
                  [clojure-contrib "1.2.0"]
                  [compojure "0.6.2"]
                  [hiccup "0.3.6"]
-                 [clojail "0.4.0-SNAPSHOT"]
+                 [clojail "0.5.1"]
                  [sandbar "0.4.0-SNAPSHOT"]
                  [org.clojars.christophermaier/congomongo "0.1.4-SNAPSHOT"]
                  [org.jasypt/jasypt "1.7"]
