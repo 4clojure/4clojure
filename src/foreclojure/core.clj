@@ -57,18 +57,17 @@
       handler/site
       wrap-strip-trailing-slash))
 
-(let [canonical-host (or config/dynamic-host "www.4clojure.com")]
-  (defn redirect-routes [request]
-    (let [{:keys [scheme uri]} request
-          proper-uri (str (name scheme)
-                          "://"
-                          canonical-host
-                          uri)]
-      {:status 302
-       :headers {"Location" proper-uri}
-       :body (str "<a href='" proper-uri "'>"
-                  proper-uri
-                  "</a>")})))
+(defn redirect-routes [request]
+  (let [{:keys [scheme uri]} request
+        proper-uri (str (name scheme)
+                        "://"
+                        config/canonical-host
+                        uri)]
+    {:status 302
+     :headers {"Location" proper-uri}
+     :body (str "<a href='" proper-uri "'>"
+                proper-uri
+                "</a>")}))
 
 (def host-handlers (reduce into
                            {:default (routes dynamic-routes resource-routes)}

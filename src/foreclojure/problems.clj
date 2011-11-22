@@ -19,7 +19,6 @@
             [hiccup.page-helpers      :only    [link-to]]
             [hiccup.core              :only    [html]]
             [useful.debug             :only    [?]]
-            [amalloy.utils            :only    [defcomp]]
             [compojure.core           :only    [defroutes GET POST]]))
 
 (def solved-stats (agent {:total 0}))
@@ -305,6 +304,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
         [:p#instruct "Code which fills in the blank: "]
         (when (wants-no-javascript-codebox?) [:span#disable-javascript-codebox])
         (text-area {:id "code-box"
+                    :name "code"
                     :spellcheck "false"}
                    :code (escape-html
                           (or (session/flash-get :code)

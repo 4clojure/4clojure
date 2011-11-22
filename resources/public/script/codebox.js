@@ -22,7 +22,8 @@ var CodeBox = {
       this.setupEditor();
     }
 
-    this.submitButtons.live("click", $.proxy(this.run, this));
+    $("#run-button").live("click", $.proxy(this.run, this));
+    $("#submission-button").live("click", $.proxy(this.submitProblem, this));
   },
 
   setupEditor: function() {
@@ -56,6 +57,12 @@ var CodeBox = {
       $("#code-box").toggle('fast');
     else
       $("#code-div").toggle('fast');
+  },
+
+  submitProblem: function(e) {
+    e.preventDefault();
+    $("#code-box").val(this.getCode());
+    $("#code-box").closest("form").submit();
   },
 
   run: function(e) {

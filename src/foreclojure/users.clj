@@ -5,7 +5,7 @@
             [cheshire.core            :as json])
   (:use     [foreclojure.utils        :only [from-mongo row-class rank-class get-user if-user with-user]]
             [foreclojure.template     :only [def-page content-page]]
-            [foreclojure.ring-utils   :only [*http-scheme* static-url]]
+            [foreclojure.ring-utils   :only [*http-scheme* universal-url]]
             [foreclojure.config       :only [config repo-url]]
             [somnium.congomongo       :only [fetch-one fetch update!]]
             [compojure.core           :only [defroutes GET POST]]
@@ -73,7 +73,7 @@
 
 (let [canonical-email (comp string/trim string/lower-case)
       md5 #(DigestUtils/md5Hex %)
-      as-url #(URLEncoder/encode (static-url %))
+      as-url #(URLEncoder/encode (universal-url %))
       no-gravatar-url (as-url "images/no-gravatar.png")]
   (defn gravatar-img [{:keys [email size class default] :or {size 24}}]
     (let [hash (if email
