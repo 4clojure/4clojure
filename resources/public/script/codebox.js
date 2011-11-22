@@ -34,6 +34,7 @@ var CodeBox = {
 
     this.editor = ace.edit("editor");
     this.editor.setTheme("ace/theme/textmate");
+    this.editor.setShowPrintMargin(false);
 
     var ClojureMode = require("ace/mode/clojure").Mode;
     this.editorSession = this.editor.getSession();
