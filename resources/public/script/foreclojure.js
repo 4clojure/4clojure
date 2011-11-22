@@ -150,7 +150,7 @@ function configureDataTables(){
         ]
     } );
 
-    
+
     $('#server-user-table').dataTable( {
         "aoColumns": [
             null,
@@ -177,7 +177,6 @@ function changeToCodeView() {
   $('#golfgraph').hide('fast');
   $('#graph-link').html("View Chart");
 }
-
 
 function configureGolf(){
   $('#graph-link').show();
