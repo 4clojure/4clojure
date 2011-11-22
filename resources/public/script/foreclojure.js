@@ -184,7 +184,9 @@ function configureCodeBox(){
     //the proper div
     var oldBox = $('#code-box');
     var disableJavaScriptCodeBox = $('#disable-javascript-codebox');
-    if (disableJavaScriptCodeBox.length){
+    
+    //disable JavaScript for mobile browsers by default
+    if (disableJavaScriptCodeBox.length || jQuery.browser.mobile){
       return;
     }
     var hiddenCodeInput = "<input type=\"hidden\" value=\"blank\" name=\"code\" id=\"code\">";
