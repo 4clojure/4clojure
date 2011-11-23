@@ -5,6 +5,7 @@
   (:use     [hiccup.form-helpers      :only [form-to label text-field password-field check-box]]
             [foreclojure.utils        :only [from-mongo flash-error flash-msg form-row assuming send-email login-url]]
             [foreclojure.template     :only [def-page content-page]]
+            [foreclojure.messages     :only [err-msgs]]
             [compojure.core           :only [defroutes GET POST]]
             [useful.map               :only [keyed]]
             [clojail.core             :only [thunk-timeout]]
@@ -110,9 +111,9 @@
               "Your password has been reset! You should receive an email soon."))
         (do (spit (str name ".pwd") diagnostics)
             (flash-error "/login/reset"
-              (str "Something went wrong emailing your new password! Please contact <a href='mailto:team@4clojure.com?subject=Password Reset: " name "'>team@4clojure.com</a> - we'll reset it manually and look into the problem. When you do, please mention your username.")))))
+              (err-msgs "security.err-pwd-email" name)))))
     (flash-error "/login/reset"
-      "We don't know anyone with that email address!")))
+      (err-msgs "security.err-unknown"))))
 
 (defroutes login-routes
   (GET  "/login" [location] (my-login-page location))
