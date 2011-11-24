@@ -1,7 +1,8 @@
 (ns foreclojure.solutions
   (:require [clojure.string      :as   s])
   (:use     [somnium.congomongo  :only [fetch-one update!]]
-            [useful.debug        :only [?]]))
+            [useful.debug        :only [?]]
+            [foreclojure.messages :only [err-msg]]))
 
 (defn get-solution
   ([perm-level user-id problem-id]
@@ -19,10 +20,8 @@
                           :where {:_id user-id}
                           :only [(keyword (str "scores." problem-id))
                                  :solved])]
-           (cond (seq scores) (str "Scored " (first (vals scores))
-                                   ", before 4clojure started saving solutions."),
-
-                 (some #{problem-id} solved) "Solved before 4clojure started scoring solutions")))))
+           (cond (seq scores) (err-msg "solution.scored-early" (first (vals scores))),
+                 (some #{problem-id} solved) (err-msg "solution.solved-early"))))))
 
 (defn save-solution [user-id problem-id code]
   (update! :solutions
