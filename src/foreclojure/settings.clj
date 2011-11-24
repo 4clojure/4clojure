@@ -6,7 +6,7 @@
             [foreclojure.utils        :only [from-mongo flash-error flash-msg with-user form-row assuming send-email login-url plausible-email?]]
             [foreclojure.template     :only [def-page content-page]]
             [foreclojure.users        :only [disable-codebox? hide-solutions? gravatar-img]]
-            [foreclojure.messages     :only [err-msgs]]
+            [foreclojure.messages     :only [err-msg]]
             [compojure.core           :only [defroutes GET POST]]
             [useful.map               :only [keyed]]
             [clojail.core             :only [thunk-timeout]]
@@ -71,23 +71,23 @@
           new-pwd-hash (.encryptPassword encryptor new-pwd)
           new-lower-user (.toLowerCase new-username)]
       (assuming [(or (= new-lower-user user) (nil? (fetch-one :users :where {:user new-lower-user})))
-                 (err-msgs "settings.user-exists"),
+                 (err-msg "settings.user-exists"),
                  (< 3 (.length new-lower-user) 14)
-                 (err-msgs "settings.uname-size"),
+                 (err-msg "settings.uname-size"),
                  (= new-lower-user
                     (first (re-seq #"[A-Za-z0-9_]+" new-lower-user)))
-                 (err-msgs "settings.uname-alphanum")
+                 (err-msg "settings.uname-alphanum")
                  (or (empty? new-pwd) (< 6 (.length new-pwd)))
-                 (err-msgs "settings.npwd-size"),
+                 (err-msg "settings.npwd-size"),
                  (= new-pwd repeat-pwd)
-                 (err-msgs "settings.npwd-match")
+                 (err-msg "settings.npwd-match")
                  (or (empty? new-pwd)
                      (.checkPassword encryptor old-pwd pwd))
-                 (err-msgs "settings.pwd-incorrect")
+                 (err-msg "settings.pwd-incorrect")
                  (plausible-email? email)
-                 (err-msgs "settings.email-invalid")
+                 (err-msg "settings.email-invalid")
                  (nil? (fetch-one :users :where {:email email :user {:$ne user}}))
-                 (err-msgs "settings.email-exists")]
+                 (err-msg "settings.email-exists")]
           (do
             (update! :users {:user user}
                      {:$set {:pwd (if (seq new-pwd) new-pwd-hash pwd)
