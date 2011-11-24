@@ -2,6 +2,7 @@
   (:require [sandbar.stateful-session :as   session]
             [ring.util.response       :as   response]
             [foreclojure.config       :as   config]
+            [foreclojure.messages     :as   msg]
             [clojure.walk             :as   walk]
             [clojure.string           :as   string]
             [foreclojure.git          :as   git]
@@ -146,7 +147,7 @@
 (defmacro with-user [[binding expr] & body]
   `(if-user [~binding ~expr]
      (do ~@body)
-     [:span.error "You must " (login-link) " to do this."]))
+     [:span.error (msg/err-msg "security.login-required" (login-link))]))
 
 (defn flash-fn [type]
   (fn [url msg]

@@ -6,7 +6,7 @@
             [compojure.core           :only [defroutes GET POST]]
             [foreclojure.utils        :only [form-row assuming flash-error plausible-email?]]
             [foreclojure.template     :only [def-page]]
-            [foreclojure.messages     :only [err-msgs]]
+            [foreclojure.messages     :only [err-msg]]
             [somnium.congomongo       :only [insert! fetch-one]]))
 
 (def-page register-page []
@@ -27,20 +27,20 @@
 (defn do-register [user pwd repeat-pwd email]
   (let [lower-user (.toLowerCase user)]
     (assuming [(nil? (fetch-one :users :where {:user lower-user}))
-               (err-msgs "settings.user-exists"),
+               (err-msg "settings.user-exists"),
                (< 3 (.length lower-user) 14)
-               (err-msgs "settings.uname-size"),
+               (err-msg "settings.uname-size"),
                (= lower-user
                   (first (re-seq #"[A-Za-z0-9_]+" lower-user)))
-               (err-msgs "settings.uname-alphanum")
+               (err-msg "settings.uname-alphanum")
                (< 6 (.length pwd))
-               (err-msgs "settings.pwd-size"),
+               (err-msg "settings.pwd-size"),
                (= pwd repeat-pwd)
-               (err-msgs "settings.pwd-match"),
+               (err-msg "settings.pwd-match"),
                (plausible-email? email)
-               (err-msgs "settings.email-invalid")
+               (err-msg "settings.email-invalid")
                (nil? (fetch-one :users :where {:email email}))
-               (err-msgs "settings.email-exists")]
+               (err-msg "settings.email-exists")]
       (do
         (insert! :users
                  {:user lower-user
