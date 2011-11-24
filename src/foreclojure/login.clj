@@ -5,7 +5,7 @@
   (:use     [hiccup.form-helpers      :only [form-to label text-field password-field check-box]]
             [foreclojure.utils        :only [from-mongo flash-error flash-msg form-row assuming send-email login-url]]
             [foreclojure.template     :only [def-page content-page]]
-            [foreclojure.messages     :only [err-msgs]]
+            [foreclojure.messages     :only [err-msg]]
             [compojure.core           :only [defroutes GET POST]]
             [useful.map               :only [keyed]]
             [clojail.core             :only [thunk-timeout]]
@@ -111,9 +111,9 @@
               "Your password has been reset! You should receive an email soon."))
         (do (spit (str name ".pwd") diagnostics)
             (flash-error "/login/reset"
-              (err-msgs "security.err-pwd-email" name)))))
+              (err-msg "security.err-pwd-email" name)))))
     (flash-error "/login/reset"
-      (err-msgs "security.err-unknown"))))
+      (err-msg "security.err-unknown"))))
 
 (defroutes login-routes
   (GET  "/login" [location] (my-login-page location))

@@ -147,7 +147,7 @@
 (defmacro with-user [[binding expr] & body]
   `(if-user [~binding ~expr]
      (do ~@body)
-     [:span.error (msg/err-msgs "security.login-required" (login-link))]))
+     [:span.error (msg/err-msg "security.login-required" (login-link))]))
 
 (defn flash-fn [type]
   (fn [url msg]

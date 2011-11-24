@@ -8,5 +8,5 @@
  
 (def err-msg-map  (load-props "error-messages.properties"))             
              
-(defn err-msgs [key & args]
+(defn err-msg [key & args]
       (apply format (cons (get err-msg-map key) args)))
