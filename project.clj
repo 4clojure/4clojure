@@ -11,6 +11,7 @@
                  [cheshire "2.0.2"]
                  [useful "0.7.0-beta5"]
                  [amalloy/ring-gzip-middleware "[0.1.0,)"]
+                 [amalloy/mongo-session "0.0.1"]
                  [clj-github "1.0.1"]
                  [ring "0.3.7"]
                  [clj-config "0.1.0"]
