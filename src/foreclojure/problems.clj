@@ -183,11 +183,11 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
                     ["Empty input is not allowed."]
                     (for [test tests]
                       (try
-                        (when-not (sb sb-tester
-                                      (->> user-forms
+                        (when-not (sb (->> user-forms
                                            (s/replace test "__")
                                            read-string-safely
                                            first)
+                                      sb-tester
                                       {#'*out* devnull
                                        #'*err* devnull})
                           "You failed the unit tests")

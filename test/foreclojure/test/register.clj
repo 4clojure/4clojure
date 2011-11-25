@@ -2,7 +2,7 @@
   (:require [sandbar.stateful-session :as   session]
             [ring.util.response       :as   response])
   (:use [foreclojure.register])
-  (:use [foreclojure.messages     :only [err-msgs]])
+  (:use [foreclojure.messages     :only [err-msg]])
   (:use [clojure.test])
   (:use [midje.sweet])
   (:use [foreclojure.utils :only [form-row assuming flash-error]])
@@ -35,30 +35,30 @@
           (do-register uname pwd pwd email) => truthy
             (provided
               (fetch-one :users :where {:user uname}) => {:user "username"}
-              (flash-error "/register" (err-msgs "settings.user-exists")) => 1))
+              (flash-error "/register" (err-msg "settings.user-exists")) => 1))
       (fact "about do-register - username too long"
           (do-register lngname pwd pwd email) => truthy
             (provided
-              (flash-error "/register" (err-msgs "settings.uname-size")) => 1))
+              (flash-error "/register" (err-msg "settings.uname-size")) => 1))
       (fact "about do-register - username not alphanumeric"
           (do-register bname pwd pwd email) => truthy
             (provided
-              (flash-error "/register" (err-msgs "settings.uname-alphanum")) => 1))
+              (flash-error "/register" (err-msg "settings.uname-alphanum")) => 1))
       (fact "about do-register - short password"
           (do-register uname shpwd shpwd email) => truthy
             (provided
-              (flash-error "/register" (err-msgs "settings.pwd-size")) => 1))
+              (flash-error "/register" (err-msg "settings.pwd-size")) => 1))
       (fact "about do-register - passwords don't match"
           (do-register uname pwd shpwd email) => truthy
             (provided
-              (flash-error "/register" (err-msgs "settings.pwd-match")) => 1))
+              (flash-error "/register" (err-msg "settings.pwd-match")) => 1))
       (fact "about do-register - bad email"
           (do-register uname pwd pwd bemail) => truthy
             (provided
-              (flash-error "/register" (err-msgs "settings.email-invalid")) => 1))
+              (flash-error "/register" (err-msg "settings.email-invalid")) => 1))
       (fact "about do-register - email exists"
           (do-register uname pwd pwd email) => truthy
             (provided
               (fetch-one :users :where {:user uname}) => nil
               (fetch-one :users :where {:email email}) => {:user "username"}
-              (flash-error "/register" (err-msgs "settings.email-exists")) => 1)))))
+              (flash-error "/register" (err-msg "settings.email-exists")) => 1)))))
