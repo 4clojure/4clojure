@@ -21,6 +21,7 @@
                  [org.apache.commons/commons-email "1.2"]]
   :dev-dependencies [[lein-ring "0.4.5"]
                      [midje "1.1.1"]]
+  :checksum-deps true
   :main foreclojure.core
   :ring {:handler foreclojure.core/app
          :init foreclojure.mongo/prepare-mongo})
