@@ -16,10 +16,16 @@
       (get-solution :private uid pid) => code
       (provided
         (fetch-one :solutions :where {:user uid :problem pid}) => {:code code}))
-    (fact "about get-solution: hide solutions"
+    (fact "about get-solution: hide solutions = true"
       (get-solution :public uid pid) => falsey
       (provided
+        (fetch-one :solutions :where {:user uid :problem pid}) => {:code code}
         (fetch-one :users :where {:_id uid} :only [:hide-solutions]) => {:hide-solutions true}))
+    (fact "about get-solution: hide solutions = true"
+      (get-solution :public uid pid) => code
+      (provided
+        (fetch-one :solutions :where {:user uid :problem pid}) => {:code code}
+        (fetch-one :users :where {:_id uid} :only [:hide-solutions]) => {:hide-solutions false}))
     (fact "about get-solution: scored early"
       (get-solution uid pid) => (err-msg "solution.scored-early" pid)
       (provided
