@@ -19,8 +19,7 @@
     (fact "about get-solution: hide solutions = true"
       (get-solution :public uid pid) => falsey
       (provided
-        (fetch-one :solutions :where {:user uid :problem pid}) => {:code code}
-        (fetch-one :users :where {:_id uid} :only [:hide-solutions]) => {:hide-solutions true}))
+       (fetch-one :users :where {:_id uid} :only [:hide-solutions]) => {:hide-solutions true}))
     (fact "about get-solution: hide solutions = true"
       (get-solution :public uid pid) => code
       (provided
