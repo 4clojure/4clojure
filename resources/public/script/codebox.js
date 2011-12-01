@@ -93,6 +93,8 @@ var CodeBox = {
         }, this.animationTime);
         this.high = !this.high;
         setTimeout($.proxy(anim, this),this.animationTime);
+      } else {
+        this.high = false;
       }
     };
 
@@ -120,6 +122,9 @@ var CodeBox = {
         var color = getColorFor(index);
         waitTime = CodeBox.waitTimePerItem * (index+1);
         setIconColor(element, color, waitTime, true);
+        if(color == "red") { //failing test
+          setTimeout("CodeBox.stopAnimation()", waitTime);
+        }
       },
       setMessages = function() {
         $("#message-text").html(data.message);
@@ -131,5 +136,9 @@ var CodeBox = {
 
     this.images.filter( testWasExecuted ).each(setColor);
     setTimeout(setMessages, waitTime);
+  },
+
+  stopAnimation: function() {
+    this.images.stop(true).removeClass("animated").css({ opacity: 1.0, });
   },
 }
