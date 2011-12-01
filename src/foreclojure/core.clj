@@ -25,7 +25,8 @@
             [ring.middleware.reload     :only [wrap-reload]]
             [ring.middleware.stacktrace :only [wrap-stacktrace]]
             [ring.middleware.file-info  :only [wrap-file-info]]
-            [ring.middleware.gzip       :only [wrap-gzip]]))
+            [ring.middleware.gzip       :only [wrap-gzip]]
+            [mongo-session.core         :only [mongo-session]]))
 
 (def *block-server* false)
 
@@ -52,7 +53,7 @@
       ((if (:wrap-reload config)
          #(wrap-reload % '(foreclojure.core))
          identity))
-      session/wrap-stateful-session
+      (session/wrap-stateful-session {:store (mongo-session :sessions)})
       wrap-request-bindings
       handler/site
       wrap-strip-trailing-slash))
