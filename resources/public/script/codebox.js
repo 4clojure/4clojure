@@ -6,7 +6,6 @@ var CodeBox = {
   editor:             null,
   editorSession:      null,
   editorElement:      null,
-  cont:               true,
   high:               false,
   animationTime:      800,
   waitTimePerItem:    500,
@@ -88,12 +87,12 @@ var CodeBox = {
 
   beforeSendCallback: function() {
     var anim = function() {
-      if(this.cont) {
-        this.images.animate({
+      if(this.images.filter('.animated').length > 0) {
+        this.images.filter('.animated').animate({
           opacity: this.high ? 1.0 : 0.1,
         }, this.animationTime);
         this.high = !this.high;
-        setTimeout(anim,this.animationTime);
+        setTimeout($.proxy(anim, this),this.animationTime);
       }
     };
 
@@ -103,6 +102,7 @@ var CodeBox = {
       setIconColor(element, "blue");
     });
     setTimeout(changeToCodeView,0);
+    this.images.addClass("animated");
     setTimeout($.proxy(anim, this),0);
   },
 
@@ -119,7 +119,7 @@ var CodeBox = {
       setColor = function(index,element) {
         var color = getColorFor(index);
         waitTime = CodeBox.waitTimePerItem * (index+1);
-        setIconColor(element, color, waitTime);
+        setIconColor(element, color, waitTime, true);
       },
       setMessages = function() {
         $("#message-text").html(data.message);
@@ -127,14 +127,8 @@ var CodeBox = {
         $("#golfgraph").html(data.golfChart);
         $("#golfscore").html(data.golfScore);
         configureGolf();
-      },
-      stopAnimation = function() {
-        this.cont = false;
-        this.images.stop(true);
-        this.images.css({ opacity: 1.0, });
       };
 
-    setTimeout($.proxy(stopAnimation, this), waitTime);
     this.images.filter( testWasExecuted ).each(setColor);
     setTimeout(setMessages, waitTime);
   },
