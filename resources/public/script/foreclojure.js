@@ -165,10 +165,13 @@ function configureDataTables(){
     } );
 }
 
-function setIconColor(element, color, timeOut) {
-  timeOut = (typeof timeOut == "undefined") ? 0 : timeOut
+function setIconColor(element, color, timeOut, stopAnimation) {
+  timeOut = (typeof timeOut == "undefined") ? 0 : timeOut;
+
   setTimeout (function() {
-      element.src = element.src.replace(new RegExp("(.*/images/).*(light.png)"), "$1" + color + "$2");
+    if(stopAnimation)
+      $(element).stop(true).removeClass("animated").css({ opacity: 1.0, });
+    element.src = element.src.replace(new RegExp("(.*/images/).*(light.png)"), "$1" + color + "$2");
   }, timeOut);
 }
 
