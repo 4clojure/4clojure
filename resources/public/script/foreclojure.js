@@ -78,6 +78,14 @@ var difficulty = {
 // dataTable will call this function in preparation for sorting a column.
 // We're responsible for giving it the "real" data to sort on, for all the
 // rows at once
+jQuery.fn.dataTableExt.afnSortData['title'] = function(oSettings, iColumn) {
+    var aData = [];
+    $('td:eq('+iColumn+')', oSettings.oApi._fnGetTrNodes(oSettings)).each(function () {
+        aData.push( parseInt($(this).find('a').attr('href').split('/').slice(-1)[0]) );
+    });
+    return aData;
+}
+
 jQuery.fn.dataTableExt.afnSortData['difficulty'] = function(oSettings, iColumn)
 {
     var aData = [];
@@ -119,7 +127,7 @@ function configureDataTables(){
         "iDisplayLength": 100,
         "aaSorting": [[5, "desc"], [1, "asc"], [4, "desc"]],
         "aoColumns": [
-            {"sType": "string"},
+            {"sSortDataType": "title", "sType": "numeric"},
             {"sSortDataType": "difficulty", "sType": "numeric"},
             {"sType": "string"},
             {"sType": "string"},
