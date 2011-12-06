@@ -81,7 +81,9 @@ var difficulty = {
 jQuery.fn.dataTableExt.afnSortData['title'] = function(oSettings, iColumn) {
     var aData = [];
     $('td:eq('+iColumn+')', oSettings.oApi._fnGetTrNodes(oSettings)).each(function () {
-        aData.push($(this).text());
+	// Prefix the data with the link text (title) for proper sorting, then append
+	// target ID so that searching picks it up.
+        aData.push($(this).text() + parseInt($(this).find('a').attr('href').split('/').slice(-1)[0]));
     });
     return aData;
 }
@@ -126,14 +128,14 @@ function configureDataTables(){
     $('#problem-table').dataTable( {
         "iDisplayLength": 100,
         "aaSorting": [[5, "desc"], [1, "asc"], [4, "desc"]],
-        "aoColumns": [
+	"aoColumns": [
             {"sSortDataType": "title", "sType": "string"},
             {"sSortDataType": "difficulty", "sType": "numeric"},
             {"sType": "string"},
-            {"sType": "string"},
-            {"sType": "numeric"},
+	    {"sType": "string"},
+	    {"sType": "numeric", "bSearchable": false},
             {"sType": "string"}
-        ]
+	]
     } );
 
     $('#unapproved-problems').dataTable( {
