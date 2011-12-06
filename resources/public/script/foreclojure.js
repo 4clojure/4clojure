@@ -81,7 +81,7 @@ var difficulty = {
 jQuery.fn.dataTableExt.afnSortData['title'] = function(oSettings, iColumn) {
     var aData = [];
     $('td:eq('+iColumn+')', oSettings.oApi._fnGetTrNodes(oSettings)).each(function () {
-        aData.push( parseInt($(this).find('a').attr('href').split('/').slice(-1)[0]) );
+        aData.push($(this).text());
     });
     return aData;
 }
@@ -127,7 +127,7 @@ function configureDataTables(){
         "iDisplayLength": 100,
         "aaSorting": [[5, "desc"], [1, "asc"], [4, "desc"]],
         "aoColumns": [
-            {"sSortDataType": "title", "sType": "numeric"},
+            {"sSortDataType": "title", "sType": "string"},
             {"sSortDataType": "difficulty", "sType": "numeric"},
             {"sType": "string"},
             {"sType": "string"},
