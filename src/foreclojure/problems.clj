@@ -268,7 +268,8 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
 
     {:title (str _id ". " title)
      :content
-     [:div
+     [:div#prob-container
+      [:div#prob-number "#" id]
       [:div#prob-title title]
       (if-user [{:keys [solved]}]
         (if (some #{(Integer. id)} solved)
