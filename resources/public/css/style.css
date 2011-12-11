@@ -7,6 +7,15 @@ body {
    text-align: center;
 }
 
+div#right-title {
+  float: right;
+}
+div#title-rule {
+    clear: right;
+    margin-bottom: 5px;
+    border-bottom: 1px solid;
+}
+
 img {border:none}
 
 div.progress-bar-bg {
@@ -78,7 +87,7 @@ div.progress-bar {
 
 #top {
    width: 85%;
-   padding: 15px 0px 15px 0px;
+   padding: 0px 0px 15px 0px;
    margin: 0 auto;
 }
 div#top a {
@@ -188,7 +197,7 @@ img.gravatar{
    height: 84px;
    margin-left: -7px;
    float:left;
-   padding:15px 0px 15px 0px;
+   padding:0px 0px 15px 0px;
    border: 0;
 }
 
