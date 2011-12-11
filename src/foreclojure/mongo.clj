@@ -54,8 +54,9 @@
                                          [(number-from-mongo-key id) score]
                                          + times))
                             {}))
-        total  (count (mapcat :solved users))]
-    (send solved-stats (constantly (assoc scores :total total)))))
+        solved-counts (frequencies (map int (mapcat :solved users)))
+        total (reduce + (vals solved-counts))]
+    (send solved-stats (constantly (assoc scores :total total :solved-counts solved-counts)))))
 
 (defn prepare-mongo []
   (connect-to-db)
