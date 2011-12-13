@@ -13,7 +13,7 @@
             [hiccup.page-helpers      :only [link-to]]
             [hiccup.core              :only [html]])
   (:import org.apache.commons.codec.digest.DigestUtils
-           java.net.URLEncoder))
+           java.net.URLEncoder java.net.URLDecoder))
 
 (def golfer-tags (into [:contributor]
                        (when (:golfing-active config)
@@ -125,7 +125,7 @@
                        [:td (rank-class position) rank]
                        [:td
                         (gravatar-img {:email email :class "gravatar"})
-                        [:a.user-profile-link {:href (str "/user/" user)} user (when contributor [:span.contributor " *"])]]
+                        [:a.user-profile-link {:href (str "/user/" (URLEncoder/encode user))} user (when contributor [:span.contributor " *"])]]
                        [:td.centered (count solved)]
                        [:td (following-checkbox user-id following _id user)]]))
                    user-set)])))
@@ -292,10 +292,11 @@
 (defroutes users-routes
   (GET  "/users" [] (top-users-page))
   (GET  "/users/all" [] (all-users-page))
-  (GET  "/user/:username" [username] 
-    (if (nil? (get-user username)) 
+  (GET  ["/user/:username" :username #"[-\w.+*%]+"] [username] 
+        (if (nil? (or (get-user username)
+                      (get-user {:openid (URLDecoder/decode username)}))) 
       {:status 404 :headers {"Content-Type" "text/plain"} :body "Error: This user does not exist, nice try though."}
-      (user-profile username)))
+      (user-profile (if (get-user username) username {:openid (URLDecoder/decode username)}))))
   (POST "/user/follow/:username" [username] (static-follow-user username true))
   (POST "/user/unfollow/:username" [username] (static-follow-user username false))
   (POST "/rest/user/follow/:username" [username] (rest-follow-user username true))
