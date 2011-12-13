@@ -97,7 +97,7 @@
     [:br]]))
 
 (defn follow-url [username follow?]
-  (str "/user/" (if follow? "follow" "unfollow") "/" username))
+  (str "/user/" (if follow? "follow" "unfollow") "/" (URLEncoder/encode username)))
 
 (defn following-checkbox [current-user-id following user-id user]
   (if (and current-user-id (not= current-user-id user-id))
