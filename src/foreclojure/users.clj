@@ -26,7 +26,7 @@
 (defn get-users []
   (from-mongo
    (fetch :users
-          :only [:user :solved :contributor :email])))
+          :only [:user :solved :contributor :email :openid])))
 
 (defn get-ranked-users []
   (let [users (get-users)
@@ -37,7 +37,7 @@
     (first
      (reduce (fn [[user-list position rank] new-group]
                [(into user-list
-                      (for [user (sort-by :user new-group)]
+                      (for [user (sort-by #(or (:user %) (:openid %)) new-group)]
                         (into user {:rank     rank
                                     :position position})))
                 (inc position)
@@ -47,7 +47,7 @@
 
 (defn get-top-100-and-current-user [username]
   (let [ranked-users      (get-ranked-users)
-        this-user         (first (filter (comp #{username} :user)
+        this-user         (first (filter (comp #{username} #(or (:user %) (:openid %)))
                                          ranked-users))
         this-user-ranking (update-in this-user [:rank] #(str (or % "?") " out of " (count ranked-users)))]
     {:user-ranking this-user-ranking
@@ -63,7 +63,7 @@
   (true? (:hide-solutions user)))
 
 (defn email-address [username]
-  (:email (fetch-one :users :where {:user username})))
+  (:email ((user-attribute :email) username)))
 
 (defn mailto [username]
   (link-to (str "mailto:" (email-address username))
@@ -120,14 +120,15 @@
         [:th {:style "width: 200px;"} "Username"]
         [:th {:style "width: 180px;"} "Problems Solved"]
         [:th "Following"]]]
-      (map-indexed (fn [rownum {:keys [_id email position rank user contributor solved]}]
-                     [:tr (row-class rownum)
-                      [:td (rank-class position) rank]
-                      [:td
-                       (gravatar-img {:email email :class "gravatar"})
-                       [:a.user-profile-link {:href (str "/user/" user)} user (when contributor [:span.contributor " *"])]]
-                      [:td.centered (count solved)]
-                      [:td (following-checkbox user-id following _id user)]])
+      (map-indexed (fn [rownum {:keys [_id email position rank user openid contributor solved]}]
+                     (let [user (or user openid)]
+                      [:tr (row-class rownum)
+                       [:td (rank-class position) rank]
+                       [:td
+                        (gravatar-img {:email email :class "gravatar"})
+                        [:a.user-profile-link {:href (str "/user/" user)} user (when contributor [:span.contributor " *"])]]
+                       [:td.centered (count solved)]
+                       [:td (following-checkbox user-id following _id user)]]))
                    user-set)])))
 
 (defn generate-datatable-users-list [user-set]
