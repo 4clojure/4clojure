@@ -131,13 +131,22 @@
 
 (def-page openid-failure [r]
   {:title "OpenID Failure"
-   :content (content-page [:div [:p "Failure"]])})
+   :content (content-page {:main [:div [:p "The OpenID you provided could not be verified.  Please go back and try again."]]})})
 
 (def-page openid-success [r]
-  {:title "OpenID success"
-   :content (content-page [:div [:p "Success"]])})
+  (let [claimed-id (-> r :params :openid.claimed_id)
+        user {:openid claimed-id}
+        location (session/session-get :login-to)
+        db-user (fetch-one :users :where {:user })]
+    (update! :users {:user user}
+             {:$set {:last-login (java.util.Date.)}})
+    (session/session-put! :user user)
+    (session/session-delete-key! :login-to)
+    (response/redirect (or location "/problems"))))
 
-(def openid-sessions (atom {}))
+;; Putting the session info that openid needs in the sandbar session
+;; doesn't work.  Thus, I'll make a little hack around that.
+(def openid-sessions (atom {})) 
 
 (defn do-openid-login [r]
   (let [openid-url (-> r :form-params (get "openid-url"))
