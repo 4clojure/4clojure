@@ -3,7 +3,7 @@
             [clojure.string           :as string]
             [sandbar.stateful-session :as session]
             [cheshire.core            :as json])
-  (:use     [foreclojure.utils        :only [from-mongo row-class rank-class get-user if-user with-user]]
+  (:use     [foreclojure.utils        :only [from-mongo row-class rank-class get-user if-user with-user user-attribute]]
             [foreclojure.template     :only [def-page content-page]]
             [foreclojure.ring-utils   :only [*http-scheme* universal-url]]
             [foreclojure.config       :only [config repo-url]]
@@ -21,9 +21,7 @@
 
 (defn get-user-id [name]
   (:_id
-   (fetch-one :users
-              :where {:user name}
-              :only [:_id])))
+   ((user-attribute :_id) name)))
 
 (defn get-users []
   (from-mongo

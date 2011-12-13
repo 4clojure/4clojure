@@ -10,7 +10,8 @@
 ;; Global wrapping template
 (defn html-doc [body]
   (let [attrs (rendering-info (page-attributes body))
-        user (session/session-get :user)]
+        user (session/session-get :user)
+        user (or (when (string? user) user) (:user user) (:openid user))]
     (html
      (doctype :html5)
      [:html

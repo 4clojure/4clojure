@@ -5,14 +5,14 @@
             [clj-openid.helpers :as helpers])
   (:import  [org.jasypt.util.password StrongPasswordEncryptor])
   (:use     [hiccup.form-helpers      :only [form-to label text-field password-field check-box]]
-            [foreclojure.utils        :only [from-mongo flash-error flash-msg form-row assuming send-email login-url]]
+            [foreclojure.utils        :only [from-mongo flash-error flash-msg form-row assuming send-email login-url get-user]]
             [foreclojure.template     :only [def-page content-page]]
             [foreclojure.messages     :only [err-msg]]
             [compojure.core           :only [defroutes GET POST]]
             [useful.map               :only [keyed]]
             [clojail.core             :only [thunk-timeout]]
             [clojure.stacktrace       :only [print-cause-trace]]
-            [somnium.congomongo       :only [update! fetch-one]]))
+            [somnium.congomongo       :only [update! fetch-one destroy!]]))
 
 (def password-reset-url "https://www.4clojure.com/settings")
 
@@ -58,10 +58,12 @@
         {db-pwd :pwd} (from-mongo (fetch-one :users :where {:user user}))
         location (session/session-get :login-to)]
     (if (and db-pwd (.checkPassword (StrongPasswordEncryptor.) pwd db-pwd))
-      (do (update! :users {:user user}
+      (let [{possible-openid :openid} (from-mongo (fetch-one :users :where {:user user} :only [:openid]))
+            merged-user {:user user :openid possible-openid}]
+          (update! :users {:user user}
                    {:$set {:last-login (java.util.Date.)}}
                    :upsert false) ; never create new users accidentally
-          (session/session-put! :user user)
+          (session/session-put! :user merged-user)
           (session/session-delete-key! :login-to)
           (response/redirect (or location "/problems")))
       (flash-error "/login" "Error logging in."))))
@@ -133,14 +135,21 @@
   {:title "OpenID Failure"
    :content (content-page {:main [:div [:p "The OpenID you provided could not be verified.  Please go back and try again."]]})})
 
-(def-page openid-success [r]
+(defn openid-success [r]
   (let [claimed-id (-> r :params :openid.claimed_id)
-        user {:openid claimed-id}
+        user  {:openid claimed-id}
+        session-user (session/session-get :user) ; non-nil if already logged in
+        session-user {:user (:user (get-user session-user))}
         location (session/session-get :login-to)
-        db-user (fetch-one :users :where {:user })]
-    (update! :users {:user user}
+        merged-user (merge session-user user)]
+    (when (:user merged-user)
+      (update! :users {:user (:user merged-user)}
+               {:$set {:openid claimed-id}})
+      (destroy! :users {:user nil :openid claimed-id}))
+    (update! :users {:openid claimed-id}
              {:$set {:last-login (java.util.Date.)}})
-    (session/session-put! :user user)
+    (let [db-user (fetch-one :users :where {:openid claimed-id} :only [:user :openid])]
+     (session/session-put! :user db-user))
     (session/session-delete-key! :login-to)
     (response/redirect (or location "/problems"))))
 
