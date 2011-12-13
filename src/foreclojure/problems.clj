@@ -134,8 +134,8 @@
     (record-golf-score! user-id problem-id (code-length code))
     (save-solution user-id problem-id code)))
 
-(defn mark-completed [problem code & [user]]
-  (let [user (or user (session/session-get :user))
+(defn mark-completed [problem code]
+  (let [user (session/session-get :user)
         {:keys [_id approved]} problem
         gist-link (html [:span.share
                          [:a.novisited {:href "/share/code"} "share"]
