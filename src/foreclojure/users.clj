@@ -289,15 +289,23 @@
     :iTotalDisplayRecords (str (count filtered-users))
     :aaData page-users}))
 
+(defn get-user-possible-openid [username]
+  (let [decoded-username (URLDecoder/decode username)]
+    (cond (get-user username) ; registered users don't need decoding
+          username
+          (get-user {:openid decoded-username})
+          {:openid decoded-username}
+          :else
+          nil)))
+
 (defroutes users-routes
   (GET  "/users" [] (top-users-page))
   (GET  "/users/all" [] (all-users-page))
   (GET  ["/user/:username" :username #"[-\w.+*%]+"] [username] 
-        (if (nil? (or (get-user username)
-                      (get-user {:openid (URLDecoder/decode username)}))) 
+        (if (nil? (get-user-possible-openid username)) 
       {:status 404 :headers {"Content-Type" "text/plain"} :body "Error: This user does not exist, nice try though."}
-      (user-profile (if (get-user username) username {:openid (URLDecoder/decode username)}))))
-  (POST "/user/follow/:username" [username] (static-follow-user username true))
-  (POST "/user/unfollow/:username" [username] (static-follow-user username false))
-  (POST "/rest/user/follow/:username" [username] (rest-follow-user username true))
-  (POST "/rest/user/unfollow/:username" [username] (rest-follow-user username false)))
+      (user-profile (get-user-possible-openid username))))
+  (POST ["/user/follow/:username" :username #"[-\w.+*%]+"] [username] (static-follow-user (get-user-possible-openid username) true))
+  (POST ["/user/unfollow/:username" :username #"[-\w.+*%]+"] [username] (static-follow-user (get-user-possible-openid username) false))
+  (POST ["/rest/user/follow/:username" :username #"[-\w.+*%]+"] [username] (rest-follow-user (get-user-possible-openid username) true))
+  (POST ["/rest/user/unfollow/:username" :username #"[-\w.+*%]+"] [username] (rest-follow-user (get-user-possible-openid username) false)))
