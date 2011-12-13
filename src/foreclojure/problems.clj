@@ -121,7 +121,7 @@
                                                 (maybe-update [old-score] dec)))))))))
 
 (defn store-completed-state! [username problem-id code]
-  (let [{user-id :_id} ((user-attribute :_id) username)
+  (let [user-id ((user-attribute :_id) username)
         current-time (java.util.Date.)]
     (when (not-any? #{problem-id} (get-solved username))
       (update! :users {:_id user-id} {:$addToSet {:solved problem-id}
