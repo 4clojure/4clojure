@@ -189,7 +189,7 @@
        (filter ids (get-solved username)))))
 
 (def-page user-profile [username]
-  (let [page-title (str "User: " username)
+  (let [page-title (str "User: " (if (string? username) username (:openid username)))
         {user-id :_id email :email} (get-user username)]
     {:title page-title
      :content
