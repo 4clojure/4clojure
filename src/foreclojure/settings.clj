@@ -75,12 +75,12 @@
           [:div#button-div
             [:button {:type "submit"} "Submit"]]))})}))
 
-(defn do-update-settings! [new-username old-pwd new-pwd repeat-pwd email disable-codebox hide-solutions new-openid response-map]
+(defn do-update-settings! [new-username old-pwd new-pwd repeat-pwd email disable-codebox hide-solutions new-openid cookie-val]
   (with-user [{:keys [user pwd openid]}]
     (if (not= openid new-openid)
       (do
         (session/session-put! :login-to "/settings")
-        (login/do-openid-login (assoc-in response-map [:form-params "openid-url"] new-openid)))
+        (login/do-openid-login new-openid cookie-val))
      (let [encryptor (StrongPasswordEncryptor.)
            new-pwd-hash (.encryptPassword encryptor new-pwd)
            new-lower-user (.toLowerCase new-username)]
@@ -117,5 +117,5 @@
 
 (defroutes settings-routes
   (GET  "/settings" [] (settings-page))
-  (POST "/settings" {{:strs [new-username old-pwd pwd repeat-pwd email disable-codebox hide-solutions openid]} :form-params :as r}
-    (do-update-settings! new-username old-pwd pwd repeat-pwd email disable-codebox hide-solutions openid r)))
+  (POST "/settings" {{:strs [new-username old-pwd pwd repeat-pwd email disable-codebox hide-solutions openid]} :form-params {:strs [ring-session]} :cookies}
+    (do-update-settings! new-username old-pwd pwd repeat-pwd email disable-codebox hide-solutions openid (:value ring-session))))
