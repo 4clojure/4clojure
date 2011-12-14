@@ -157,11 +157,9 @@
 ;; doesn't work.  Thus, I'll make a little hack around that.
 (def openid-sessions (atom {})) 
 
-(defn do-openid-login [r]
-  (let [openid-url (-> r :form-params (get "openid-url"))
-        cookies (get r :cookies)
-        redir (openid/redirect openid-url {} openid-callback-url)
-        sess (-> cookies (get "ring-session") :value)]
+(defn do-openid-login [openid-url session-value]
+  (let [redir (openid/redirect openid-url {} openid-callback-url)
+        sess session-value]
     (swap! openid-sessions #(assoc % sess (:session redir)))
     (dissoc redir :session)))
 
@@ -174,8 +172,8 @@
   (GET  "/login" [location] (my-login-page location))
   (POST "/login" {{:strs [user pwd]} :form-params}
         (do-login user pwd))
-  (POST "/openid-login" [:as r]
-        (do-openid-login r))
+  (POST "/openid-login" {{:strs [openid-url]} :form-params {:strs [ring-session]} :cookies}
+        (do-openid-login openid-url (:value ring-session)))
   (GET "/openid-callback" [:as r]
        (do-openid-callback r))
 
