@@ -36,6 +36,8 @@ vaguely like this:
 
 * Run `lein ring server`
 
+* Run the tests `lein test`
+
 ## Contributors
 
 * [David Byrne](https://github.com/dbyrne) (dbyrne)
