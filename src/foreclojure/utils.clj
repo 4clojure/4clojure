@@ -132,15 +132,15 @@
    (:openid user)))
 
 (defn get-user [username]
-  (cond
-   (string? username)
-   (from-mongo (fetch-one :users :where {:user username}))
-   (map? username)
-   (let [user (:user username)
-         openid (:openid username)]
-     (if user
-       (from-mongo (fetch-one :users :where {:user user}))
-       (from-mongo (fetch-one :users :where {:openid openid}))))))
+  (from-mongo
+   (fetch-one :users :where
+    (cond
+     (string? username)
+     {:user username}
+     (and (map? username) (:user username))
+     {:user (:user username)}
+     (and (map? username) (:openid username))
+     {:openid (:openid username)}))))
 
 (defmacro if-user
   "Look for a user with the given username in the database, let-ing it
@@ -175,22 +175,18 @@
 
 (defn user-attribute [attr]
   (fn [username]
-    (cond
-     (string? username)
-     (attr (from-mongo
-            (fetch-one :users
-                       :where {:user username}
-                       :only [attr])))
-     (and (map? username) (:user username))
-     (attr (from-mongo
-            (fetch-one :users
-                       :where {:user (:user username)}
-                       :only [attr])))
-     (and (map? username) (:openid username))
-     (attr (from-mongo
-            (fetch-one :users
-                       :where {:openid (:openid username)}
-                       :only [attr]))))))
+    (attr
+     (from-mongo
+      (fetch-one :users
+                 :where
+                 (cond
+                  (string? username)
+                  {:user username}
+                  (and (map? username) (:user username))
+                  {:user (:user username)}
+                  (and (map? username) (:openid username))
+                  {:openid (:openid username)})
+                 :only [attr])))))
 
 (def get-solved (comp set (user-attribute :solved)))
 (def approver? (user-attribute :approver))
