@@ -20,7 +20,7 @@
                          [:golfer])))
 
 (defn get-user-id [name]
-  ((user-attribute :_id) name))
+  (user-id name))
 
 (defn get-users []
   (from-mongo
@@ -62,7 +62,7 @@
   (true? (:hide-solutions user)))
 
 (defn email-address [username]
-  ((user-attribute :email) username))
+  (user-email username))
 
 (defn mailto [username]
   (link-to (str "mailto:" (email-address username))

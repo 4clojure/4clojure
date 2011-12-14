@@ -5,7 +5,7 @@
             [ring.util.response       :as      response]
             [cheshire.core            :as      json])
   (:import  [org.apache.commons.mail  EmailException])
-  (:use     [foreclojure.utils        :only    [from-mongo get-user get-solved login-link flash-msg flash-error row-class approver? can-submit? send-email image-builder if-user with-user as-int maybe-update escape-html user-attribute]]
+  (:use     [foreclojure.utils        :only    [from-mongo get-user get-solved login-link flash-msg flash-error row-class approver? can-submit? send-email image-builder if-user with-user as-int maybe-update escape-html user-id]]
             [foreclojure.ring-utils   :only    [*url*]]
             [foreclojure.template     :only    [def-page content-page]]
             [foreclojure.social       :only    [tweet-link gist!]]
@@ -121,7 +121,7 @@
                                                 (maybe-update [old-score] dec)))))))))
 
 (defn store-completed-state! [username problem-id code]
-  (let [user-id ((user-attribute :_id) username)
+  (let [user-id (user-id username)
         current-time (java.util.Date.)]
     (when (not-any? #{problem-id} (get-solved username))
       (update! :users {:_id user-id} {:$addToSet {:solved problem-id}

@@ -194,6 +194,8 @@
 
 (def get-solved (comp set (user-attribute :solved)))
 (def approver? (user-attribute :approver))
+(def user-id (user-attribute :_id))
+(def user-email (user-attribute :email))
 
 (defn can-submit? [username]
   (or (approver? username)
