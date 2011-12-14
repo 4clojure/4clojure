@@ -36,7 +36,7 @@ vaguely like this:
 
 * Run `lein ring server`
 
-* Run the tests `lein test`
+* To run the tests: `lein test`
 
 ## Contributors
 
