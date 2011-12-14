@@ -46,8 +46,8 @@
 (defn assoc-openid-box [openid]
   (list
    [:p "Associate an OpenID with your account and you can log in with that in the future.  Other settings will not change if this field is changed."]
-   (map form-row
-        [[text-field :openid "OpenID" openid]])))
+   (form-row
+    [text-field :openid "OpenID" openid])))
 
 (def-page settings-page []
   (with-user [{:keys [user email openid] :as user-obj}]
