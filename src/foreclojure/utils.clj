@@ -122,6 +122,15 @@
   (walk/postwalk (to-fix float? int)
                  data))
 
+(defn user-or-openid
+  "Returns a string with the best representation of the username.
+   Prefers the registered username to the openid."
+  [user]
+  (or
+   (when (string? user) user)
+   (:user user)
+   (:openid user)))
+
 (defn get-user [username]
   (cond
    (string? username)

@@ -3,7 +3,7 @@
             [clojure.string           :as string]
             [sandbar.stateful-session :as session]
             [cheshire.core            :as json])
-  (:use     [foreclojure.utils        :only [from-mongo row-class rank-class get-user if-user with-user user-attribute]]
+  (:use     [foreclojure.utils        :only [from-mongo row-class rank-class get-user if-user with-user user-id user-email user-or-openid]]
             [foreclojure.template     :only [def-page content-page]]
             [foreclojure.ring-utils   :only [*http-scheme* universal-url]]
             [foreclojure.config       :only [config repo-url]]
@@ -36,7 +36,7 @@
     (first
      (reduce (fn [[user-list position rank] new-group]
                [(into user-list
-                      (for [user (sort-by #(or (:user %) (:openid %)) new-group)]
+                      (for [user (sort-by user-or-openid new-group)]
                         (into user {:rank     rank
                                     :position position})))
                 (inc position)
@@ -46,7 +46,7 @@
 
 (defn get-top-100-and-current-user [username]
   (let [ranked-users      (get-ranked-users)
-        this-user         (first (filter (comp #{username} #(or (:user %) (:openid %)))
+        this-user         (first (filter (comp #{username} user-or-openid)
                                          ranked-users))
         this-user-ranking (update-in this-user [:rank] #(str (or % "?") " out of " (count ranked-users)))]
     {:user-ranking this-user-ranking
@@ -189,7 +189,7 @@
        (filter ids (get-solved username)))))
 
 (def-page user-profile [username]
-  (let [page-title (str "User: " (if (string? username) username (:openid username)))
+  (let [page-title (str "User: " (user-or-openid username))
         {user-id :_id email :email} (get-user username)]
     {:title page-title
      :content
@@ -292,7 +292,7 @@
 (defn get-user-possible-openid [username]
   (let [decoded-username (URLDecoder/decode username)]
     (cond (get-user username) ; registered users don't need decoding
-          username
+          {:user username}
           (get-user {:openid decoded-username})
           {:openid decoded-username}
           :else

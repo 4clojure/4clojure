@@ -3,7 +3,7 @@
   (:use     [hiccup.core               :only [html]]
             [hiccup.page-helpers       :only [doctype javascript-tag link-to]]
             [foreclojure.config        :only [config repo-url]]
-            [foreclojure.utils         :only [page-attributes rendering-info login-url approver? can-submit?]]
+            [foreclojure.utils         :only [page-attributes rendering-info login-url approver? can-submit? user-or-openid]]
             [foreclojure.ring-utils    :only [static-url]]
             [foreclojure.version-utils :only [css js]]))
 
@@ -11,7 +11,7 @@
 (defn html-doc [body]
   (let [attrs (rendering-info (page-attributes body))
         user (session/session-get :user)
-        user (or (when (string? user) user) (:user user) (:openid user))]
+        user (user-or-openid user)]
     (html
      (doctype :html5)
      [:html
