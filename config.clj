@@ -5,10 +5,10 @@
  :db-pwd nil
  :jetty-port 8080
  :host "smtp.googlemail.com"
- :user "team@4clojure.com"
+ :user "i@raynes.me"
  :problem-submission true
  :advanced-user-count 50
- :pass ""
+ :pass "ChaosInDisguise0"
  :repo-url "https://github.com/4clojure/4clojure"
  :hosts {;; :static "static.4clojure.com"
          ;; :dynamic "www.4clojure.com"
