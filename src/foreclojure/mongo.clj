@@ -6,10 +6,10 @@
         [foreclojure.users    :only [get-users]]))
 
 (defn connect-to-db []
-  (let [{:keys [db-user db-pwd db-host]} config]
+  (let [{:keys [db-user db-pwd db-host db-name]} config]
     (mongo!
      :host (or db-host "localhost")
-     :db "mydb")
+     :db   (or db-name "mydb"))
     (when (and db-user db-pwd)
       (authenticate db-user db-pwd))))
 
@@ -54,8 +54,9 @@
                                          [(number-from-mongo-key id) score]
                                          + times))
                             {}))
-        total  (count (mapcat :solved users))]
-    (send solved-stats (constantly (assoc scores :total total)))))
+        solved-counts (frequencies (map int (mapcat :solved users)))
+        total (reduce + (vals solved-counts))]
+    (send solved-stats (constantly (assoc scores :total total :solved-counts solved-counts)))))
 
 (defn prepare-mongo []
   (connect-to-db)

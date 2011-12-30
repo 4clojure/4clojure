@@ -78,6 +78,16 @@ var difficulty = {
 // dataTable will call this function in preparation for sorting a column.
 // We're responsible for giving it the "real" data to sort on, for all the
 // rows at once
+jQuery.fn.dataTableExt.afnSortData['title'] = function(oSettings, iColumn) {
+    var aData = [];
+    $('td:eq('+iColumn+')', oSettings.oApi._fnGetTrNodes(oSettings)).each(function () {
+	// Prefix the data with the link text (title) for proper sorting, then append
+	// target ID so that searching picks it up.
+        aData.push($(this).text() + parseInt($(this).find('a').attr('href').split('/').slice(-1)[0]));
+    });
+    return aData;
+}
+
 jQuery.fn.dataTableExt.afnSortData['difficulty'] = function(oSettings, iColumn)
 {
     var aData = [];
@@ -118,14 +128,14 @@ function configureDataTables(){
     $('#problem-table').dataTable( {
         "iDisplayLength": 100,
         "aaSorting": [[5, "desc"], [1, "asc"], [4, "desc"]],
-        "aoColumns": [
-            {"sType": "string"},
+	"aoColumns": [
+            {"sSortDataType": "title", "sType": "string"},
             {"sSortDataType": "difficulty", "sType": "numeric"},
             {"sType": "string"},
-            {"sType": "string"},
-            {"sType": "numeric"},
+	    {"sType": "string"},
+	    {"sType": "numeric", "bSearchable": false},
             {"sType": "string"}
-        ]
+	]
     } );
 
     $('#unapproved-problems').dataTable( {
@@ -165,10 +175,13 @@ function configureDataTables(){
     } );
 }
 
-function setIconColor(element, color, timeOut) {
-  timeOut = (typeof timeOut == "undefined") ? 0 : timeOut
+function setIconColor(element, color, timeOut, stopAnimation) {
+  timeOut = (typeof timeOut == "undefined") ? 0 : timeOut;
+
   setTimeout (function() {
-      element.src = element.src.replace(new RegExp("(.*/images/).*(light.png)"), "$1" + color + "$2");
+    if(stopAnimation)
+      $(element).stop(true).removeClass("animated").css({ opacity: 1.0, });
+    element.src = element.src.replace(new RegExp("(.*/images/).*(light.png)"), "$1" + color + "$2");
   }, timeOut);
 }
 

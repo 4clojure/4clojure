@@ -128,7 +128,11 @@
     (when (not-any? #{problem-id} (get-solved username))
       (update! :users {:_id user-id} {:$addToSet {:solved problem-id}
                                       :$set {:last-solved-date current-time}})
-      (send solved-stats update-in [:total] inc))
+      (let [inc (fnil inc 0)]
+        (send solved-stats
+              #(-> %
+                 (update-in [:total] inc)
+                 (update-in [:solved-counts problem-id] inc)))))
     (record-golf-score! user-id problem-id (code-length code))
     (save-solution user-id problem-id code)))
 
@@ -268,7 +272,8 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
 
     {:title (str _id ". " title)
      :content
-     [:div
+     [:div#prob-container
+      [:div#prob-number "#" id]
       [:div#prob-title title]
       (if-user [{:keys [solved]}]
         (if (some #{(Integer. id)} solved)
@@ -402,7 +407,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
               (s/join " " (map #(str "<span class='tag'>" % "</span>")
                                tags))]
              [:td.centered user]
-             [:td.centered (reduce + (vals (get @solved-stats id)))]
+             [:td.centered (get-in @solved-stats [:solved-counts id] 0)]
              [:td.centered (checkbox-img (contains? solved id))]])
           problems))])}))
 

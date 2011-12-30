@@ -326,11 +326,24 @@ div.message #error-text {
     color: red;
 }
 
+div#prob-container {
+  position: relative;
+}
+
 div#prob-title {
    font-size: 15pt;
    font-family: sans-serif;
    font-weight: bold;
    float: left;
+}
+
+div#prob-number {
+  position: absolute;
+  right: 10px;
+  font-size: 2em;
+  font-weight: bold;
+  color: #888;
+  top: -10px;
 }
 
 button#solutions-link {
