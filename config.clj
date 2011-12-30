@@ -1,5 +1,6 @@
 {:wrap-reload false
  :db-host "localhost"
+ :db-name "mydb"
  :db-user nil
  :db-pwd nil
  :jetty-port 8080
