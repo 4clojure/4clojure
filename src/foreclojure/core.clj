@@ -3,6 +3,7 @@
             [compojure.handler          :as   handler]
             [foreclojure.config         :as   config]
             [sandbar.stateful-session   :as   session])
+  (:import  [java.lang                  OutOfMemoryError])
   (:use     [compojure.core             :only [defroutes routes GET]]
             [foreclojure.static         :only [static-routes welcome-page]]
             [foreclojure.api            :only [api-routes]]
@@ -97,10 +98,15 @@
 
 (let [default-jetty-port 8080]
   (defn run []
-    (prepare-mongo)
-    (register-heartbeat)
-    (run-jetty (var app) {:join? *block-server*
-                          :port (get config :jetty-port default-jetty-port)})))
+    (try
+      (do
+        (prepare-mongo)
+        (register-heartbeat)
+        (run-jetty (var app) {:join? *block-server*
+                              :port  (get config :jetty-port default-jetty-port)}))
+      (catch OutOfMemoryError e
+        ;;TODO: log this?
+        (run)))))
 
 (defn -main [& args]
   (binding [*block-server* true]
