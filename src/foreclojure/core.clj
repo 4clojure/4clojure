@@ -98,14 +98,19 @@
 
 (let [default-jetty-port 8080]
   (defn run []
-    (try
-      (do
-        (prepare-mongo)
-        (register-heartbeat)
-        (run-jetty (var app) {:join? *block-server*
-                              :port  (get config :jetty-port default-jetty-port)}))
-      (catch OutOfMemoryError e
-        ;;TODO: log this?
+    (prepare-mongo)
+    (register-heartbeat)
+    (letfn [(run []
+              (run-jetty (var app) {:join? *block-server*
+                                    :port  (get config :jetty-port
+                                                default-jetty-port)}))]
+      (if *block-server*
+        (while true
+          (try
+            (run)
+            (catch OutOfMemoryError _
+              (binding [*out* *err*]
+                (println "Caught error at " (java.util.Date.))))))
         (run)))))
 
 (defn -main [& args]
