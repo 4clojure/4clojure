@@ -1,5 +1,5 @@
 (ns foreclojure.social
-  (:require [clj-github.gists         :as   gist]
+  (:require [innuendo.core            :as rheap]
             [sandbar.stateful-session :as   session])
   (:import  [java.net                 URLEncoder])
   (:use     [foreclojure.template     :only [def-page]]
@@ -43,32 +43,29 @@
               :only [:title]
               :where {:_id id})))
 
-(defn gist!
-  "Create a new gist containing a user's solution to a problem and
+(defn node!
+  "Create a new node containing a user's solution to a problem and
   return its url."
   [user-name problem-num solution]
   (let [[user-name possessive] (if user-name
                                  [user-name "'s"]
                                  ["anonymous" nil])
         name (get-problem-title problem-num)
-        filename (str user-name "-4clojure-solution" problem-num ".clj")
         text (str ";; " user-name possessive " solution to " name "\n"
                   ";; https://4clojure.com/problem/" problem-num
                   "\n\n"
                   solution)]
     (try
-      (->> (gist/new-gist {} filename text)
-           :repo
-           (str "https://gist.github.com/"))
+      (:url (rheap/create-paste text {:language "Clojure"}))
       (catch Throwable _))))
 
-(defn tweet-solution [id gist-url & [link-text]]
+(defn tweet-solution [id paste-url & [link-text]]
   (let [status-msg (str "Check out how I solved "
                         (let [title (get-problem-title id)]
                           (if (> (count title) 35)
                             (str "problem " id)
                             (str "\"" title "\"")))
-                        " on #4clojure " (clojure-hashtag) gist-url)]
+                        " on #4clojure " (clojure-hashtag) paste-url)]
     (tweet-link id status-msg link-text)))
 
 (def-page share-page []
@@ -76,19 +73,20 @@
    :content
    (if-let [[id code] (session/session-get :code)]
      (let [user (session/session-get :user)
-           gist-url (gist! user id code)
-           gist-link (if gist-url
-                       [:div {:id "shared-code-box"}
-                        [:div.code
-                         [:h3 "Your Solution"]
-                         [:pre {:class "brush: clojure;gutter: false;toolbar: false;light: true"} (escape-html code)]]
-                        [:br]
-                        [:div.share
-                         "Share this " (link-to gist-url "solution")
-                         " on " (tweet-solution id gist-url) "?"]]
-                       [:div.error
-                        "Failed to create gist of your solution"])]
-       gist-link)
+           paste-url (paste! user id code)
+           paste-link (if paste-url
+                        [:div {:id "shared-code-box"}
+                         [:div.code
+                          [:h3 "Your Solution"]
+                          [:pre {:class "brush: clojure;gutter: false;toolbar: false;light: true"}
+                           (escape-html code)]]
+                         [:br]
+                         [:div.share
+                          "Share this " (link-to paste-url "solution")
+                          " on " (tweet-solution id paste-url) "?"]]
+                        [:div.error
+                         "Failed to create paste of your solution"])]
+       paste-link)
      [:div.error
       "Sorry...I don't remember you solving anything recently!"])})
 
