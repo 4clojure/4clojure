@@ -1,8 +1,8 @@
 (ns foreclojure.template
-  (:require [sandbar.stateful-session  :as   session])
+  (:require [sandbar.stateful-session  :as   session]
+            [foreclojure.config        :as   config])
   (:use     [hiccup.core               :only [html]]
             [hiccup.page-helpers       :only [doctype javascript-tag link-to]]
-            [foreclojure.config        :only [config repo-url]]
             [foreclojure.utils         :only [page-attributes rendering-info login-url approver? can-submit?]]
             [foreclojure.ring-utils    :only [static-url]]
             [foreclojure.version-utils :only [css js]]))
@@ -31,18 +31,20 @@
        [:script {:type "text/javascript"} "SyntaxHighlighter.all()"]]
       [:body
        (when (:fork-banner attrs)
-         [:div#github-banner [:a {:href repo-url
-                                   :alt "Fork 4Clojure on Github!"}]])
-        [:div#banner
-          [:span#banner-text "( " [:a {:href "#" } "want-free-tickets?"]
-            [:img#banner-logo {:src (static-url "images/clojure-west.png") :alt "Clojure West"}]
-            " ) "]
-          [:span#banner-info.hidden  "4Clojure is proud to be supporting Clojure/West, an upcoming conference targeted at Clojure developers of all levels of skill and experience.<br><br> Especially exciting is that we will be running a series of contests to get [discounts? free tickets?] to Clojure/West. The current contest goes from [date] to [date] - whoever submits the best new problem by the end of the contest will receive [the prize]."]
+         [:div#github-banner [:a {:href config/repo-url
+                                  :alt "Fork 4Clojure on Github!"}]])
+       (when-let [{{:keys [file alt]} :img, {:keys [banner main]} :text} (config/contest)]
+         [:div#banner
+          [:span#banner-text
+           "( " [:a {:href "#" } banner]
+           [:img#banner-logo {:src (static-url file) :alt alt}]
+           " ) "]
+          [:span#banner-info.hidden main]
           (when-not (:fork-banner attrs)
-            [:div#right-spacer])]
+            [:div#right-spacer])])
        [:div#top
         (link-to "/" [:img#logo {:src (static-url "images/4clj-logo-small.png")
-                                  :alt "4clojure.com"}])]
+                                 :alt "4clojure.com"}])]
        [:div#content
         [:div#menu
          (for [[link text & [tabbed]]
