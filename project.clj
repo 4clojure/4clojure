@@ -20,7 +20,7 @@
                  [commons-lang "2.6"]
                  [org.apache.commons/commons-email "1.2"]]
   :dev-dependencies [[lein-ring "0.4.5"]
-                     [midje "1.1.1"]]
+                     [midje "1.3.0"]]
   :checksum-deps true
   :main foreclojure.core
   :ring {:handler foreclojure.core/app
