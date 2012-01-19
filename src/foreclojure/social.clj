@@ -43,8 +43,8 @@
               :only [:title]
               :where {:_id id})))
 
-(defn node!
-  "Create a new node containing a user's solution to a problem and
+(defn paste!
+  "Create a new paste containing a user's solution to a problem and
   return its url."
   [user-name problem-num solution]
   (let [[user-name possessive] (if user-name
