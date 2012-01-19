@@ -55,7 +55,7 @@
                                          + times))
                             {}))
         solved-counts (frequencies (map int (mapcat :solved users)))
-        total (reduce + (vals solved-counts))]
+        total (reduce + 0 (vals solved-counts))]
     (send solved-stats (constantly (assoc scores :total total :solved-counts solved-counts)))))
 
 (defn prepare-mongo []
