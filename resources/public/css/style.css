@@ -78,7 +78,6 @@ div.progress-bar {
 
 #top {
    width: 85%;
-   padding: 15px 0px 15px 0px;
    margin: 0 auto;
 }
 div#top a {
@@ -630,3 +629,24 @@ hr.solution {
     margin-top: 20px;
     margin-bottom: 20px;
 }
+
+#banner{
+    font-size:40px;
+    float: right;
+    padding-bottom: 10px;
+}
+
+#banner-link{
+    text-decoration: underline;
+}
+
+#banner-logo {
+    position: relative;
+    top: 20px;
+}
+
+.hidden {
+    display: none;
+}
+
+

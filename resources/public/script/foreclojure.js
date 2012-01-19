@@ -65,6 +65,11 @@ $(document).ready(function() {
     return false;
   });
 
+  $("#banner").live("click", function(e){
+    var html = $("#banner-info").html();
+    $.prompt(html);
+  });
+
 });
 
 var difficulty = {
