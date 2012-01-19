@@ -7,11 +7,12 @@
   (:import  [org.apache.commons.mail  EmailException])
   (:use     [foreclojure.utils        :only    [from-mongo get-user get-solved login-link flash-msg flash-error row-class approver? can-submit? send-email image-builder if-user with-user as-int maybe-update escape-html]]
             [foreclojure.ring-utils   :only    [*url*]]
-            [foreclojure.template     :only    [def-page content-page]]
+            [foreclojure.template     :only    [def-page content-page html-doc]]
             [foreclojure.social       :only    [tweet-link gist!]]
             [foreclojure.feeds        :only    [create-feed]]
             [foreclojure.users        :only    [golfer? get-user-id disable-codebox?]]
             [foreclojure.solutions    :only    [save-solution get-solution]]
+            [foreclojure.config       :only    [config]]
             [clojail.core             :exclude [safe-read]]
             [clojail.testers          :only    [secure-tester]]
             [somnium.congomongo       :only    [update! fetch-one fetch fetch-and-modify destroy!]]
@@ -446,77 +447,85 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
       (unapproved-problem-list-page)
       (flash-error "/problems" "You cannot access this page"))))
 
-(def-page problem-submission-page []
-  {:title "Submit a problem"
-   :content
-   (list
-    [:div.instructions
-     [:p "Thanks for choosing to submit a problem. Please make sure that you own the rights to the code you are submitting and that you wouldn't mind having us use the code as a 4clojure problem.  Once you've submitted your problem, it won't appear on the site until someone from the 4clojure team has had a chance to review it."]]
-    (form-to {:id "problem-submission"} [:post "/problems/submit"]
-      (hidden-field :author (session/flash-get :author))
-      (hidden-field :prob-id (session/flash-get :prob-id))
-      (label :title "Problem Title")
-      (text-field :title  (session/flash-get :title))
-      (label :diffulty "Difficulty")
-      (drop-down :difficulty ["Elementary" "Easy" "Medium" "Hard"] (session/flash-get :difficulty))
-      (label :tags "Topics (space separated)")
-      (text-field :tags  (session/flash-get :tags))
-      (label :restricted "Restricted Functions (space separated)")
-      (text-field :restricted  (session/flash-get :restricted))
-      (label :description "Problem Description")
-      (text-area {:id "problem-description"} :description  (session/flash-get :description))
-      [:br]
-      (label :code-box "Problem test cases. Use two underscores (__) for user input. Individual tests can span multiple lines, but each test should be separated by a totally blank line.")
-      (text-area {:id "code-box" :spellcheck "false"}
-                 :code (session/flash-get :tests))
-      [:p
-       [:button.large {:id "submission-button" :type "submit"} "Submit"]]))})
+(defmacro when-submitter [prob-id & body]
+  `(let [user# (session/session-get :user)]
+     (if (or (approver? user#)
+             (and (can-submit? user#)
+                  (not ~prob-id)))
+       (do ~@body)
+       (flash-error "/problems" (format "You must solve at least %d problems before you can submit one of your own."
+                                        (:advanced-user-count config))))))
+
+(defn problem-submission-page []
+  (when-submitter nil ;; we're not trying to edit an existing problem
+    (html-doc
+     {:title "Submit a problem"
+      :content
+      (list
+       [:div.instructions
+        [:p "Thanks for choosing to submit a problem. Please make sure that you own the rights to the code you are submitting and that you wouldn't mind having us use the code as a 4clojure problem.  Once you've submitted your problem, it won't appear on the site until someone from the 4clojure team has had a chance to review it."]]
+       (form-to {:id "problem-submission"} [:post "/problems/submit"]
+         (hidden-field :author (session/flash-get :author))
+         (hidden-field :prob-id (session/flash-get :prob-id))
+         (label :title "Problem Title")
+         (text-field :title  (session/flash-get :title))
+         (label :diffulty "Difficulty")
+         (drop-down :difficulty ["Elementary" "Easy" "Medium" "Hard"] (session/flash-get :difficulty))
+         (label :tags "Topics (space separated)")
+         (text-field :tags  (session/flash-get :tags))
+         (label :restricted "Restricted Functions (space separated)")
+         (text-field :restricted  (session/flash-get :restricted))
+         (label :description "Problem Description")
+         (text-area {:id "problem-description"} :description  (session/flash-get :description))
+         [:br]
+         (label :code-box "Problem test cases. Use two underscores (__) for user input. Individual tests can span multiple lines, but each test should be separated by a totally blank line.")
+         (text-area {:id "code-box" :spellcheck "false"}
+                    :code (session/flash-get :tests))
+         [:p
+          [:button.large {:id "submission-button" :type "submit"} "Submit"]]))})))
 
 (defn create-problem
   "create a user submitted problem"
   [title difficulty tags restricted description code id author]
-  (let [user (session/session-get :user)]
-    (if (or (approver? user)
-            (and (can-submit? user)
-                 (not id)))
-      (let [id (or id
-                   (:seq (fetch-and-modify
-                          :seqs
-                          {:_id "problems"}
-                          {:$inc {:seq 1}})))
-            edit-url (str "https://4clojure.com/problem/"
-                          id)
-            existing-problem (fetch-one :problems
-                                        :where {:_id id}
-                                        :only [:approved :times-solved])
-            approved (true? (:approved existing-problem))]
+  (when-submitter id
+    (let [user (session/session-get :user)
+          id (or id
+                 (:seq (fetch-and-modify
+                        :seqs
+                        {:_id "problems"}
+                        {:$inc {:seq 1}})))
+          edit-url (str "https://4clojure.com/problem/"
+                        id)
+          existing-problem (fetch-one :problems
+                                      :where {:_id id}
+                                      :only [:approved :times-solved])
+          approved (true? (:approved existing-problem))]
+      (when-not existing-problem
+        (try
+          (send-email
+           {:from "team@4clojure.com"
+            :to ["team@4clojure.com"]
+            :reply-to [(users/email-address user)]
+            :subject (str "User submission: " title)
+            :html (html [:h3 (link-to edit-url title)]
+                        [:div description])
+            :text (str title ": " edit-url "\n" description)})
+          ;; TODO: dump this in a proper log
+          (catch EmailException e (println (str "email failed to send on newly submitted problem #" id)))))
 
-        (when-not existing-problem
-          (try
-            (send-email
-             {:from "team@4clojure.com"
-              :to ["team@4clojure.com"]
-              :reply-to [(users/email-address user)]
-              :subject (str "User submission: " title)
-              :html (html [:h3 (link-to edit-url title)]
-                          [:div description])
-              :text (str title ": " edit-url "\n" description)})
-            ;; TODO: dump this in a proper log
-            (catch EmailException e (println (str "email failed to send on newly submitted problem #" id)))))
-
-        (update! :problems
-                 {:_id id}
-                 {:$set
-                  {:title title
-                   :difficulty difficulty
-                   :description description
-                   :tags (re-seq #"\S+" tags)
-                   :restricted (re-seq #"\S+" restricted)
-                   :tests (s/split code #"\r\n\r\n")
-                   :user (if (empty? author) user author)
-                   :approved approved}})
-        (flash-msg "/problems"
-          "Thank you for submitting a problem! Be sure to check back to see it posted."))
+      (update! :problems
+               {:_id id}
+               {:$set
+                {:title title
+                 :difficulty difficulty
+                 :description description
+                 :tags (re-seq #"\S+" tags)
+                 :restricted (re-seq #"\S+" restricted)
+                 :tests (s/split code #"\r\n\r\n")
+                 :user (if (empty? author) user author)
+                 :approved approved}})
+      (flash-msg "/problems"
+        "Thank you for submitting a problem! Be sure to check back to see it posted.")
       (flash-error "/problems" "You are not authorized to submit a problem."))))
 
 (defn edit-problem [id]
