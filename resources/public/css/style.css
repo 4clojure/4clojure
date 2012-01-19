@@ -649,4 +649,10 @@ hr.solution {
     display: none;
 }
 
+#right-spacer{
+    width: 135px;
+    float: right;
+    margin-right: 135px;
+}
+
 

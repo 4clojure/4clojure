@@ -37,7 +37,9 @@
           [:span#banner-text "( " [:a {:href "#" } "want-free-tickets?"]
             [:img#banner-logo {:src (static-url "images/clojure-west.png") :alt "Clojure West"}]
             " ) "]
-          [:span#banner-info.hidden  "4Clojure is proud to be supporting Clojure/West, an upcoming conference targeted at Clojure developers of all levels of skill and experience.<br><br> Especially exciting is that we will be running a series of contests to get [discounts? free tickets?] to Clojure/West. The current contest goes from [date] to [date] - whoever submits the best new problem by the end of the contest will receive [the prize]."]]
+          [:span#banner-info.hidden  "4Clojure is proud to be supporting Clojure/West, an upcoming conference targeted at Clojure developers of all levels of skill and experience.<br><br> Especially exciting is that we will be running a series of contests to get [discounts? free tickets?] to Clojure/West. The current contest goes from [date] to [date] - whoever submits the best new problem by the end of the contest will receive [the prize]."]
+          (when-not (:fork-banner attrs)
+            [:div#right-spacer])]
        [:div#top
         (link-to "/" [:img#logo {:src (static-url "images/4clj-logo-small.png")
                                   :alt "4clojure.com"}])]
