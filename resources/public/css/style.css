@@ -64,6 +64,7 @@ div.progress-bar {
    -moz-border-radius: 15px;
    border-radius: 15px;
    position: relative;
+   clear: both;
 }
 
 #content_body {
