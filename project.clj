@@ -12,7 +12,7 @@
                  [useful "0.7.0-beta5"]
                  [amalloy/ring-gzip-middleware "[0.1.0,)"]
                  [amalloy/mongo-session "0.0.1"]
-                 [innuendo "0.1.0"]
+                 [innuendo "0.1.1"]
                  [ring "0.3.7"]
                  [clj-config "0.1.0"]
                  [incanter/incanter-core "1.2.3"]
