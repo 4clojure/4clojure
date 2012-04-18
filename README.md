@@ -16,7 +16,7 @@ Join us in #4clojure on freenode for help or discussion.
 * Download and install [leiningen](https://github.com/technomancy/leiningen).
 * Download and install [mongodb](http://www.mongodb.org/).
 * The project uses
-[clojail](https://github.com/cognitivedissonance/clojail), which
+[clojail](https://github.com/flatland/clojail), which
 requires a security policy setup in your home directory (because
 Clojure's `eval` is unsafe if used improperly).  Set up a file called
 `.java.policy` in your home directory.  The contents should look
