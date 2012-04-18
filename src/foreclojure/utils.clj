@@ -122,9 +122,25 @@
   (walk/postwalk (to-fix float? int)
                  data))
 
+(defn user-or-openid
+  "Returns a string with the best representation of the username.
+   Prefers the registered username to the openid."
+  [user]
+  (or
+   (when (string? user) user)
+   (:user user)
+   (:openid user)))
+
 (defn get-user [username]
   (from-mongo
-   (fetch-one :users :where {:user username})))
+   (fetch-one :users :where
+    (cond
+     (string? username)
+     {:user username}
+     (and (map? username) (:user username))
+     {:user (:user username)}
+     (and (map? username) (:openid username))
+     {:openid (:openid username)}))))
 
 (defmacro if-user
   "Look for a user with the given username in the database, let-ing it
@@ -159,13 +175,23 @@
 
 (defn user-attribute [attr]
   (fn [username]
-    (attr (from-mongo
-           (fetch-one :users
-                      :where {:user username}
-                      :only [attr])))))
+    (attr
+     (from-mongo
+      (fetch-one :users
+                 :where
+                 (cond
+                  (string? username)
+                  {:user username}
+                  (and (map? username) (:user username))
+                  {:user (:user username)}
+                  (and (map? username) (:openid username))
+                  {:openid (:openid username)})
+                 :only [attr])))))
 
 (def get-solved (comp set (user-attribute :solved)))
 (def approver? (user-attribute :approver))
+(def user-id (user-attribute :_id))
+(def user-email (user-attribute :email))
 
 (defn can-submit? [username]
   (or (approver? username)

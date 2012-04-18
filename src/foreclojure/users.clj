@@ -3,7 +3,7 @@
             [clojure.string           :as string]
             [sandbar.stateful-session :as session]
             [cheshire.core            :as json])
-  (:use     [foreclojure.utils        :only [from-mongo row-class rank-class get-user if-user with-user]]
+  (:use     [foreclojure.utils        :only [from-mongo row-class rank-class get-user if-user with-user user-id user-email user-or-openid]]
             [foreclojure.template     :only [def-page content-page]]
             [foreclojure.ring-utils   :only [*http-scheme* universal-url]]
             [foreclojure.config       :only [config repo-url]]
@@ -13,22 +13,19 @@
             [hiccup.page-helpers      :only [link-to]]
             [hiccup.core              :only [html]])
   (:import org.apache.commons.codec.digest.DigestUtils
-           java.net.URLEncoder))
+           java.net.URLEncoder java.net.URLDecoder))
 
 (def golfer-tags (into [:contributor]
                        (when (:golfing-active config)
                          [:golfer])))
 
 (defn get-user-id [name]
-  (:_id
-   (fetch-one :users
-              :where {:user name}
-              :only [:_id])))
+  (user-id name))
 
 (defn get-users []
   (from-mongo
    (fetch :users
-          :only [:user :solved :contributor :email])))
+          :only [:user :solved :contributor :email :openid])))
 
 (defn get-ranked-users []
   (let [users (get-users)
@@ -39,7 +36,7 @@
     (first
      (reduce (fn [[user-list position rank] new-group]
                [(into user-list
-                      (for [user (sort-by :user new-group)]
+                      (for [user (sort-by user-or-openid new-group)]
                         (into user {:rank     rank
                                     :position position})))
                 (inc position)
@@ -49,7 +46,7 @@
 
 (defn get-top-100-and-current-user [username]
   (let [ranked-users      (get-ranked-users)
-        this-user         (first (filter (comp #{username} :user)
+        this-user         (first (filter (comp #{username} user-or-openid)
                                          ranked-users))
         this-user-ranking (update-in this-user [:rank] #(str (or % "?") " out of " (count ranked-users)))]
     {:user-ranking this-user-ranking
@@ -65,7 +62,7 @@
   (true? (:hide-solutions user)))
 
 (defn email-address [username]
-  (:email (fetch-one :users :where {:user username})))
+  (user-email username))
 
 (defn mailto [username]
   (link-to (str "mailto:" (email-address username))
@@ -100,7 +97,7 @@
     [:br]]))
 
 (defn follow-url [username follow?]
-  (str "/user/" (if follow? "follow" "unfollow") "/" username))
+  (str "/user/" (if follow? "follow" "unfollow") "/" (URLEncoder/encode username)))
 
 (defn following-checkbox [current-user-id following user-id user]
   (if (and current-user-id (not= current-user-id user-id))
@@ -122,14 +119,15 @@
         [:th {:style "width: 200px;"} "Username"]
         [:th {:style "width: 180px;"} "Problems Solved"]
         [:th "Following"]]]
-      (map-indexed (fn [rownum {:keys [_id email position rank user contributor solved]}]
-                     [:tr (row-class rownum)
-                      [:td (rank-class position) rank]
-                      [:td
-                       (gravatar-img {:email email :class "gravatar"})
-                       [:a.user-profile-link {:href (str "/user/" user)} user (when contributor [:span.contributor " *"])]]
-                      [:td.centered (count solved)]
-                      [:td (following-checkbox user-id following _id user)]])
+      (map-indexed (fn [rownum {:keys [_id email position rank user openid contributor solved]}]
+                     (let [user (or user openid)]
+                      [:tr (row-class rownum)
+                       [:td (rank-class position) rank]
+                       [:td
+                        (gravatar-img {:email email :class "gravatar"})
+                        [:a.user-profile-link {:href (str "/user/" (URLEncoder/encode user))} user (when contributor [:span.contributor " *"])]]
+                       [:td.centered (count solved)]
+                       [:td (following-checkbox user-id following _id user)]]))
                    user-set)])))
 
 (defn generate-datatable-users-list [user-set]
@@ -191,7 +189,7 @@
        (filter ids (get-solved username)))))
 
 (def-page user-profile [username]
-  (let [page-title (str "User: " username)
+  (let [page-title (str "User: " (user-or-openid username))
         {user-id :_id email :email} (get-user username)]
     {:title page-title
      :content
@@ -291,14 +289,23 @@
     :iTotalDisplayRecords (str (count filtered-users))
     :aaData page-users}))
 
+(defn get-user-possible-openid [username]
+  (let [decoded-username (URLDecoder/decode username)]
+    (cond (get-user username) ; registered users don't need decoding
+          {:user username}
+          (get-user {:openid decoded-username})
+          {:openid decoded-username}
+          :else
+          nil)))
+
 (defroutes users-routes
   (GET  "/users" [] (top-users-page))
   (GET  "/users/all" [] (all-users-page))
-  (GET  "/user/:username" [username] 
-    (if (nil? (get-user username)) 
+  (GET  ["/user/:username" :username #"[-\w.+*%]+"] [username] 
+        (if (nil? (get-user-possible-openid username)) 
       {:status 404 :headers {"Content-Type" "text/plain"} :body "Error: This user does not exist, nice try though."}
-      (user-profile username)))
-  (POST "/user/follow/:username" [username] (static-follow-user username true))
-  (POST "/user/unfollow/:username" [username] (static-follow-user username false))
-  (POST "/rest/user/follow/:username" [username] (rest-follow-user username true))
-  (POST "/rest/user/unfollow/:username" [username] (rest-follow-user username false)))
+      (user-profile (get-user-possible-openid username))))
+  (POST ["/user/follow/:username" :username #"[-\w.+*%]+"] [username] (static-follow-user (get-user-possible-openid username) true))
+  (POST ["/user/unfollow/:username" :username #"[-\w.+*%]+"] [username] (static-follow-user (get-user-possible-openid username) false))
+  (POST ["/rest/user/follow/:username" :username #"[-\w.+*%]+"] [username] (rest-follow-user (get-user-possible-openid username) true))
+  (POST ["/rest/user/unfollow/:username" :username #"[-\w.+*%]+"] [username] (rest-follow-user (get-user-possible-openid username) false)))

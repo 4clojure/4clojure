@@ -1,6 +1,7 @@
 (ns foreclojure.settings
   (:require [sandbar.stateful-session :as   session]
-            [ring.util.response       :as   response])
+            [ring.util.response       :as   response]
+            [foreclojure.login        :as   login])
   (:import  [org.jasypt.util.password StrongPasswordEncryptor])
   (:use     [hiccup.form-helpers      :only [form-to label text-field password-field check-box]]
             [foreclojure.utils        :only [from-mongo flash-error flash-msg with-user form-row assuming send-email login-url plausible-email?]]
@@ -42,8 +43,14 @@
     "Hide my solutions"]
    [:br]))
 
+(defn assoc-openid-box [openid]
+  (list
+   [:p "Associate an OpenID with your account and you can log in with that in the future.  Other settings will not change if this field is changed."]
+   (form-row
+    [text-field :openid "OpenID" openid])))
+
 (def-page settings-page []
-  (with-user [{:keys [user email] :as user-obj}]
+  (with-user [{:keys [user email openid] :as user-obj}]
     {:title "Account settings"
      :content
      (content-page
@@ -59,49 +66,56 @@
           [:h3 "Hide My Solutions"]
           [:div#settings-follow (hide-settings-box user-obj)]
           [:hr]
+          [:h3 "Associate an OpenID with your account"]
+          [:div#assoc-openid (assoc-openid-box openid)]
+          [:hr]
           [:h3 "Profile Image"]
           [:div (gravatar-img {:email email :size 64})]
           [:p "To change your profile image, visit <a href='http://gravatar.com' target='_blank'>Gravatar</a> and edit the image for '" email "'."]
           [:div#button-div
             [:button {:type "submit"} "Submit"]]))})}))
 
-(defn do-update-settings! [new-username old-pwd new-pwd repeat-pwd email disable-codebox hide-solutions]
-  (with-user [{:keys [user pwd]}]
-    (let [encryptor (StrongPasswordEncryptor.)
-          new-pwd-hash (.encryptPassword encryptor new-pwd)
-          new-lower-user (.toLowerCase new-username)]
-      (assuming [(or (= new-lower-user user) (nil? (fetch-one :users :where {:user new-lower-user})))
-                 (err-msg "settings.user-exists"),
-                 (< 3 (.length new-lower-user) 14)
-                 (err-msg "settings.uname-size"),
-                 (= new-lower-user
-                    (first (re-seq #"[A-Za-z0-9_]+" new-lower-user)))
-                 (err-msg "settings.uname-alphanum")
-                 (or (empty? new-pwd) (< 6 (.length new-pwd)))
-                 (err-msg "settings.npwd-size"),
-                 (= new-pwd repeat-pwd)
-                 (err-msg "settings.npwd-match")
-                 (or (empty? new-pwd)
-                     (.checkPassword encryptor old-pwd pwd))
-                 (err-msg "settings.pwd-incorrect")
-                 (plausible-email? email)
-                 (err-msg "settings.email-invalid")
-                 (nil? (fetch-one :users :where {:email email :user {:$ne user}}))
-                 (err-msg "settings.email-exists")]
-          (do
-            (update! :users {:user user}
-                     {:$set {:pwd (if (seq new-pwd) new-pwd-hash pwd)
-                             :user new-lower-user
-                             :email email
-                             :disable-code-box (boolean disable-codebox)
-                             :hide-solutions (boolean hide-solutions)}}
-                     :upsert false)
-            (session/session-put! :user new-lower-user)
-            (flash-msg "/problems"
-              (str "Account for " new-lower-user " updated successfully")))
-          (flash-error "/settings" why)))))
+(defn do-update-settings! [new-username old-pwd new-pwd repeat-pwd email disable-codebox hide-solutions new-openid cookie-val]
+  (with-user [{:keys [user pwd openid]}]
+    (if (not= openid new-openid)
+      (do
+        (session/session-put! :login-to "/settings")
+        (login/do-openid-login new-openid cookie-val))
+     (let [encryptor (StrongPasswordEncryptor.)
+           new-pwd-hash (.encryptPassword encryptor new-pwd)
+           new-lower-user (.toLowerCase new-username)]
+       (assuming [(or (= new-lower-user user) (nil? (fetch-one :users :where {:user new-lower-user})))
+                  (err-msg "settings.user-exists"),
+                  (< 3 (.length new-lower-user) 14)
+                  (err-msg "settings.uname-size"),
+                  (= new-lower-user
+                     (first (re-seq #"[A-Za-z0-9_]+" new-lower-user)))
+                  (err-msg "settings.uname-alphanum")
+                  (or (empty? new-pwd) (< 6 (.length new-pwd)))
+                  (err-msg "settings.npwd-size"),
+                  (= new-pwd repeat-pwd)
+                  (err-msg "settings.npwd-match")
+                  (or (empty? new-pwd)
+                      (.checkPassword encryptor old-pwd pwd))
+                  (err-msg "settings.pwd-incorrect")
+                  (plausible-email? email)
+                  (err-msg "settings.email-invalid")
+                  (nil? (fetch-one :users :where {:email email :user {:$ne user}}))
+                  (err-msg "settings.email-exists")]
+                 (do
+                   (update! :users {:user user}
+                            {:$set {:pwd (if (seq new-pwd) new-pwd-hash pwd)
+                                    :user new-lower-user
+                                    :email email
+                                    :disable-code-box (boolean disable-codebox)
+                                    :hide-solutions (boolean hide-solutions)}}
+                            :upsert false)
+                   (session/session-put! :user new-lower-user)
+                   (flash-msg "/problems"
+                              (str "Account for " new-lower-user " updated successfully")))
+                 (flash-error "/settings" why))))))
 
 (defroutes settings-routes
   (GET  "/settings" [] (settings-page))
-  (POST "/settings" {{:strs [new-username old-pwd pwd repeat-pwd email disable-codebox hide-solutions]} :form-params}
-    (do-update-settings! new-username old-pwd pwd repeat-pwd email disable-codebox hide-solutions)))
+  (POST "/settings" {{:strs [new-username old-pwd pwd repeat-pwd email disable-codebox hide-solutions openid]} :form-params {:strs [ring-session]} :cookies}
+    (do-update-settings! new-username old-pwd pwd repeat-pwd email disable-codebox hide-solutions openid (:value ring-session))))

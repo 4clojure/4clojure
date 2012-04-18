@@ -1,18 +1,22 @@
 (ns foreclojure.login
   (:require [sandbar.stateful-session :as   session]
-            [ring.util.response       :as   response])
+            [ring.util.response       :as   response]
+            [clj-openid.core :as openid]
+            [clj-openid.helpers :as helpers])
   (:import  [org.jasypt.util.password StrongPasswordEncryptor])
   (:use     [hiccup.form-helpers      :only [form-to label text-field password-field check-box]]
-            [foreclojure.utils        :only [from-mongo flash-error flash-msg form-row assuming send-email login-url]]
+            [foreclojure.utils        :only [from-mongo flash-error flash-msg form-row assuming send-email login-url get-user]]
             [foreclojure.template     :only [def-page content-page]]
             [foreclojure.messages     :only [err-msg]]
             [compojure.core           :only [defroutes GET POST]]
             [useful.map               :only [keyed]]
             [clojail.core             :only [thunk-timeout]]
             [clojure.stacktrace       :only [print-cause-trace]]
-            [somnium.congomongo       :only [update! fetch-one]]))
+            [somnium.congomongo       :only [update! fetch-one destroy!]]))
 
 (def password-reset-url "https://www.4clojure.com/settings")
+
+(def openid-callback-url "http://www.4clojure.com/openid-callback")
 
 (def login-box
   (form-to [:post "/login"]
@@ -25,11 +29,21 @@
       [:td (password-field :pwd)]]
      [:tr
       [:td]
-      [:td [:button {:type "submit"} "Log In"]]]
-     [:tr
-      [:td]
-      [:td
-       [:a {:href "/login/reset"} "Forgot your password?"]]]]))
+      [:td [:button {:type "submit"} "Log In"]]]]))
+
+(def openid-login-box
+  (form-to [:post "/openid-login"]
+           [:table
+            [:tr
+             [:td (label :openid-url "OpenID URL")]
+             [:td (text-field "openid-url")]]
+            [:tr
+             [:td]
+             [:td [:button {:type "submit"} "Log In With OpenID"]]]
+            [:tr
+             [:td]
+             [:td
+              [:a {:href "/login/reset"} "Forgot your password?"]]]]))
 
 (def-page my-login-page [location]
   (do
@@ -37,17 +51,19 @@
     {:title "4clojure - login"
      :content
      (content-page
-      {:main login-box})}))
+      {:main [:div login-box openid-login-box]})}))
 
 (defn do-login [user pwd]
   (let [user (.toLowerCase user)
         {db-pwd :pwd} (from-mongo (fetch-one :users :where {:user user}))
         location (session/session-get :login-to)]
     (if (and db-pwd (.checkPassword (StrongPasswordEncryptor.) pwd db-pwd))
-      (do (update! :users {:user user}
+      (let [{possible-openid :openid} (from-mongo (fetch-one :users :where {:user user} :only [:openid]))
+            merged-user {:user user :openid possible-openid}]
+          (update! :users {:user user}
                    {:$set {:last-login (java.util.Date.)}}
                    :upsert false) ; never create new users accidentally
-          (session/session-put! :user user)
+          (session/session-put! :user merged-user)
           (session/session-delete-key! :login-to)
           (response/redirect (or location "/problems")))
       (flash-error "/login" "Error logging in."))))
@@ -113,12 +129,53 @@
             (flash-error "/login/reset"
               (err-msg "security.err-pwd-email" name)))))
     (flash-error "/login/reset"
-      (err-msg "security.err-unknown"))))
+                 (err-msg "security.err-unknown"))))
+
+(def-page openid-failure [r]
+  {:title "OpenID Failure"
+   :content (content-page {:main [:div [:p "The OpenID you provided could not be verified.  Please go back and try again."]]})})
+
+(defn openid-success [r]
+  (let [claimed-id (-> r :params :openid.claimed_id)
+        user  {:openid claimed-id}
+        session-user (session/session-get :user) ; non-nil if already logged in
+        session-user {:user (:user (get-user session-user))}
+        location (session/session-get :login-to)
+        merged-user (merge session-user user)]
+    (when (:user merged-user)
+      (update! :users {:user (:user merged-user)}
+               {:$set {:openid claimed-id}})
+      (destroy! :users {:user nil :openid claimed-id}))
+    (update! :users {:openid claimed-id}
+             {:$set {:last-login (java.util.Date.)}})
+    (let [db-user (fetch-one :users :where {:openid claimed-id} :only [:user :openid])]
+     (session/session-put! :user db-user))
+    (session/session-delete-key! :login-to)
+    (response/redirect (or location "/problems"))))
+
+;; Putting the session info that openid needs in the sandbar session
+;; doesn't work.  Thus, I'll make a little hack around that.
+(def openid-sessions (atom {})) 
+
+(defn do-openid-login [openid-url session-value]
+  (let [redir (openid/redirect openid-url {} openid-callback-url)
+        sess session-value]
+    (swap! openid-sessions #(assoc % sess (:session redir)))
+    (dissoc redir :session)))
+
+(defn do-openid-callback [r]
+  (if (openid/validate (assoc r :session (merge (get r :session) (get @openid-sessions (-> r :cookies (get "ring-session") :value)))))
+    (openid-success r)
+    (openid-failure r)))
 
 (defroutes login-routes
   (GET  "/login" [location] (my-login-page location))
   (POST "/login" {{:strs [user pwd]} :form-params}
-    (do-login user pwd))
+        (do-login user pwd))
+  (POST "/openid-login" {{:strs [openid-url]} :form-params {:strs [ring-session]} :cookies}
+        (do-openid-login openid-url (:value ring-session)))
+  (GET "/openid-callback" [:as r]
+       (do-openid-callback r))
 
   (GET  "/login/reset" [] (reset-password-page))
   (POST "/login/reset" [email]
