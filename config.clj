@@ -1,6 +1,6 @@
 {:wrap-reload false
  :db-host "localhost"
- :db-name "mydb"
+ :db-name "4clojure"
  :db-user nil
  :db-pwd nil
  :jetty-port 8080

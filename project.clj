@@ -1,4 +1,4 @@
-(defproject foreclojure "1.8.0.1"
+(defproject foreclojure "1.8.1"
   :description "4clojure - a website for learning Clojure"
   :dependencies [[clojure "1.2.1"]
                  [clojure-contrib "1.2.0"]
@@ -12,7 +12,7 @@
                  [useful "0.7.0-beta5"]
                  [amalloy/ring-gzip-middleware "[0.1.0,)"]
                  [amalloy/mongo-session "0.0.1"]
-                 [clj-github "1.0.1"]
+                 [innuendo "0.1.1"]
                  [ring "0.3.7"]
                  [clj-config "0.1.0"]
                  [incanter/incanter-core "1.2.3"]
@@ -20,7 +20,7 @@
                  [commons-lang "2.6"]
                  [org.apache.commons/commons-email "1.2"]]
   :dev-dependencies [[lein-ring "0.4.5"]
-                     [midje "1.1.1"]]
+                     [midje "1.3.0"]]
   :checksum-deps true
   :main foreclojure.core
   :ring {:handler foreclojure.core/app

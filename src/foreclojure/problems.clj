@@ -8,7 +8,7 @@
   (:use     [foreclojure.utils        :only    [from-mongo get-user get-solved login-link flash-msg flash-error row-class approver? can-submit? send-email image-builder if-user with-user as-int maybe-update escape-html]]
             [foreclojure.ring-utils   :only    [*url*]]
             [foreclojure.template     :only    [def-page content-page]]
-            [foreclojure.social       :only    [tweet-link gist!]]
+            [foreclojure.social       :only    [tweet-link]]
             [foreclojure.feeds        :only    [create-feed]]
             [foreclojure.users        :only    [golfer? get-user-id disable-codebox?]]
             [foreclojure.solutions    :only    [save-solution get-solution]]
@@ -139,7 +139,7 @@
 (defn mark-completed [problem code & [user]]
   (let [user (or user (session/session-get :user))
         {:keys [_id approved]} problem
-        gist-link (html [:span.share
+        paste-link (html [:span.share
                          [:a.novisited {:href "/share/code"} "share"]
                          " this solution on github and twitter!  "])
         message
@@ -150,10 +150,10 @@
                 (str "Congratulations, you've solved the problem!  See the "
                      "<a href='/problem/solutions/" _id "'>solutions</a>"
                      " that the users you follow have submitted, or "
-                     gist-link
+                     paste-link
                      (next-problem-link _id)))
          :else (str "You've solved the problem; "
-                    gist-link
+                    paste-link
                     "You need to " (login-link "log in" (str "/problem/" _id)) " in order to save your solutions and track progress."))]
     (session/session-put! :code [_id code])
     {:message message, :error "",  :url (str "/problem/" _id)}))
