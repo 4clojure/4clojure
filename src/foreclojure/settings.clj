@@ -1,8 +1,8 @@
 (ns foreclojure.settings
-  (:require [sandbar.stateful-session :as   session]
+  (:require [noir.session             :as   session]
             [ring.util.response       :as   response])
   (:import  [org.jasypt.util.password StrongPasswordEncryptor])
-  (:use     [hiccup.form-helpers      :only [form-to label text-field password-field check-box]]
+  (:use     [hiccup.form              :only [form-to label text-field password-field check-box]]
             [foreclojure.utils        :only [from-mongo flash-error flash-msg with-user form-row assuming send-email login-url plausible-email?]]
             [foreclojure.template     :only [def-page content-page]]
             [foreclojure.users        :only [disable-codebox? hide-solutions? gravatar-img]]
@@ -96,7 +96,7 @@
                              :disable-code-box (boolean disable-codebox)
                              :hide-solutions (boolean hide-solutions)}}
                      :upsert false)
-            (session/session-put! :user new-lower-user)
+            (session/put! :user new-lower-user)
             (flash-msg "/problems"
               (str "Account for " new-lower-user " updated successfully")))
           (flash-error "/settings" why)))))
