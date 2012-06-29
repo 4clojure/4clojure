@@ -11,7 +11,7 @@
                  [useful "0.8.3-alpha3"]
                  [amalloy/ring-gzip-middleware "0.1.2"]
                  [amalloy/mongo-session "0.0.2"]
-                 [innuendo "0.1.1"]
+                 [innuendo "0.1.4"]
                  [ring "1.1.1"]
                  [clj-config "0.1.0"]
                  [incanter/incanter-core "1.3.0"]
