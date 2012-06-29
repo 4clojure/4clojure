@@ -1,8 +1,8 @@
 (ns foreclojure.login
-  (:require [sandbar.stateful-session :as   session]
+  (:require [noir.session             :as   session]
             [ring.util.response       :as   response])
   (:import  [org.jasypt.util.password StrongPasswordEncryptor])
-  (:use     [hiccup.form-helpers      :only [form-to label text-field password-field check-box]]
+  (:use     [hiccup.form              :only [form-to label text-field password-field check-box]]
             [foreclojure.utils        :only [from-mongo flash-error flash-msg form-row assuming send-email login-url]]
             [foreclojure.template     :only [def-page content-page]]
             [foreclojure.messages     :only [err-msg]]
@@ -33,7 +33,7 @@
 
 (def-page my-login-page [location]
   (do
-    (if location (session/session-put! :login-to location))
+    (if location (session/put! :login-to location))
     {:title "4clojure - login"
      :content
      (content-page
@@ -42,13 +42,13 @@
 (defn do-login [user pwd]
   (let [user (.toLowerCase user)
         {db-pwd :pwd} (from-mongo (fetch-one :users :where {:user user}))
-        location (session/session-get :login-to)]
+        location (session/get :login-to)]
     (if (and db-pwd (.checkPassword (StrongPasswordEncryptor.) pwd db-pwd))
       (do (update! :users {:user user}
                    {:$set {:last-login (java.util.Date.)}}
                    :upsert false) ; never create new users accidentally
-          (session/session-put! :user user)
-          (session/session-delete-key! :login-to)
+          (session/put! :user user)
+          (session/remove! :login-to)
           (response/redirect (or location "/problems")))
       (flash-error "/login" "Error logging in."))))
 
@@ -106,7 +106,7 @@
                                             :only [:_id :user])]
     (let [{:keys [success] :as diagnostics} (try-to-email email name id)]
       (if success
-        (do (session/session-put! :login-to password-reset-url)
+        (do (session/put! :login-to password-reset-url)
             (flash-msg (login-url password-reset-url)
               "Your password has been reset! You should receive an email soon."))
         (do (spit (str name ".pwd") diagnostics)
@@ -125,5 +125,5 @@
     (do-reset-password! email))
 
   (GET "/logout" []
-    (do (session/session-delete-key! :user)
+    (do (session/remove! :user)
         (response/redirect "/"))))

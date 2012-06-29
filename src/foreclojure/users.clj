@@ -1,7 +1,7 @@
 (ns foreclojure.users
   (:require [ring.util.response       :as response]
             [clojure.string           :as string]
-            [sandbar.stateful-session :as session]
+            [noir.session             :as session]
             [cheshire.core            :as json])
   (:use     [foreclojure.utils        :only [from-mongo row-class rank-class get-user if-user with-user]]
             [foreclojure.template     :only [def-page content-page]]
@@ -9,8 +9,8 @@
             [foreclojure.config       :only [config repo-url]]
             [somnium.congomongo       :only [fetch-one fetch update!]]
             [compojure.core           :only [defroutes GET POST]]
-            [hiccup.form-helpers      :only [form-to hidden-field]]
-            [hiccup.page-helpers      :only [link-to]]
+            [hiccup.form              :only [form-to hidden-field]]
+            [hiccup.element           :only [link-to]]
             [hiccup.core              :only [html]])
   (:import org.apache.commons.codec.digest.DigestUtils
            java.net.URLEncoder))
@@ -155,7 +155,7 @@
      :main (generate-user-list [] "server-user-table")})})
 
 (def-page top-users-page []
-  (let [username (session/session-get :user)
+  (let [username (session/get :user)
         {:keys [user-ranking top-100]} (get-top-100-and-current-user username)]
     {:title "Top 100 Users"
      :content

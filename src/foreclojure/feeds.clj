@@ -1,42 +1,29 @@
 (ns foreclojure.feeds
-  (:use [clojure.contrib.prxml :only [prxml]]))
-
-(defn escape [x]
-  (str "<![CDATA[" x "]>"))
+  (:require [clojure.data.xml :refer [emit-str element]]))
 
 (defn create-feed
-  "Creates a feed with title, link, description, a link to the location of the feed itself, and is populated with a collection of items in the following format:
+  "Creates a feed with title, link, description, a link to the location
+   of the feed itself, and is populated with a collection of items in the
+   following format:
 
-  [:item [:guid \"http://example.com/location/of/item/1\"]
-         [:title \"Title of Item\"]
-         [:description \"Description of Item\"]]"
+   (element :item
+     (element :guid \"http://example.com/location/of/item/1\")
+     (element :title \"Title of Item\")
+     (element :description \"Description of Item\"))"
   [feed-title feed-link feed-description resource-link items]
-  (with-out-str
-    (prxml [:decl! {:version "1.0"}]
-           [:rss {:version "2.0"
+  (emit-str
+   (element :rss {:version "2.0"
                   :xmlns:atom "http://www.w3.org/2005/Atom"}
-            [:channel
-             [:atom:link
-              {:href resource-link
-               :rel "self"
-               :type "application/rss+xml"}]
-             [:title feed-title]
-             [:link feed-link]
-             [:description (escape feed-description)]
-             items]])))
+     (apply element :channel {}
+       (element :atom:link {:href resource-link
+                            :rel "self"
+                            :type "application/rss+xml"})
+       (element :title {} feed-title)
+       (element :link {} feed-link)
+       (element :descrption {} feed-description)
+       items))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; Example Feed
-(comment
-  (defn problem-feed [n]
-    (reduce (fn [feed v]
-              (conj feed [:item
-                          [:guid (str "http://4clojure.com/problem/" (:_id v))]
-                          [:title (:title v)]
-                          [:description (:description v)]]))
-            () (get-recent-problems n))))
-
 
 ;; Testing Validity
 ;; Paste the resulting test.xml file into the w3c validator

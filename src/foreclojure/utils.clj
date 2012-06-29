@@ -1,18 +1,19 @@
 (ns foreclojure.utils
-  (:require [sandbar.stateful-session :as   session]
+  (:require [noir.session             :as   session]
             [ring.util.response       :as   response]
             [foreclojure.config       :as   config]
             [foreclojure.messages     :as   msg]
             [clojure.walk             :as   walk]
             [clojure.string           :as   string]
             [foreclojure.git          :as   git]
-            [hiccup.page-helpers      :as   hiccup])
+            [hiccup.page              :as   hiccup])
   (:import  [java.net                 URLEncoder]
             (org.apache.commons.lang  StringEscapeUtils)
             (org.apache.commons.mail  HtmlEmail))
   (:use     [hiccup.core              :only [html]]
-            [hiccup.page-helpers      :only [doctype javascript-tag link-to]]
-            [hiccup.form-helpers      :only [label]]
+            [hiccup.page              :only [doctype]]
+            [hiccup.element           :only [link-to]]
+            [hiccup.form              :only [label]]
             [useful.fn                :only [to-fix]]
             [somnium.congomongo       :only [fetch-one]]
             [foreclojure.ring-utils   :only [*url* static-url]]
@@ -137,7 +138,7 @@
   ([[user-binding username] then]
      `(if-user ~[user-binding username] ~then nil))
   ([[user-binding username] then else]
-     (let [userexpr (or username `(session/session-get :user))]
+     (let [userexpr (or username `(session/get :user))]
        `(let [username# ~userexpr]
           (if-let [~user-binding (and username#
                                       (get-user username#))]

@@ -4,7 +4,7 @@
         [foreclojure.config        :only [repo-url]]
         [foreclojure.ring-utils    :only [static-url]]
         [foreclojure.template      :only [def-page]]
-        [hiccup.form-helpers       :only [hidden-field]]))
+        [hiccup.form               :only [hidden-field]]))
 
 (def df
   (let [df (java.text.DecimalFormat.)

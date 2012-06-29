@@ -3,7 +3,7 @@
   (:require [foreclojure.git        :as   git]
             [foreclojure.config     :as   config]
             [clojure.string         :as   string]
-            [hiccup.page-helpers    :as   hiccup]))
+            [hiccup.page            :as   hiccup]))
 
 (let [version-suffix (str "__" git/tag)]
   (defn add-version-number [file]
