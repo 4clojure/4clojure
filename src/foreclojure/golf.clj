@@ -1,8 +1,8 @@
 (ns foreclojure.golf
   (:require [ring.util.response       :as   response]
-            [sandbar.stateful-session :as   session])
-  (:use     [hiccup.form-helpers      :only [form-to check-box]]
-            [hiccup.page-helpers      :only [link-to]]
+            [noir.session             :as   session])
+  (:use     [hiccup.form              :only [form-to check-box]]
+            [hiccup.element           :only [link-to]]
             [foreclojure.utils        :only [with-user]]
             [foreclojure.template     :only [def-page content-page]]
             [foreclojure.users        :only [golfer?]]
@@ -54,7 +54,7 @@
 
   (GET "/league" []
     (comment ;; be smarter somehow in future. not sure what the right UI is, atm
-     (if-let [username (session/session-get :user)]
+     (if-let [username (session/get :user)]
        (let [user-obj (get-user username)]
          (if-not (golfer? user-obj)
            (response/redirect "/leag")))))

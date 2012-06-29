@@ -1,11 +1,11 @@
 (ns foreclojure.social
-  (:require [innuendo.core            :as rheap]
-            [sandbar.stateful-session :as   session])
+  (:require [innuendo.core            :as   rheap]
+            [noir.session             :as   session])
   (:import  [java.net                 URLEncoder])
   (:use     [foreclojure.template     :only [def-page]]
             [foreclojure.utils        :only [escape-html]]
             [compojure.core           :only [defroutes GET]]
-            [hiccup.page-helpers      :only [link-to]]
+            [hiccup.element           :only [link-to]]
             [somnium.congomongo       :only [fetch-one]]))
 
 (defn throttled
@@ -71,8 +71,8 @@
 (def-page share-page []
   {:title "Share your code!"
    :content
-   (if-let [[id code] (session/session-get :code)]
-     (let [user (session/session-get :user)
+   (if-let [[id code] (session/get :code)]
+     (let [user (session/get :user)
            paste-url (paste! user id code)
            paste-link (if paste-url
                         [:div {:id "shared-code-box"}

@@ -1,10 +1,8 @@
 (ns foreclojure.config
-  (:use [clojure.java.io :only [file]]
-        [clj-config.core :only [safely read-config]]))
+  (:require [clojure.java.io :refer [file]]
+            [useful.config :refer [load-config]]))
 
-(def config-file (file (System/getProperty "user.dir") "config.clj"))
-
-(def config (safely read-config config-file))
+(def config (load-config "config.clj"))
 
 ;; Defs both for convenience and compile-time verification of simple settings
 (def repo-url (or (:repo-url config)

@@ -1,9 +1,10 @@
 (ns foreclojure.problems
   (:require [foreclojure.users        :as      users]
-            [sandbar.stateful-session :as      session]
+            [noir.session             :as      session]
             [clojure.string           :as      s]
             [ring.util.response       :as      response]
-            [cheshire.core            :as      json])
+            [cheshire.core            :as      json]
+            [clojure.data.xml         :refer   [element]])
   (:import  [org.apache.commons.mail  EmailException])
   (:use     [foreclojure.utils        :only    [from-mongo get-user get-solved login-link flash-msg flash-error row-class approver? can-submit? send-email image-builder if-user with-user as-int maybe-update escape-html]]
             [foreclojure.ring-utils   :only    [*url*]]
@@ -13,10 +14,10 @@
             [foreclojure.users        :only    [golfer? get-user-id disable-codebox?]]
             [foreclojure.solutions    :only    [save-solution get-solution]]
             [clojail.core             :exclude [safe-read]]
-            [clojail.testers          :only    [secure-tester]]
+            [clojail.testers          :only    [secure-tester blanket]]
             [somnium.congomongo       :only    [update! fetch-one fetch fetch-and-modify destroy!]]
-            [hiccup.form-helpers      :only    [form-to text-area hidden-field label text-field drop-down]]
-            [hiccup.page-helpers      :only    [link-to]]
+            [hiccup.form              :only    [form-to text-area hidden-field label text-field drop-down]]
+            [hiccup.element           :only    [link-to]]
             [hiccup.core              :only    [html]]
             [useful.debug             :only    [?]]
             [compojure.core           :only    [defroutes GET POST]]))
@@ -60,7 +61,7 @@
            ", or go back and try " (problem-link skipped) " again!"))))
 
 (defn next-problem-link [completed-problem-id]
-  (when-let [{:keys [solved]} (get-user (session/session-get :user))]
+  (when-let [{:keys [solved]} (get-user (session/get :user))]
     (apply suggest-problems
            (next-unsolved-problem solved completed-problem-id))))
 
@@ -69,10 +70,11 @@
 
 (defn problem-feed [n]
   (reduce (fn [feed v]
-            (conj feed [:item
-                        [:guid (str "http://4clojure.com/problem/" (:_id v))]
-                        [:title (:title v)]
-                        [:description (:description v)]]))
+            (conj feed
+                  (element :item {}
+                    (element :guid {} (str "http://4clojure.com/problem/" (:_id v)))
+                    (element :title {} (:title v))
+                    (element :description {} (:description v)))))
           ()
           (get-recent-problems n)))
 
@@ -101,10 +103,10 @@
               (fetch-one :users
                          :where {:_id user-id}))]
     (when (golfer? user)
-      (session/session-put! :golf-chart
-                            {:id problem-id
-                             :score score
-                             :best old-score}))
+      (session/put! :golf-chart
+                    {:id problem-id
+                     :score score
+                     :best old-score}))
     (when (or (not old-score)
               (> old-score score))
       (update! :users
@@ -137,7 +139,7 @@
     (save-solution user-id problem-id code)))
 
 (defn mark-completed [problem code & [user]]
-  (let [user (or user (session/session-get :user))
+  (let [user (or user (session/get :user))
         {:keys [_id approved]} problem
         paste-link (html [:span.share
                          [:a.novisited {:href "/share/code"} "share"]
@@ -155,13 +157,19 @@
          :else (str "You've solved the problem; "
                     paste-link
                     "You need to " (login-link "log in" (str "/problem/" _id)) " in order to save your solutions and track progress."))]
-    (session/session-put! :code [_id code])
+    (session/put! :code [_id code])
     {:message message, :error "",  :url (str "/problem/" _id)}))
 
 (def restricted-list '[use require in-ns future agent send send-off pmap pcalls])
 
+(def base-tester (blanket secure-tester
+                          "foreclojure"
+                          "somnium"
+                          "ring"
+                          "compojure"))
+
 (defn get-tester [restricted]
-  (into secure-tester (concat restricted-list (map symbol restricted))))
+  (into base-tester (concat restricted-list (map symbol restricted))))
 
 (def sb (sandbox*))
 
@@ -233,16 +241,16 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
 
 (defn render-golf-chart []
   (let [{:keys [id best score] :as settings}
-        (session/session-get :golf-chart)
+        (session/get :golf-chart)
 
         url (str "/leagues/golf/" id "?best=" best "&curr=" score)]
-    (session/session-delete-key! :golf-chart)
+    (session/remove! :golf-chart)
     (when settings
       [:img {:src url}])))
 
 (defn render-golf-score []
   (let [{:keys [id best score] :as settings}
-        (session/session-get :golf-chart)]
+        (session/get :golf-chart)]
     (when settings
       [:div#golf-scores
        [:p#golfheader (str "Code Golf Score: " score)]
@@ -313,7 +321,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
                     :spellcheck "false"}
                    :code (escape-html
                           (or (session/flash-get :code)
-                              (-> (session/session-get :user)
+                              (-> (session/get :user)
                                   (get-user-id)
                                   (get-solution ,,, _id)))))
         [:div#golfgraph
@@ -328,7 +336,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
 
 (defn problem-page [id]
   (let [error #(flash-error "/problems" %)
-        user (delay (session/session-get :user))]
+        user (delay (session/get :user))]
     (if-let [{:keys [approved]} (get-problem id)]
       (cond (or approved (approver? (force user))) (code-box id)
             (force user) (error "You cannot access this page")
@@ -366,14 +374,14 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
 
 (defn show-solutions [id]
   (let [problem-id (Integer. id)
-        user (session/session-get :user)]
+        user (session/get :user)]
     (if-user [{:keys [solved]}]
       (if (some #{problem-id} solved)
         (show-solutions-page problem-id)
         (flash-error (str "/problem/" problem-id)
           "You must solve this problem before you can see others' solutions!"))
       (do
-        (session/session-put! :login-to *url*)
+        (session/put! :login-to *url*)
         (flash-error "/login" "You must log in to see solutions!")))))
 
 (let [checkbox-img (image-builder {true ["images/checkmark.png" "completed"]
@@ -394,7 +402,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
          [:th "Submitted By"]
          [:th "Times Solved"]
          [:th "Solved?"]]]
-       (let [solved (get-solved (session/session-get :user))
+       (let [solved (get-solved (session/get :user))
              problems (get-problem-list)]
          (map-indexed
           (fn [x {:keys [title difficulty tags user], id :_id}]
@@ -441,7 +449,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
     {:main (generate-unapproved-problems-list)})})
 
 (defn access-unapproved-problem-list-page []
-  (let [user (session/session-get :user)]
+  (let [user (session/get :user)]
     (if (approver? user)
       (unapproved-problem-list-page)
       (flash-error "/problems" "You cannot access this page"))))
@@ -475,7 +483,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
 (defn create-problem
   "create a user submitted problem"
   [title difficulty tags restricted description code id author]
-  (let [user (session/session-get :user)]
+  (let [user (session/get :user)]
     (if (or (approver? user)
             (and (can-submit? user)
                  (not id)))
@@ -520,7 +528,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
       (flash-error "/problems" "You are not authorized to submit a problem."))))
 
 (defn edit-problem [id]
-  (if (approver? (session/session-get :user))
+  (if (approver? (session/get :user))
     (let [{:keys [title user difficulty tags restricted description tests]} (get-problem id)]
       (doseq [[k v] {:prob-id id
                      :author user
@@ -536,7 +544,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
 
 (defn approve-problem [id]
   "take a user submitted problem and approve it"
-  (if (approver? (session/session-get :user))
+  (if (approver? (session/get :user))
     (let [{:keys [title user]} (from-mongo
                                 (fetch-one :problems
                                            :where {:_id id}
@@ -559,7 +567,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
 
 (defn reject-problem [id reason]
   "reject a user submitted problem by deleting it from the database"
-  (if (approver? (session/session-get :user))
+  (if (approver? (session/get :user))
     (let [{:keys [user title description tags tests]} (get-problem id)
           email (:email (get-user user))]
       (destroy! :problems
