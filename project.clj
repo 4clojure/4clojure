@@ -1,4 +1,4 @@
-(defproject foreclojure "1.8.1"
+(defproject foreclojure "2.0.0-alpha1"
   :description "4clojure - a website for learning Clojure"
   :dependencies [[org.clojure/clojure "1.4.0"]
                  [compojure "1.1.0"]
@@ -20,7 +20,7 @@
                  [org.clojure/data.xml "0.0.5"]]
   :plugins [[lein-ring "0.7.1"]]
   :profiles {:dev {:dependencies [[midje "1.3.0" :exclusions [org.clojure/clojure]]]}}
-  :checksum-deps true   
+  :checksum-deps true
   :main foreclojure.core
   :ring {:handler foreclojure.core/app
          :init foreclojure.mongo/prepare-mongo})
