@@ -2,7 +2,7 @@
   (:require [compojure.route            :as   route]
             [compojure.handler          :as   handler]
             [foreclojure.config         :as   config]
-            [sandbar.stateful-session   :as   session])
+            [noir.session               :as   session])
   (:import  [java.lang                  OutOfMemoryError])
   (:use     [compojure.core             :only [defroutes routes GET]]
             [foreclojure.static         :only [static-routes welcome-page]]
@@ -29,7 +29,7 @@
             [ring.middleware.gzip       :only [wrap-gzip]]
             [mongo-session.core         :only [mongo-session]]))
 
-(def *block-server* false)
+(def ^:dynamic *block-server* false)
 
 (defroutes resource-routes
   (-> (resources "/*")
@@ -54,7 +54,8 @@
       ((if (:wrap-reload config)
          #(wrap-reload % '(foreclojure.core))
          identity))
-      (session/wrap-stateful-session {:store (mongo-session :sessions)})
+      session/wrap-noir-flash
+      (session/wrap-noir-session {:store (mongo-session :sessions)})
       wrap-request-bindings
       handler/site
       wrap-strip-trailing-slash))
