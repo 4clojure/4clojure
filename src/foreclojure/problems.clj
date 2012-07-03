@@ -14,7 +14,7 @@
             [foreclojure.users        :only    [golfer? get-user-id disable-codebox?]]
             [foreclojure.solutions    :only    [save-solution get-solution]]
             [clojail.core             :exclude [safe-read]]
-            [clojail.testers          :only    [secure-tester blanket]]
+            [clojail.testers          :only    [secure-tester blanket blacklist-symbols]]
             [somnium.congomongo       :only    [update! fetch-one fetch fetch-and-modify destroy!]]
             [hiccup.form              :only    [form-to text-area hidden-field label text-field drop-down]]
             [hiccup.element           :only    [link-to]]
@@ -169,7 +169,7 @@
                           "compojure"))
 
 (defn get-tester [restricted]
-  (into base-tester (concat restricted-list (map symbol restricted))))
+  (apply blacklist-symbols base-tester (concat restricted-list (map symbol restricted))))
 
 (def sb (sandbox*))
 
