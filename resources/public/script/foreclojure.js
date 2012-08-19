@@ -172,7 +172,7 @@ function configureDataTables(){
         "bProcessing": true,
         "bServerSide": true,
         "sAjaxSource": "/datatable/users"
-    } );
+    } ).fnSetFilteringDelay(300);
 }
 
 function setIconColor(element, color, timeOut, stopAnimation) {
