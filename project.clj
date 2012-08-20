@@ -1,9 +1,9 @@
-(defproject foreclojure "2.0.0-alpha1"
+(defproject foreclojure "2.0.0-alpha2"
   :description "4clojure - a website for learning Clojure"
   :dependencies [[org.clojure/clojure "1.4.0"]
                  [compojure "1.1.0"]
                  [hiccup "1.0.0"]
-                 [clojail "0.6.2"]
+                 [clojail "0.5.1"]
                  [lib-noir "0.1.1"]
                  [congomongo "0.1.9"]
                  [org.jasypt/jasypt "1.7"]
