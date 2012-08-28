@@ -614,19 +614,26 @@ a.graph-class :hover {color: #445599;}
 
 .solution-username {
     font-weight: bold;
+    margin-bottom: 10px;
 }
 
 .solution-user-code {
     background-color: #DDD;
-    padding: 15px;
     margin-bottom: 25px;
 }
 
-.solution-code {
-    padding-left: 10px;
+.solution-code .ace_editor {
+    position: relative;
 }
 
-hr.solution {
-    margin-top: 20px;
-    margin-bottom: 20px;
+.solution-code .ace_gutter {
+    position: relative;
+}
+
+.follower-solution {
+    margin-bottom: 40px;
+}
+
+.ace-tm .ace_line .ace_indent-guide {
+    background: none;
 }

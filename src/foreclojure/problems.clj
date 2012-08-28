@@ -352,18 +352,17 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
        (if (empty? following)
          [:p "You can only see solutions of users whom you follow.  Click on any name from the " (link-to "/users" "users") " listing page to see their profile, and click follow from there."]
          (if (some (complement nil?) (map #(get-solution :public % problem-id) following))
-           (interpose [:hr.solution]
-                      (for [f-user-id following
-                            :let [f-user (:user (from-mongo
-                                                 (fetch-one :users
-                                                            :where {:_id f-user-id}
-                                                            :only [:user])))
-                                  f-code (get-solution :public
-                                                       f-user-id problem-id)]
-                            :when f-code]
-                        [:div.follower-solution
-                         [:div.solution-username (str f-user "'s solution:")]
-                         [:pre.solution-code (escape-html f-code)]]))
+           (for [f-user-id following
+                 :let [f-user (:user (from-mongo
+                                      (fetch-one :users
+                                                 :where {:_id f-user-id}
+                                                 :only [:user])))
+                       f-code (get-solution :public
+                                            f-user-id problem-id)]
+                 :when f-code]
+             [:div.follower-solution
+              [:div.solution-username (str f-user "'s solution:")]
+              [:pre.solution-code (escape-html f-code)]])
            [:p "None of the users you follow have solved this problem yet!"])))))})
 
 (defn show-solutions [id]
