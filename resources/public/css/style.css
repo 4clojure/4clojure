@@ -616,13 +616,17 @@ a.graph-class :hover {color: #445599;}
     font-weight: bold;
 }
 
-.solution-user-code {
-    background-color: #DDD;
+.syntaxhighlighter.solution-code.solution-user-code {
+    background-color: #DDD !important;
     padding: 15px;
     margin-bottom: 25px;
 }
 
-.solution-code {
+.syntaxhighlighter.solution-code.solution-user-code div {
+    background-color: #DDD !important;
+}
+
+.syntaxhighlighter.solution-code {
     padding-left: 10px;
 }
 
