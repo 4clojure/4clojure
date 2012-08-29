@@ -5,7 +5,6 @@ $(document).ready(function() {
   configureDataTables();
   CodeBox.initialize();
   configureGolf();
-  highlightSolutions();
 
   if($("#totalcount").length > 0)
     configureCounter();
@@ -240,22 +239,4 @@ function updateProblemCount() {
     });
     setTimeout("updateProblemCount()", updateProblemCountDelay);
   }
-}
-
-function highlightSolutions() {
-  var highlighter = require("ace/ext/static_highlight");
-  var ClojureMode = require("ace/mode/clojure").Mode;
-  var theme = require("ace/theme/textmate");
-
-  $(".solution-code").each(function() {
-    var codeEl = $(this);
-    var data = codeEl.text();
-    var highlighted = $(highlighter.render(data, new ClojureMode(), theme).html)
-      .addClass('solution-code')
-      .css('font-size', '13px');
-    if (codeEl.hasClass('solution-user-code')) {
-      highlighted.addClass('solution-user-code');
-    }
-    codeEl.replaceWith(highlighted);
-  });
 }

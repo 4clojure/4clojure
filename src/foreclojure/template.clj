@@ -25,7 +25,7 @@
        (js "vendor/script/jquery-1.5.2.min.js" "vendor/script/jquery.dataTables.min.js" "vendor/script/jquery.flipCounter.1.1.pack.js" "vendor/script/jquery.easing.1.3.js" "vendor/script/jquery.dataTables.fnSetFilteringDelay.js")
        (js "script/codebox.js" "script/foreclojure.js")
        (js "vendor/script/xregexp.js" "vendor/script/shCore.js" "vendor/script/shBrushClojure.js")
-       (js "vendor/script/ace/ace.js" "vendor/script/ace/mode-clojure.js" "vendor/script/ace/static-highlight.js")
+       (js "vendor/script/ace/ace.js" "vendor/script/ace/mode-clojure.js")
        (js "vendor/script/detectmobilebrowser.js")
        [:script {:type "text/javascript"} "SyntaxHighlighter.all()"]]
       [:body
