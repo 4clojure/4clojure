@@ -348,7 +348,8 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
     (with-user [{:keys [_id following]}]
       (list
        (let [user-code (get-solution :public _id problem-id)]
-         [:pre.solution-code.solution-user-code (escape-html user-code)])
+         [:pre {:class "brush: clojure;gutter: false;toolbar: false;light: true; class-name: 'solution-code solution-user-code'"}
+          (escape-html user-code)])
        (if (empty? following)
          [:p "You can only see solutions of users whom you follow.  Click on any name from the " (link-to "/users" "users") " listing page to see their profile, and click follow from there."]
          (if (some (complement nil?) (map #(get-solution :public % problem-id) following))
@@ -363,7 +364,8 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
                             :when f-code]
                         [:div.follower-solution
                          [:div.solution-username (str f-user "'s solution:")]
-                         [:pre.solution-code (escape-html f-code)]]))
+                         [:pre {:class "brush: clojure;gutter: false;toolbar: false;light: true; class-name: 'solution-code'"}
+                          (escape-html f-code)]]))
            [:p "None of the users you follow have solved this problem yet!"])))))})
 
 (defn show-solutions [id]
