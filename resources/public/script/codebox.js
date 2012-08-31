@@ -4,8 +4,7 @@ var CodeBox = {
   element:            null,
   submitButtons:      null,
   editor:             null,
-  editorSession:      null,
-  editorElement:      null,
+  allEditors:         [],
   high:               false,
   animationTime:      800,
   waitTimePerItem:    500,
@@ -27,14 +26,16 @@ var CodeBox = {
   },
 
   setupEditor: function() {
-
-    this.editorElement = $("#editor");
-
     this.editor = CodeMirror.fromTextArea(this.element[0],
                                          {mode: 'clojure',
-                                          lineNumbers: true});
+                                          lineNumbers: true,
+                                          theme: this.getTheme()});
+    this.registerEditor(this.editor);
     $(this.editor.getWrapperElement()).addClass('codebox');
-
+    $('#theme-selector').live('change', function() {
+      CodeBox.changeTheme($(this).val());
+    });
+    $('#theme-selector').val(this.getTheme());
   },
 
   getCode: function() {
@@ -134,4 +135,22 @@ var CodeBox = {
   stopAnimation: function() {
     this.images.stop(true).removeClass("animated").css({ opacity: 1.0, });
   },
+
+  registerEditor: function(editor) {
+    this.allEditors.push(editor);
+  },
+
+  getTheme: function() {
+    var theme = window.localStorage && localStorage.getItem('theme');
+    return theme && theme.length > 0 ? theme : 'eclipse';
+  },
+
+  changeTheme: function(theme) {
+    $(this.allEditors).each(function(_, editor) {
+      editor.setOption('theme', theme);
+    });
+    if (window.localStorage) {
+      localStorage.setItem('theme', theme);
+    }
+  }
 }

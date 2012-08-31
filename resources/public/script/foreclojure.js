@@ -248,10 +248,12 @@ function highlightPreElements() {
     var hasLineNumbers = el.hasClass('test') ? false : true;
     var editor = CodeMirror(function(editor) {
       el.replaceWith(editor);
-    }, { value: el.text(),
-         mode: 'clojure',
-         readOnly: true,
-         lineNumbers: hasLineNumbers });
+    }, {value: el.text(),
+        mode: 'clojure',
+        readOnly: true,
+        lineNumbers: hasLineNumbers,
+        theme: CodeBox.getTheme()});
+    CodeBox.registerEditor(editor);
     var editorDiv = $(editor.getWrapperElement());
     editorDiv.attr('class', editorDiv.attr('class') + ' ' + el.attr('class'));
   });

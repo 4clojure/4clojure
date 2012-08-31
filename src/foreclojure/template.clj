@@ -8,7 +8,7 @@
             [foreclojure.ring-utils    :only [static-url]]
             [foreclojure.version-utils :only [css js]]))
 
-(def codemirror-themes ["default" "ambiance" "blackboard" "cobalt" "eclipse" "elegant" "erlang-dark"
+(def codemirror-themes ["ambiance" "blackboard" "cobalt" "eclipse" "elegant" "erlang-dark"
                         "lesser-dark" "monokai" "neat" "night" "rubyblue" "vibrant-ink" "xq-dark"])
 
 ;; Global wrapping template
@@ -25,9 +25,7 @@
        [:style {:type "text/css"}
         ".syntaxhighlighter { overflow-y: hidden !important; }"]
        (css "css/style.css" "css/demo_table.css" "css/shCore.css" "css/shThemeDefault.css" "css/codemirror.css")
-       (->> (rest codemirror-themes)
-            (map #(format "css/themes/%s.css" %))
-            (apply css))
+       (apply css (map #(format "css/theme/%s.css" %) codemirror-themes))
        (js "vendor/script/jquery-1.5.2.min.js" "vendor/script/jquery.dataTables.min.js" "vendor/script/jquery.flipCounter.1.1.pack.js" "vendor/script/jquery.easing.1.3.js" "vendor/script/jquery.dataTables.fnSetFilteringDelay.js")
        (js "script/codebox.js" "script/foreclojure.js")
        (js "vendor/script/xregexp.js" "vendor/script/shCore.js" "vendor/script/shBrushClojure.js")
