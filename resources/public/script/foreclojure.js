@@ -3,6 +3,7 @@ var updateProblemCountDelay = 4000; // milliseconds
 $(document).ready(function() {
 
   configureDataTables();
+  highlightPreElements();
   CodeBox.initialize();
   configureGolf();
 
@@ -239,4 +240,19 @@ function updateProblemCount() {
     });
     setTimeout("updateProblemCount()", updateProblemCountDelay);
   }
+}
+
+function highlightPreElements() {
+  $('pre').each(function() {
+    var el = $(this);
+    var hasLineNumbers = el.hasClass('test') ? false : true;
+    var editor = CodeMirror(function(editor) {
+      el.replaceWith(editor);
+    }, { value: el.text(),
+         mode: 'clojure',
+         readOnly: true,
+         lineNumbers: hasLineNumbers });
+    var editorDiv = $(editor.getWrapperElement());
+    editorDiv.attr('class', editorDiv.attr('class') + ' ' + el.attr('class'));
+  });
 }

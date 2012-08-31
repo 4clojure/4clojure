@@ -8,7 +8,7 @@
   (:import  [org.apache.commons.mail  EmailException])
   (:use     [foreclojure.utils        :only    [from-mongo get-user get-solved login-link flash-msg flash-error row-class approver? can-submit? send-email image-builder if-user with-user as-int maybe-update escape-html]]
             [foreclojure.ring-utils   :only    [*url*]]
-            [foreclojure.template     :only    [def-page content-page]]
+            [foreclojure.template     :only    [def-page content-page codemirror-themes]]
             [foreclojure.social       :only    [tweet-link]]
             [foreclojure.feeds        :only    [create-feed]]
             [foreclojure.users        :only    [golfer? get-user-id disable-codebox?]]
@@ -230,8 +230,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
                        (= idx fail)                  :red
                        :else                         :green))]
           [:td
-           [:pre {:class "brush: clojure;gutter: false;toolbar: false;light: true"}
-            test]]]))]))
+           [:pre.test test]]]))]))
 
 (defn render-golf-chart []
   (let [{:keys [id best score] :as settings}
@@ -309,15 +308,18 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
         [:br]
         [:br]
         [:p#instruct "Code which fills in the blank: "]
+        [:div.theme-holder
+         "High-lighting theme:"
+         (drop-down :theme-selector codemirror-themes)]
+        [:div.clearfix]
         (when (wants-no-javascript-codebox?) [:span#disable-javascript-codebox])
         (text-area {:id "code-box"
                     :name "code"
                     :spellcheck "false"}
-                   :code (escape-html
-                          (or (session/flash-get :code)
-                              (-> (session/get :user)
-                                  (get-user-id)
-                                  (get-solution ,,, _id)))))
+                   :code (or (session/flash-get :code)
+                             (-> (session/get :user)
+                                 (get-user-id)
+                                 (get-solution ,,, _id))))
         [:div#golfgraph
          (render-golf-chart)]
         (hidden-field :id id)
@@ -348,7 +350,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
     (with-user [{:keys [_id following]}]
       (list
        (let [user-code (get-solution :public _id problem-id)]
-         [:pre {:class "brush: clojure;gutter: false;toolbar: false;light: true; class-name: 'solution-code solution-user-code'"}
+         [:pre.solution-code.solution-user-code
           (escape-html user-code)])
        (if (empty? following)
          [:p "You can only see solutions of users whom you follow.  Click on any name from the " (link-to "/users" "users") " listing page to see their profile, and click follow from there."]
@@ -364,7 +366,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
                             :when f-code]
                         [:div.follower-solution
                          [:div.solution-username (str f-user "'s solution:")]
-                         [:pre {:class "brush: clojure;gutter: false;toolbar: false;light: true; class-name: 'solution-code'"}
+                         [:pre.solution-code
                           (escape-html f-code)]]))
            [:p "None of the users you follow have solved this problem yet!"])))))})
 

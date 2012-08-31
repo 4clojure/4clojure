@@ -11,6 +11,7 @@ var CodeBox = {
   waitTimePerItem:    500,
   images:             null,
 
+
   initialize: function() {
     this.disableJavascript = $('#disable-javascript-codebox').length > 0
                                 || $.browser.mobile;
@@ -26,29 +27,21 @@ var CodeBox = {
   },
 
   setupEditor: function() {
-    this.element.after("<div id=\"code-div\"> <pre id=\"editor\">" +
-        this.element.val() + "</pre></div>");
 
-    this.element.hide();
     this.editorElement = $("#editor");
 
-    this.editor = ace.edit("editor");
-    this.editor.setTheme("ace/theme/textmate");
-    this.editor.setShowPrintMargin(false);
+    this.editor = CodeMirror.fromTextArea(this.element[0],
+                                         {mode: 'clojure',
+                                          lineNumbers: true});
+    $(this.editor.getWrapperElement()).addClass('codebox');
 
-    var ClojureMode = require("ace/mode/clojure").Mode;
-    this.editorSession = this.editor.getSession();
-    this.editorSession.setMode(new ClojureMode());
-    this.editorSession.setUseSoftTabs(true);
-    this.editorSession.setTabSize(2);
-    this.editorElement.css("font-size", "13px");
   },
 
   getCode: function() {
     if(this.disableJavascript)
       return $("#code-box").val();
     else
-      return this.editorSession.getValue();
+      return this.editor.getValue();
   },
 
   toggle: function() {
