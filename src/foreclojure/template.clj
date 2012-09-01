@@ -22,17 +22,12 @@
        [:title (:title attrs)]
        [:link {:rel "alternate" :type "application/atom+xml" :title "Atom" :href "/problems/rss"}]
        [:link {:rel "shortcut icon" :href (static-url "favicon2.ico")}]
-       [:style {:type "text/css"}
-        ".syntaxhighlighter { overflow-y: hidden !important; }"]
-       (css "css/style.css" "css/demo_table.css" "css/shCore.css" "css/shThemeDefault.css" "css/codemirror.css")
+       (css "css/style.css" "css/demo_table.css" "css/codemirror.css")
        (apply css (map #(format "css/theme/%s.css" %) codemirror-themes))
        (js "vendor/script/jquery-1.5.2.min.js" "vendor/script/jquery.dataTables.min.js" "vendor/script/jquery.flipCounter.1.1.pack.js" "vendor/script/jquery.easing.1.3.js" "vendor/script/jquery.dataTables.fnSetFilteringDelay.js")
        (js "script/codebox.js" "script/foreclojure.js")
-       (js "vendor/script/xregexp.js" "vendor/script/shCore.js" "vendor/script/shBrushClojure.js")
-       (js "vendor/script/ace/ace.js" "vendor/script/ace/mode-clojure.js")
        (js "vendor/script/codemirror-clojure-compressed.js")
-       (js "vendor/script/detectmobilebrowser.js")
-       [:script {:type "text/javascript"} "SyntaxHighlighter.all()"]]
+       (js "vendor/script/detectmobilebrowser.js")]
       [:body
        (when (:fork-banner attrs)
          [:div#github-banner [:a {:href repo-url
