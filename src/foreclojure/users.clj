@@ -249,8 +249,13 @@
 (defn datatable-paging [start length users]
   (take length (drop start users)))
 
-(let [column-sorts [:rank :user (comp count :solved)]]
-  (defn datatable-sort-cols [sort-col users]
+(defn get-sort-by-following-fn []
+  (let [following (if-user [{:keys [following]}]
+                           (set following))]
+    #(if (following (:_id %)) -1 1)))
+
+(defn datatable-sort-cols [sort-col users]
+  (let [column-sorts [:rank :user (comp count :solved) (get-sort-by-following-fn)]]
     (if-let [sort-fn (get column-sorts sort-col)]
       (sort-by sort-fn users)
       users)))
