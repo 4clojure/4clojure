@@ -47,9 +47,9 @@ var CodeBox = {
 
   toggle: function() {
     if(this.disableJavascript)
-      $("#code-box").toggle('fast');
+      $(".codebox").toggle('fast');
     else
-      $("#code-div").toggle('fast');
+      $(".codebox").toggle('fast');
   },
 
   submitProblem: function(e) {

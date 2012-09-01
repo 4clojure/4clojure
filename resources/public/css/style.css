@@ -561,14 +561,18 @@ button:active {
 
 #instruct{
   font-weight: bold;
-  padding-top: 25px;
+  padding-top: 10px;
   float: left;
 }
 
 .theme-holder {
     float: right;
     font-weight: bold;
-    padding-top: 25px;
+    padding-top: 10px;
+}
+
+.margin-right {
+    margin-right: 10px;
 }
 
 #theme-selector {

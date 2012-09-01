@@ -195,6 +195,7 @@ function changeToCodeView() {
 function configureGolf(){
   $('#graph-link').show();
   $('#golfgraph').hide();
+  $('.theme-holder').addClass('margin-right');
   $('#graph-link').click(function() {
     CodeBox.toggle();
     $('#golfgraph').toggle('fast', function() {
