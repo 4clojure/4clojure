@@ -8,7 +8,7 @@
   (:import  [org.apache.commons.mail  EmailException])
   (:use     [foreclojure.utils        :only    [from-mongo get-user get-solved login-link flash-msg flash-error row-class approver? can-submit? send-email image-builder if-user with-user as-int maybe-update escape-html]]
             [foreclojure.ring-utils   :only    [*url*]]
-            [foreclojure.template     :only    [def-page content-page codemirror-themes]]
+            [foreclojure.template     :only    [def-page content-page]]
             [foreclojure.social       :only    [tweet-link]]
             [foreclojure.feeds        :only    [create-feed]]
             [foreclojure.users        :only    [golfer? get-user-id disable-codebox?]]
@@ -308,10 +308,6 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
         [:br]
         [:br]
         [:p#instruct "Code which fills in the blank: "]
-        [:div.theme-holder
-         "High-lighting theme:"
-         (drop-down :theme-selector codemirror-themes)]
-        [:div.clearfix]
         (when (wants-no-javascript-codebox?) [:span#disable-javascript-codebox])
         (text-area {:id "code-box"
                     :name "code"

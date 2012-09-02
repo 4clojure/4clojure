@@ -4,12 +4,11 @@
             [hiccup.page               :only [doctype]]
             [hiccup.element            :only [javascript-tag link-to]]
             [foreclojure.config        :only [config repo-url]]
-            [foreclojure.utils         :only [page-attributes rendering-info login-url approver? can-submit?]]
+            [foreclojure.utils         :only [page-attributes rendering-info login-url approver? can-submit? codemirror-themes get-theme]]
             [foreclojure.ring-utils    :only [static-url]]
             [foreclojure.version-utils :only [css js]]))
 
-(def codemirror-themes ["ambiance" "blackboard" "cobalt" "eclipse" "elegant" "erlang-dark"
-                        "lesser-dark" "monokai" "neat" "night" "rubyblue" "vibrant-ink" "xq-dark"])
+
 
 ;; Global wrapping template
 (defn html-doc [body]
@@ -27,7 +26,8 @@
        (js "vendor/script/jquery-1.5.2.min.js" "vendor/script/jquery.dataTables.min.js" "vendor/script/jquery.flipCounter.1.1.pack.js" "vendor/script/jquery.easing.1.3.js" "vendor/script/jquery.dataTables.fnSetFilteringDelay.js")
        (js "script/codebox.js" "script/foreclojure.js")
        (js "vendor/script/codemirror-clojure-compressed.js")
-       (js "vendor/script/detectmobilebrowser.js")]
+       (js "vendor/script/detectmobilebrowser.js")
+       (javascript-tag (format "CodeBox.theme = '%s';" (get-theme)))]
       [:body
        (when (:fork-banner attrs)
          [:div#github-banner [:a {:href repo-url

@@ -16,8 +16,9 @@ var CodeBox = {
                                 || $.browser.mobile;
     this.element = $("#code-box");
     this.submitButtons = $("#run-button, #submission-button");
+    var isSettingsPage = $('#settings #code-box').length > 0;
 
-    if(!this.disableJavascript && this.submitButtons.length > 0) {
+    if(!this.disableJavascript && this.submitButtons.length > 0 || isSettingsPage) {
       this.setupEditor();
     }
 
@@ -29,13 +30,13 @@ var CodeBox = {
     this.editor = CodeMirror.fromTextArea(this.element[0],
                                          {mode: 'clojure',
                                           lineNumbers: true,
-                                          theme: this.getTheme()});
-    this.registerEditor(this.editor);
+                                          theme: this.theme});
     $(this.editor.getWrapperElement()).addClass('codebox');
-    $('#theme-selector').live('change', function() {
-      CodeBox.changeTheme($(this).val());
+    $('#theme').live('change', function() {
+      var theme = $(this).val();
+      CodeBox.editor.setOption('theme', theme);
     });
-    $('#theme-selector').val(this.getTheme());
+    $('#theme').val(this.theme);
   },
 
   getCode: function() {
@@ -47,7 +48,7 @@ var CodeBox = {
 
   toggle: function() {
     if(this.disableJavascript)
-      $(".codebox").toggle('fast');
+      $("#code-box").toggle('fast');
     else
       $(".codebox").toggle('fast');
   },
@@ -135,22 +136,4 @@ var CodeBox = {
   stopAnimation: function() {
     this.images.stop(true).removeClass("animated").css({ opacity: 1.0, });
   },
-
-  registerEditor: function(editor) {
-    this.allEditors.push(editor);
-  },
-
-  getTheme: function() {
-    var theme = window.localStorage && localStorage.getItem('theme');
-    return theme && theme.length > 0 ? theme : 'eclipse';
-  },
-
-  changeTheme: function(theme) {
-    $(this.allEditors).each(function(_, editor) {
-      editor.setOption('theme', theme);
-    });
-    if (window.localStorage) {
-      localStorage.setItem('theme', theme);
-    }
-  }
 }
