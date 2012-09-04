@@ -166,7 +166,7 @@ function configureDataTables(){
             null,
             null,
             null,
-            {"bSortable": false}
+            null
         ],
         "iDisplayLength":100,
         "bProcessing": true,
