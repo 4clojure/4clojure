@@ -249,13 +249,17 @@
 (defn datatable-paging [start length users]
   (take length (drop start users)))
 
-(defn get-sort-by-following-fn []
+(defn sort-by-following
+  "Get function for sorting by following for current user.
+  We need nullary function to create sort function  because 'following' set depends on current user."
+  []
   (let [following (if-user [{:keys [following]}]
-                           (set following))]
-    #(if (following (:_id %)) -1 1)))
+                    (set following))]
+    (fn [user]
+      (if (contains? following (:_id user)) -1 1))))
 
 (defn datatable-sort-cols [sort-col users]
-  (let [column-sorts [:rank :user (comp count :solved) (get-sort-by-following-fn)]]
+  (let [column-sorts [:rank :user (comp count :solved) (sort-by-following)]]
     (if-let [sort-fn (get column-sorts sort-col)]
       (sort-by sort-fn users)
       users)))
