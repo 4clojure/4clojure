@@ -14,7 +14,7 @@
             [foreclojure.users        :only    [golfer? get-user-id disable-codebox?]]
             [foreclojure.solutions    :only    [save-solution get-solution]]
             [clojail.core             :exclude [safe-read]]
-            [clojail.testers          :only    [secure-tester]]
+            [clojail.testers          :only    [secure-tester blacklist-symbols]]
             [somnium.congomongo       :only    [update! fetch-one fetch fetch-and-modify destroy!]]
             [hiccup.form              :only    [form-to text-area hidden-field label text-field drop-down]]
             [hiccup.element           :only    [link-to]]
@@ -163,7 +163,9 @@
 (def restricted-list '[use require in-ns future agent send send-off pmap pcalls])
 
 (defn get-tester [restricted]
-  (into secure-tester (concat restricted-list (map symbol restricted))))
+  (conj secure-tester
+        (blacklist-symbols (set (concat restricted-list
+                                        (map symbol restricted))))))
 
 (def sb (sandbox*))
 
