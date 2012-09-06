@@ -208,9 +208,9 @@
 (def codemirror-themes ["ambiance" "blackboard" "cobalt" "eclipse" "elegant" "erlang-dark"
                         "lesser-dark" "monokai" "neat" "night" "rubyblue" "vibrant-ink" "xq-dark"])
 
-(def default-theme "eclipse")
+(def default-theme "neat")
 
 (defn get-theme []
   (if-user [{:keys [theme]}]
-           (or theme default-theme)
-           default-theme))
+    (or theme default-theme)
+    default-theme))
