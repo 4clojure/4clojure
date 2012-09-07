@@ -232,8 +232,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
                        (= idx fail)                  :red
                        :else                         :green))]
           [:td
-           [:pre {:class "brush: clojure;gutter: false;toolbar: false;light: true"}
-            test]]]))]))
+           [:pre.test test]]]))]))
 
 (defn render-golf-chart []
   (let [{:keys [id best score] :as settings}
@@ -315,11 +314,10 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
         (text-area {:id "code-box"
                     :name "code"
                     :spellcheck "false"}
-                   :code (escape-html
-                          (or (session/flash-get :code)
-                              (-> (session/get :user)
-                                  (get-user-id)
-                                  (get-solution ,,, _id)))))
+                   :code (or (session/flash-get :code)
+                             (-> (session/get :user)
+                                 (get-user-id)
+                                 (get-solution ,,, _id))))
         [:div#golfgraph
          (render-golf-chart)]
         (hidden-field :id id)
@@ -350,7 +348,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
     (with-user [{:keys [_id following]}]
       (list
        (let [user-code (get-solution :public _id problem-id)]
-         [:pre {:class "brush: clojure;gutter: false;toolbar: false;light: true; class-name: 'solution-code solution-user-code'"}
+         [:pre.solution-code.solution-user-code
           (escape-html user-code)])
        (if (empty? following)
          [:p "You can only see solutions of users whom you follow.  Click on any name from the " (link-to "/users" "users") " listing page to see their profile, and click follow from there."]
@@ -366,7 +364,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
                             :when f-code]
                         [:div.follower-solution
                          [:div.solution-username (str f-user "'s solution:")]
-                         [:pre {:class "brush: clojure;gutter: false;toolbar: false;light: true; class-name: 'solution-code'"}
+                         [:pre.solution-code
                           (escape-html f-code)]]))
            [:p "None of the users you follow have solved this problem yet!"])))))})
 

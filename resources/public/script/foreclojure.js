@@ -3,6 +3,7 @@ var updateProblemCountDelay = 4000; // milliseconds
 $(document).ready(function() {
 
   configureDataTables();
+  highlightPreElements();
   CodeBox.initialize();
   configureGolf();
 
@@ -194,6 +195,7 @@ function changeToCodeView() {
 function configureGolf(){
   $('#graph-link').show();
   $('#golfgraph').hide();
+  $('.theme-holder').addClass('margin-right');
   $('#graph-link').click(function() {
     CodeBox.toggle();
     $('#golfgraph').toggle('fast', function() {
@@ -239,4 +241,21 @@ function updateProblemCount() {
     });
     setTimeout("updateProblemCount()", updateProblemCountDelay);
   }
+}
+
+function highlightPreElements() {
+  $('pre').each(function() {
+    var el = $(this);
+    // Don't show line numbers if current element is test or it is an example on help page.
+    var hasLineNumbers = !(el.hasClass('test') || el.parents('#getting-started').length > 0);
+    var editor = CodeMirror(function(editor) {
+      el.replaceWith(editor);
+    }, {value: el.text(),
+        mode: 'clojure',
+        readOnly: true,
+        lineNumbers: hasLineNumbers,
+        theme: CodeBox.theme});
+    var editorDiv = $(editor.getWrapperElement());
+    editorDiv.attr('class', editorDiv.attr('class') + ' ' + el.attr('class'));
+  });
 }

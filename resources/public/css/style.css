@@ -561,8 +561,12 @@ button:active {
 
 #instruct{
   font-weight: bold;
-  width: 100%;
   padding-top: 25px;
+  width: 100%;
+}
+
+#theme {
+    margin-bottom: 10px;
 }
 
 #golfheader{
@@ -616,21 +620,42 @@ a.graph-class :hover {color: #445599;}
     font-weight: bold;
 }
 
-.syntaxhighlighter.solution-code.solution-user-code {
-    background-color: #DDD !important;
-    padding: 15px;
+.solution-code {
+    padding: 10px;
+}
+
+.solution-user-code {
+    border: #AAA solid 10px;
+    padding: 0px;
     margin-bottom: 25px;
+    border-radius: 5px;
 }
 
-.syntaxhighlighter.solution-code.solution-user-code div {
-    background-color: #DDD !important;
+.CodeMirror {
+    font-size: 14px;
 }
 
-.syntaxhighlighter.solution-code {
-    padding-left: 10px;
+.CodeMirror .CodeMirror-scroll {
+    height: auto;
+    overflow: visible;
+}
+
+.CodeMirror.codebox .CodeMirror-scroll {
+    height: 300px;
+    overflow: auto;
+}
+
+.codebox {
+    border: 1px solid black;
+}
+
+.CodeMirror.test {
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 hr.solution {
     margin-top: 20px;
     margin-bottom: 20px;
 }
+
