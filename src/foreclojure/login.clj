@@ -3,7 +3,7 @@
             [ring.util.response       :as   response])
   (:import  [org.jasypt.util.password StrongPasswordEncryptor])
   (:use     [hiccup.form              :only [form-to label text-field password-field check-box]]
-            [foreclojure.utils        :only [from-mongo flash-error flash-msg form-row assuming send-email login-url]]
+            [foreclojure.utils        :only [from-mongo flash-error flash-msg form-row assuming send-email login-url is-relative-url?]]
             [foreclojure.template     :only [def-page content-page]]
             [foreclojure.messages     :only [err-msg]]
             [compojure.core           :only [defroutes GET POST]]
@@ -33,7 +33,7 @@
 
 (def-page my-login-page [location]
   (do
-    (if location (session/put! :login-to location))
+    (if (and location (is-relative-url? location)) (session/put! :login-to location))
     {:title "4clojure - login"
      :content
      (content-page

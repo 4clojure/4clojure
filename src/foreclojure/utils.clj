@@ -7,7 +7,7 @@
             [clojure.string           :as   string]
             [foreclojure.git          :as   git]
             [hiccup.page              :as   hiccup])
-  (:import  [java.net                 URLEncoder]
+  (:import  [java.net                 URLEncoder URLDecoder]
             (org.apache.commons.lang  StringEscapeUtils)
             (org.apache.commons.mail  HtmlEmail))
   (:use     [hiccup.core              :only [html]]
@@ -83,6 +83,9 @@
          (dissoc m k))))
   ([m ks f & args]
      (maybe-update m ks #(apply f % args))))
+
+(defn is-relative-url? [location]
+  (.startsWith (URLDecoder/decode location) "/"))
 
 (defn login-url
   ([] (login-url *url*))
