@@ -1,9 +1,9 @@
-(defproject foreclojure "2.0.0-alpha5"
+(defproject foreclojure "2.0.0-rc1"
   :description "4clojure - a website for learning Clojure"
   :dependencies [[org.clojure/clojure "1.4.0"]
                  [compojure "1.1.0"]
                  [hiccup "1.0.0"]
-                 [clojail "0.5.1"]
+                 [clojail "1.0.1"]
                  [lib-noir "0.1.1"]
                  [congomongo "0.1.9"]
                  [org.jasypt/jasypt "1.7"]
@@ -11,7 +11,7 @@
                  [useful "0.8.3-alpha4"]
                  [amalloy/ring-gzip-middleware "0.1.2"]
                  [amalloy/mongo-session "0.0.2"]
-                 [innuendo "0.1.6"]
+                 [innuendo "0.1.7"]
                  [ring "1.1.1"]
                  [incanter/incanter-core "1.3.0"]
                  [incanter/incanter-charts "1.3.0"]

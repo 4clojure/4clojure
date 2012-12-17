@@ -4,20 +4,21 @@ var CodeBox = {
   element:            null,
   submitButtons:      null,
   editor:             null,
-  editorSession:      null,
-  editorElement:      null,
+  allEditors:         [],
   high:               false,
   animationTime:      800,
   waitTimePerItem:    500,
   images:             null,
+
 
   initialize: function() {
     this.disableJavascript = $('#disable-javascript-codebox').length > 0
                                 || $.browser.mobile;
     this.element = $("#code-box");
     this.submitButtons = $("#run-button, #submission-button");
+    var isSettingsPage = $('#settings #code-box').length > 0;
 
-    if(!this.disableJavascript && this.submitButtons.length > 0) {
+    if(!this.disableJavascript && this.submitButtons.length > 0 || isSettingsPage) {
       this.setupEditor();
     }
 
@@ -26,36 +27,30 @@ var CodeBox = {
   },
 
   setupEditor: function() {
-    this.element.after("<div id=\"code-div\"> <pre id=\"editor\">" +
-        this.element.val() + "</pre></div>");
-
-    this.element.hide();
-    this.editorElement = $("#editor");
-
-    this.editor = ace.edit("editor");
-    this.editor.setTheme("ace/theme/textmate");
-    this.editor.setShowPrintMargin(false);
-
-    var ClojureMode = require("ace/mode/clojure").Mode;
-    this.editorSession = this.editor.getSession();
-    this.editorSession.setMode(new ClojureMode());
-    this.editorSession.setUseSoftTabs(true);
-    this.editorSession.setTabSize(2);
-    this.editorElement.css("font-size", "13px");
+    this.editor = CodeMirror.fromTextArea(this.element[0],
+                                         {mode: 'clojure',
+                                          lineNumbers: true,
+                                          theme: this.theme});
+    $(this.editor.getWrapperElement()).addClass('codebox');
+    $('#theme').live('change', function() {
+      var theme = $(this).val();
+      CodeBox.editor.setOption('theme', theme);
+    });
+    $('#theme').val(this.theme);
   },
 
   getCode: function() {
     if(this.disableJavascript)
       return $("#code-box").val();
     else
-      return this.editorSession.getValue();
+      return this.editor.getValue();
   },
 
   toggle: function() {
     if(this.disableJavascript)
       $("#code-box").toggle('fast');
     else
-      $("#code-div").toggle('fast');
+      $(".codebox").toggle('fast');
   },
 
   submitProblem: function(e) {

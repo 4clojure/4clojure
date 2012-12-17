@@ -78,8 +78,7 @@
                         [:div {:id "shared-code-box"}
                          [:div.code
                           [:h3 "Your Solution"]
-                          [:pre {:class "brush: clojure;gutter: false;toolbar: false;light: true"}
-                           (escape-html code)]]
+                          [:pre (escape-html code)]]
                          [:br]
                          [:div.share
                           "Share this " (link-to paste-url "solution")
