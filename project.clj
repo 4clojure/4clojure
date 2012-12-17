@@ -11,7 +11,7 @@
                  [useful "0.8.3-alpha4"]
                  [amalloy/ring-gzip-middleware "0.1.2"]
                  [amalloy/mongo-session "0.0.2"]
-                 [innuendo "0.1.6"]
+                 [innuendo "0.1.7"]
                  [ring "1.1.1"]
                  [incanter/incanter-core "1.3.0"]
                  [incanter/incanter-charts "1.3.0"]
