@@ -6,7 +6,7 @@
   (:use [foreclojure.messages     :only [err-msg]])
   (:use [clojure.test])
   (:use [midje.sweet])
-  (:use [foreclojure.utils :only [get-user assuming flash-error flash-msg]])
+  (:use [foreclojure.utils :only [get-user assuming flash-error flash-msg default-theme]])
   (:use [somnium.congomongo :only [update! fetch-one]]))
   
 
@@ -35,40 +35,40 @@
                          (session/get :user) => old-name
                          (get-user old-name) => {:user old-name :pwd enpwd}]
       (fact "about do-update-settings! - good inputs"
-          (do-update-settings! new-name old-pwd new-pwd new-pwd email false false) => truthy
+          (do-update-settings! new-name old-pwd new-pwd new-pwd email false false default-theme) => truthy
             (provided 
               (flash-msg "/problems" anything) => 1))
       (fact "about do-update-settings! - userexists"
-          (do-update-settings! new-name old-pwd new-pwd new-pwd email false false) => truthy
+          (do-update-settings! new-name old-pwd new-pwd new-pwd email false false default-theme) => truthy
             (provided 
               (fetch-one :users :where {:user new-name}) => {:user "username-new"}
               (flash-error "/settings" (err-msg "settings.user-exists")) => 1))
       (fact "about do-update-settings! - username too long"
-          (do-update-settings! lngname old-pwd new-pwd new-pwd email false false) => truthy
+          (do-update-settings! lngname old-pwd new-pwd new-pwd email false false default-theme) => truthy
             (provided 
               (flash-error "/settings" (err-msg "settings.uname-size")) => 1))
       (fact "about do-update-settings! - username not alphanumeric"
-          (do-update-settings! bname old-pwd new-pwd new-pwd email false false) => truthy
+          (do-update-settings! bname old-pwd new-pwd new-pwd email false false default-theme) => truthy
             (provided 
               (flash-error "/settings" (err-msg "settings.uname-alphanum")) => 1))
       (fact "about do-update-settings! - short password"
-          (do-update-settings! new-name old-pwd short-pwd short-pwd email false false) => truthy
+          (do-update-settings! new-name old-pwd short-pwd short-pwd email false false default-theme) => truthy
             (provided 
               (flash-error "/settings" (err-msg "settings.npwd-size")) => 1))
       (fact "about do-update-settings! - passwords don't match"
-          (do-update-settings! new-name old-pwd new-pwd old-pwd email false false) => truthy
+          (do-update-settings! new-name old-pwd new-pwd old-pwd email false false default-theme) => truthy
             (provided 
               (flash-error "/settings" (err-msg "settings.npwd-match")) => 1))
       (fact "about do-update-settings! - old password doesn't match"
-          (do-update-settings! new-name new-pwd new-pwd new-pwd email false false) => truthy
+          (do-update-settings! new-name new-pwd new-pwd new-pwd email false false default-theme) => truthy
             (provided 
               (flash-error "/settings" (err-msg "settings.pwd-incorrect")) => 1))
       (fact "about do-update-settings! - bad email"
-          (do-update-settings! new-name old-pwd new-pwd new-pwd bad-email false false) => truthy
+          (do-update-settings! new-name old-pwd new-pwd new-pwd bad-email false false default-theme) => truthy
             (provided 
               (flash-error "/settings" (err-msg "settings.email-invalid")) => 1))
       (fact "about do-update-settings! - email exists"
-          (do-update-settings! new-name old-pwd new-pwd new-pwd email false false) => truthy
+          (do-update-settings! new-name old-pwd new-pwd new-pwd email false false default-theme) => truthy
             (provided 
               ;you have to specify both because midje can't tell them apart
               (fetch-one :users :where {:user new-name}) => nil
