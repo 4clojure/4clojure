@@ -1,5 +1,5 @@
 (ns foreclojure.test.register
-  (:require [sandbar.stateful-session :as   session]
+  (:require [noir.session             :as   session]
             [ring.util.response       :as   response])
   (:use [foreclojure.register])
   (:use [foreclojure.messages     :only [err-msg]])
@@ -24,7 +24,7 @@
                          (fetch-one :users :where {:user uname}) => nil
                          (fetch-one :users :where {:email email}) => nil
                          (insert! :users anything) => nil
-                         (session/session-put! :user anything) => nil
+                         (session/put! :user anything) => nil
                          (session/flash-put! :user anything) => nil
                          (session/flash-put! :email anything) => nil]
       (fact "about do-register - good inputs"

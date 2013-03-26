@@ -1,7 +1,8 @@
 (ns foreclojure.test.users
   (:use [foreclojure.users])
   (:use [clojure.test])
-  (:use [midje.sweet]))
+  (:use [midje.sweet])
+  (:use [somnium.congomongo :only [update!]))
 
 (def users [{:user "user1", :solved [1 2 3 4] :rank 1}
               {:user "user2", :solved [1 2 3] :rank 2}
