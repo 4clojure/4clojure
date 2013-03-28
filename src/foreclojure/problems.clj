@@ -340,7 +340,9 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
 
 (defn solution-block [username code]
   [:div.follower-solution
-   [:div.solution-username (str username "'s solution:")]
+   [:div.solution-username
+    (link-to (str "/user/" username) username)
+    "'s solution:"]
    [:pre.solution-code
     (escape-html code)]])
 
