@@ -11,7 +11,7 @@
             [foreclojure.template     :only    [def-page content-page]]
             [foreclojure.social       :only    [tweet-link]]
             [foreclojure.feeds        :only    [create-feed]]
-            [foreclojure.users        :only    [golfer? get-user-id disable-codebox?]]
+            [foreclojure.users        :only    [golfer? get-user-id disable-codebox? get-ranked-users]]
             [foreclojure.solutions    :only    [save-solution get-solution]]
             [clojail.core             :exclude [safe-read]]
             [clojail.testers          :only    [secure-tester blacklist-symbols]]
@@ -338,35 +338,57 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
                               " to view unapproved problems")))
       (error "No such problem!"))))
 
+(defn solution-block [username code]
+  [:div.follower-solution
+   [:div.solution-username
+    (link-to (str "/user/" username) username)
+    "'s solution:"]
+   [:pre.solution-code
+    (escape-html code)]])
+
 (def-page show-solutions-page [problem-id]
   {:title "4Clojure - Problem Solutions"
    :content
    (list
     [:div.message (session/flash-get :message)]
     [:div#problems-error.error (session/flash-get :error)]
-    [:h3 {:style "margin-top: -20px;"} "Solutions:"]
+    [:h3 {:style "margin-top: -20px;"} "Your solution"]
     (with-user [{:keys [_id following]}]
       (list
        (let [user-code (get-solution :public _id problem-id)]
          [:pre.solution-code.solution-user-code
           (escape-html user-code)])
-       (if (empty? following)
-         [:p "You can only see solutions of users whom you follow.  Click on any name from the " (link-to "/users" "users") " listing page to see their profile, and click follow from there."]
-         (if (some (complement nil?) (map #(get-solution :public % problem-id) following))
-           (interpose [:hr.solution]
-                      (for [f-user-id following
-                            :let [f-user (:user (from-mongo
-                                                 (fetch-one :users
-                                                            :where {:_id f-user-id}
-                                                            :only [:user])))
-                                  f-code (get-solution :public
-                                                       f-user-id problem-id)]
-                            :when f-code]
-                        [:div.follower-solution
-                         [:div.solution-username (str f-user "'s solution:")]
-                         [:pre.solution-code
-                          (escape-html f-code)]]))
-           [:p "None of the users you follow have solved this problem yet!"])))))})
+
+       [:h3 "Your followers' solutions"]
+       (if (some (complement nil?) (map #(get-solution :public % problem-id) following))
+         (interpose
+          [:hr.solution]
+          (for [f-user-id following
+                :let [f-user (:user (from-mongo
+                                     (fetch-one :users
+                                                :where {:_id f-user-id}
+                                                :only [:user])))
+                      f-code (get-solution :public
+                                           f-user-id problem-id)]
+                :when f-code]
+            (solution-block f-user f-code)))
+         [:p "None of the users you follow have solved this problem yet!"])
+
+       [:h3 "Top users' solutions"]
+       [:p "These solutions were written by some of the top users of 4Clojure."]
+       (interpose
+        [:hr.solution]
+        (let [top-users (take 15 (get-ranked-users))
+              top-users-m (zipmap (map :_id top-users) top-users)
+
+              solns (fetch :solutions
+                           :where {:user {:$in (map :_id top-users)}
+                                   :code {:$ne nil}}
+                           :limit 5)]
+          (for [soln solns
+                :let [username (:user (top-users-m (:user soln)))
+                      code (:code soln)]]
+            (solution-block username code)))))))})
 
 (defn show-solutions [id]
   (let [problem-id (Integer. id)
