@@ -28,37 +28,37 @@
                          (session/flash-put! :user anything) => nil
                          (session/flash-put! :email anything) => nil]
       (fact "about do-register - good inputs"
-          (do-register uname pwd pwd email) => truthy
+          (do-register uname pwd pwd email) => anything
             (provided
-              (response/redirect "/") => 1))
+              (response/redirect "/") => :whatever :times 1))
       (fact "about do-register - userexists"
-          (do-register uname pwd pwd email) => truthy
+          (do-register uname pwd pwd email) => anything
             (provided
               (fetch-one :users :where {:user uname}) => {:user "username"}
-              (flash-error "/register" (err-msg "settings.user-exists")) => 1))
+              (flash-error "/register" (err-msg "settings.user-exists")) => :whatever :times 1))
       (fact "about do-register - username too long"
-          (do-register lngname pwd pwd email) => truthy
+          (do-register lngname pwd pwd email) => anything
             (provided
-              (flash-error "/register" (err-msg "settings.uname-size")) => 1))
+              (flash-error "/register" (err-msg "settings.uname-size")) => :whatever :times 1))
       (fact "about do-register - username not alphanumeric"
-          (do-register bname pwd pwd email) => truthy
+          (do-register bname pwd pwd email) => anything
             (provided
-              (flash-error "/register" (err-msg "settings.uname-alphanum")) => 1))
+              (flash-error "/register" (err-msg "settings.uname-alphanum")) => :whatever :times 1))
       (fact "about do-register - short password"
-          (do-register uname shpwd shpwd email) => truthy
+          (do-register uname shpwd shpwd email) => anything
             (provided
-              (flash-error "/register" (err-msg "settings.pwd-size")) => 1))
+              (flash-error "/register" (err-msg "settings.pwd-size")) => :whatever :times 1))
       (fact "about do-register - passwords don't match"
-          (do-register uname pwd shpwd email) => truthy
+          (do-register uname pwd shpwd email) => anything
             (provided
-              (flash-error "/register" (err-msg "settings.pwd-match")) => 1))
+              (flash-error "/register" (err-msg "settings.pwd-match")) => :whatever :times 1))
       (fact "about do-register - bad email"
-          (do-register uname pwd pwd bemail) => truthy
+          (do-register uname pwd pwd bemail) => anything
             (provided
-              (flash-error "/register" (err-msg "settings.email-invalid")) => 1))
+              (flash-error "/register" (err-msg "settings.email-invalid")) => :whatever :times 1))
       (fact "about do-register - email exists"
-          (do-register uname pwd pwd email) => truthy
+          (do-register uname pwd pwd email) => anything
             (provided
               (fetch-one :users :where {:user uname}) => nil
               (fetch-one :users :where {:email email}) => {:user "username"}
-              (flash-error "/register" (err-msg "settings.email-exists")) => 1)))))
+              (flash-error "/register" (err-msg "settings.email-exists")) => :whatever :times 1)))))
