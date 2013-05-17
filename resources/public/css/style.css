@@ -164,6 +164,10 @@ img.gravatar{
    border-right: 2px solid white;
 }
 
+#username a {
+   font-size: 12px;
+}
+
 .contributor {
    color: #458B00;
    font-weight: bold;

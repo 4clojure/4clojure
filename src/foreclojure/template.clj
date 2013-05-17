@@ -50,7 +50,7 @@
          [:div#user-info
           (if user
             [:div
-             [:span#username (str "Logged in as " user)]
+             [:span#username "Logged in as " [:a {:href (str "/user/" user)} user]]
              [:a#logout {:href "/logout"} "Logout"]]
             [:div
              [:a#login {:href (login-url)} "Login"]
