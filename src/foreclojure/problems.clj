@@ -533,9 +533,9 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
         (update! :problems
                  {:_id id}
                  {:$set
-                  {:title title
-                   :difficulty difficulty
-                   :description description
+                  {:title (escape-html title)
+                   :difficulty (escape-html difficulty)
+                   :description (escape-html description)
                    :tags (re-seq #"\S+" tags)
                    :restricted (re-seq #"\S+" restricted)
                    :tests (s/split code #"\r\n\r\n")
