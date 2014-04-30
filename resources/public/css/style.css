@@ -637,12 +637,10 @@ a.graph-class :hover {color: #445599;}
 
 .CodeMirror .CodeMirror-scroll {
     height: auto;
-    overflow: visible;
 }
 
 .CodeMirror.codebox .CodeMirror-scroll {
     height: 300px;
-    overflow: auto;
 }
 
 .codebox {
