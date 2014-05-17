@@ -19,6 +19,9 @@
             [foreclojure.ring-utils   :only [*url* static-url]]
             [foreclojure.config       :only [config repo-url]]))
 
+(defn make-user-url [user]
+  {:href (str "/user/" user)})
+
 (defn as-int [s]
   (if (integer? s) s,
       (try (Integer. s)

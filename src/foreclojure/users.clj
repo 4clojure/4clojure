@@ -3,7 +3,7 @@
             [clojure.string           :as string]
             [noir.session             :as session]
             [cheshire.core            :as json])
-  (:use     [foreclojure.utils        :only [from-mongo row-class rank-class get-user if-user with-user]]
+  (:use     [foreclojure.utils        :only [from-mongo row-class rank-class get-user if-user with-user make-user-url]]
             [foreclojure.template     :only [def-page content-page]]
             [foreclojure.ring-utils   :only [*http-scheme* universal-url]]
             [foreclojure.config       :only [config repo-url]]
@@ -93,7 +93,7 @@
     [:h2 "Your Ranking"]
     [:div.ranking (str "Username: ")
      (when contributor [:span.contributor "* "])
-     [:a.user-profile-link {:href (str "/user/" user)} user]]
+     [:a.user-profile-link make-user-url user]]
     [:div.ranking (str "Rank: " rank)]
     [:div.ranking (str "Problems Solved: " (count solved))]
     [:br]
@@ -303,8 +303,8 @@
 (defroutes users-routes
   (GET  "/users" [] (top-users-page))
   (GET  "/users/all" [] (all-users-page))
-  (GET  "/user/:username" [username] 
-    (if (nil? (get-user username)) 
+  (GET  "/user/:username" [username]
+    (if (nil? (get-user username))
       {:status 404 :headers {"Content-Type" "text/plain"} :body "Error: This user does not exist, nice try though."}
       (user-profile username)))
   (POST "/user/follow/:username" [username] (static-follow-user username true))
