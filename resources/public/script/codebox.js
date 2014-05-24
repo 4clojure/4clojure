@@ -31,6 +31,7 @@ var CodeBox = {
   setupEditor: function() {
     this.editor = CodeMirror.fromTextArea(this.element[0],
                                          {mode: 'clojure',
+                                          autofocus: true,
                                           lineNumbers: true,
                                           theme: this.theme});
 
