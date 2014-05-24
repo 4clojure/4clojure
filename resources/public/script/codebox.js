@@ -4,6 +4,7 @@ var CodeBox = {
   element:            null,
   submitButtons:      null,
   editor:             null,
+  wrapperElement:     null,
   allEditors:         [],
   high:               false,
   animationTime:      800,
@@ -31,7 +32,9 @@ var CodeBox = {
                                          {mode: 'clojure',
                                           lineNumbers: true,
                                           theme: this.theme});
-    $(this.editor.getWrapperElement()).addClass('codebox');
+
+    this.wrapperElement = $(this.editor.getWrapperElement());
+    this.wrapperElement.addClass('codebox');
     $('#theme').live('change', function() {
       var theme = $(this).val();
       CodeBox.editor.setOption('theme', theme);
