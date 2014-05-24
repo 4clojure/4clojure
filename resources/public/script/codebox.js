@@ -21,6 +21,7 @@ var CodeBox = {
 
     if(!this.disableJavascript && this.submitButtons.length > 0 || isSettingsPage) {
       this.setupEditor();
+      this.setupKeypressEvents();
     }
 
     $("#run-button").live("click", $.proxy(this.run, this));
@@ -139,4 +140,14 @@ var CodeBox = {
   stopAnimation: function() {
     this.images.stop(true).removeClass("animated").css({ opacity: 1.0, });
   },
+
+  setupKeypressEvents: function() {
+    function submitOnShiftEnter (event) {
+      if (event.keyCode === 13 && event.shiftKey === true) {
+        this.run(event);
+      }
+    };
+
+    this.wrapperElement.keypress($.proxy(submitOnShiftEnter, this));
+  }
 }
