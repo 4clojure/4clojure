@@ -414,6 +414,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
       [:table#problem-table.my-table
        [:thead
         [:tr
+         [:th "#"]
          [:th "Title"]
          [:th "Difficulty"]
          [:th "Topics"]
@@ -425,6 +426,7 @@ Return a map, {:message, :error, :url, :num-tests-passed}."
          (map-indexed
           (fn [x {:keys [title difficulty tags user], id :_id}]
             [:tr (row-class x)
+             [:td.centered id]
              [:td.titlelink
               [:a {:href (str "/problem/" id)}
                title]]
