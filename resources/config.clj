@@ -16,5 +16,5 @@
  :golfing-active true
  :heartbeat nil ; set to, eg, [1 :hour] for periodic heap information on stdout
  ;; this list is just for bootstrapping - the real DB is authoritative
- :contributors ["amalloy" "dbyrne" "raynes" "cmeier" "devn" "0x89"
-                "citizen428" "daviddavis" "clinteger" "amcnamara"]}
+ :contributors ["amalloy" "dbyrne" "raynes" "cmeier" "devn" "amcnamara"
+                "citizen428" "daviddavis" "clinteger" "tclamb" "0x89"]}

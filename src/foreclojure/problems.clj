@@ -92,9 +92,26 @@
   (when code (.trim code)))
 
 (defn code-length [code]
-  (count (remove #(or (Character/isWhitespace %)
-                      (= % \,))
-                 code)))
+  (first
+    (reduce
+      (fn [[out state] c]
+        (case state
+          :normal (case c
+                    \; [out :comment]
+                    \" [(inc out) :string]
+                    \\ [(inc out) :character-escape]
+                    (if (or (Character/isWhitespace c) (= \, c))
+                      [out :normal]
+                      [(inc out) :normal]))
+          :comment [out (if (= \newline c) :normal :comment)]
+          :string (case c
+                    \"      [(inc out) :normal]
+                    \\      [(inc out) :string-escape]
+                    \return [out :string]
+                    [(inc out) :string])
+          :character-escape [(inc out) :normal]
+          :string-escape    [(inc out) :string]))
+      [0 :normal] code)))
 
 (defn record-golf-score! [user-id problem-id score]
   (when-let [{{old-score (keyword (str problem-id))} :scores
