@@ -658,7 +658,7 @@
             :title "Function Composition"
             :times-solved 0
             :restricted ["comp"]
-            :description "Write a function which allows you to create function compositions.  The parameter list should take a variable number of functions, and create a function applies them from right-to-left."
+            :description "Write a function which allows you to create function compositions.  The parameter list should take a variable number of functions, and create a function that applies them from right-to-left."
             :tags ["medium" "higher-order-functions" "core-functions"]
             :approved true
             :tests ["(= [3 2 1] ((__ rest reverse) [1 2 3 4]))"
