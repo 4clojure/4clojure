@@ -5,7 +5,7 @@
             [noir.session               :as   session])
   (:import  [java.lang                  OutOfMemoryError])
   (:use     [compojure.core             :only [defroutes routes GET]]
-            [foreclojure.static         :only [static-routes welcome-page]]
+            [foreclojure.static         :only [static-routes]]
             [foreclojure.api            :only [api-routes]]
             [foreclojure.datatable      :only [datatable-routes]]
             [foreclojure.problems       :only [problems-routes]]
@@ -22,6 +22,7 @@
             [foreclojure.mongo          :only [prepare-mongo]]
             [foreclojure.ring-utils     :only [wrap-request-bindings]]
             [foreclojure.periodic       :only [schedule-task]]
+            [foreclojure.home           :only [home-routes]]
             [ring.adapter.jetty         :only [run-jetty]]
             [ring.middleware.reload     :only [wrap-reload]]
             [ring.middleware.stacktrace :only [wrap-stacktrace]]
@@ -38,7 +39,7 @@
       (wrap-versioned-expiry)))
 
 (def dynamic-routes
-  (-> (routes (GET "/" [] (welcome-page))
+  (-> (routes home-routes
               login-routes
               register-routes
               problems-routes
