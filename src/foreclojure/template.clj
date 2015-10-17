@@ -4,7 +4,7 @@
             [hiccup.page               :only [doctype]]
             [hiccup.element            :only [javascript-tag link-to]]
             [foreclojure.config        :only [config repo-url]]
-            [foreclojure.utils         :only [page-attributes rendering-info login-url approver? can-submit? codemirror-themes get-theme]]
+            [foreclojure.utils         :only [page-attributes rendering-info login-url approver? can-submit? codemirror-themes get-theme make-user-url]]
             [foreclojure.ring-utils    :only [static-url]]
             [foreclojure.version-utils :only [css js]]))
 
@@ -50,7 +50,8 @@
          [:div#user-info
           (if user
             [:div
-             [:span#username (str "Logged in as " user)]
+             [:span#username (str "Logged in as")
+             [:a (make-user-url user) user]]
              [:a#logout {:href "/logout"} "Logout"]]
             [:div
              [:a#login {:href (login-url)} "Login"]
@@ -86,7 +87,7 @@
           })();"
          )]]])))
 
-;; Content templates
+;; Content templateslo
 (defn content-page [{:keys [heading heading-note sub-heading main]}]
   (let [flash-message (session/flash-get :message)
         flash-error   (session/flash-get :error)]
