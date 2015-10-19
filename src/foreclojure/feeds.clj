@@ -20,7 +20,7 @@
                             :type "application/rss+xml"})
        (element :title {} feed-title)
        (element :link {} feed-link)
-       (element :descrption {} feed-description)
+       (element :description {} feed-description)
        items))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
