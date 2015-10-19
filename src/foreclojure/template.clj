@@ -87,7 +87,7 @@
           })();"
          )]]])))
 
-;; Content templateslo
+;; Content templates
 (defn content-page [{:keys [heading heading-note sub-heading main]}]
   (let [flash-message (session/flash-get :message)
         flash-error   (session/flash-get :error)]
