@@ -74,7 +74,7 @@
       [:br][:br]
       "Many of the easier problems on this site can be solved using only your browser.  However at some point you will want to install Clojure, and use your favorite IDE or text editor to write your code.  We prefer using Emacs, but it's totally a matter of personal preference.  Writing all your code directly on the site has a disadvantage:"
       [:br][:br]
-      [:li "4Clojure is not an IDE, and doesn't try to be"]
+      [:li "4Clojure is not an IDE, and doesn't try to be."]
       [:br]
       "Check out the official Clojure "
       [:a {:href "http://clojure.org/help"} "help"]
