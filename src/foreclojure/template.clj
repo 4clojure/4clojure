@@ -70,7 +70,7 @@
              [:span (link-to "/problems/submit" "Submit a Problem")])])
         [:div#content_body (:content attrs)]
         [:div#footer
-         "The content on 4clojure.com is available under the EPL v 1.0 license."
+         "#(-> % discover learn master). The content on 4clojure.com is available under the EPL v 1.0 license."
          (let [email "team@4clojure.com"]
            [:span
             [:a#contact {:href (str "mailto:" email)} "Contact us"]
