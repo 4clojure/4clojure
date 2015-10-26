@@ -1,5 +1,5 @@
 body {
-   background-color: #bbddee;
+   background-color: #EEE;
    font-size: 12px;
    font-family: Verdana, Arial, Helvetica, SunSans-Regular, Sans-Serif;
    color:#564b47;
@@ -50,8 +50,6 @@ div.progress-bar {
    text-align: left;
    background-color: #fff;
    overflow: auto;
-   -moz-border-radius: 15px;
-   border-radius: 15px;
 }
 
 #content {
@@ -61,8 +59,6 @@ div.progress-bar {
    text-align: left;
    background-color: #fff;
    overflow: auto;
-   -moz-border-radius: 15px;
-   border-radius: 15px;
    position: relative;
 }
 
@@ -72,8 +68,6 @@ div.progress-bar {
    text-align: left;
    background-color: #fff;
    overflow: auto;
-   -moz-border-radius: 15px;
-   border-radius: 15px;
 }
 
 #top {
@@ -91,22 +85,21 @@ h3 {
 
 
 #menu{
-   background-color:#445599;
-   border-radius: 12px 12px 0 0;
+   background-color:#080B3B;
    padding: 20px 15px 15px 15px;
    color: #fff;
 }
 
 #lower-menu {
-  background-color: darkblue;
-  padding: 10px 5px 10px;
+  background-color: #191C59;
+  padding: 10px 5px 10px 15px;
   color: #7CFC00;
 }
 #lower-menu a:link {color: #fff;}
 #lower-menu a:visited {color: #fff;}
 #lower-menu a:active {color: #445599;}
 #lower-menu a:hover {color: #7CFC00;}
-#lower-menu a {text-decoration: none; font-size: 1.1em; font-weight:bold; padding: 0 20px;}
+#lower-menu a {text-decoration: none; font-size: 1.1em; font-weight:bold; padding: 0 15px;}
 
 a.novisited {color: #00e;}
 
@@ -194,17 +187,25 @@ img.gravatar{
 
 #welcome{
    width: 100%;
-   float: left;
+   display: flex;
+   flex-direction: row;
+   font-size: 1.3em;
+}
+
+#action {
+   width: 100%;
+   padding-right: 1em;
+}
+
+#action p {
+   padding-left: 1em;
 }
 
 #totalcount {
-   float: right;
    padding: 8px 8px 2px 8px;
    margin: 0 0 10px 5px;
    font-size: 25px;
-   line-height: 35px;
-   background-color: #eee;
-   border: 1px solid #aaa;
+   border-bottom: 1px solid #DDD;
    color: #000;
    font-weight: normal;
    font-family: Helvetica, Arial, Sans-serif;
@@ -214,8 +215,7 @@ img.gravatar{
 }
 
 #footer{
-   background-color:#445599;
-   border-radius: 0 0 12px 12px;
+   background-color: #080B3B;
    padding: 15px;
    color: #fff;
    text-align: center;
@@ -447,8 +447,20 @@ table.my-table td {
    vertical-align: middle;
 }
 
+table {
+    margin-top: 1em;
+}
+
+thead {
+    border-bottom: 1px solid black;
+}
+
+tr a {
+    text-decoration: none;
+}
+
 tr.evenrow {
-    background-color: #E2E4FF;
+    background-color: #DDD;
 }
 
 tr.oddrow {
@@ -456,11 +468,11 @@ tr.oddrow {
 }
 
 td.oddrank {
-    background-color: #DDF !important;
+    background-color: #DDD !important;
 }
 
 td.evenrank {
-    background-color: #EEF !important;
+    background-color: white !important;
 }
 
 td.title-link {
@@ -554,8 +566,6 @@ button:active {
   float: right;
   background-color:#bbddee;
   overflow: auto;
-  -moz-border-radius: 15px;
-  border-radius: 15px;
   text-align: center;
 }
 

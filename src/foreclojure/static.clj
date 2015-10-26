@@ -1,42 +1,8 @@
 (ns foreclojure.static
   (:use [compojure.core            :only [defroutes GET]]
-        [foreclojure.problems      :only [solved-stats]]
-        [foreclojure.config        :only [repo-url]]
         [foreclojure.ring-utils    :only [static-url]]
         [foreclojure.template      :only [def-page]]
         [hiccup.form               :only [hidden-field]]))
-
-(def df
-  (let [df (java.text.DecimalFormat.)
-        dfs (java.text.DecimalFormatSymbols.)]
-    (.setGroupingSeparator dfs \,)
-    (.setDecimalFormatSymbols df dfs)
-    df))
-
-(def-page welcome-page []
-  {:title "4clojure &ndash; Welcome!"
-   :fork-banner true
-   :content
-   [:div#welcome
-    [:div#totalcount
-      (hidden-field :counter-value (:total @solved-stats))
-      [:p
-        [:span#totalcounter (.format df (:total @solved-stats))] " problems solved and counting!"]]
-    [:div
-     [:h3 "What is 4Clojure?"]
-     [:p "4Clojure is a resource to help fledgling clojurians learn the language through interactive problems.  The first few problems are easy enough that even someone with no prior experience should find the learning curve forgiving.  See 'Help' for more information."]]
-
-    [:div
-     [:h3 "Is this site written in Clojure?"]
-     "Absolutely!  This site was created using a variety of open source Clojure (and Java) libraries.  In fact, the "
-     [:a {:href repo-url} "code for this site"]
-     " is itself open source.  Once you've mastered the language, feel free to contribute something back to the community."]
-    [:div
-     [:h3 "So wait, I can't buy cheap real estate here?"]
-     [:p "At this time, 4clojure.com does not provide information regarding the sale of foreclosed homes, and has no plans of doing so in the future."]]
-    [:img {:src (static-url "images/PoweredMongoDBbeige50.png")
-           :alt "Powered by MongoDB"
-           :width 129 :height 61}]]})
 
 (def-page help-page []
   {:title "Help"
