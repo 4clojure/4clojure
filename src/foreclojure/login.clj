@@ -40,7 +40,7 @@
       {:main login-box})}))
 
 (defn do-login [user pwd]
-  (let [user (.toLowerCase user)
+  (let [user (-> user .toLowerCase .trim)
         {db-pwd :pwd} (from-mongo (fetch-one :users :where {:user user}))
         location (session/get :login-to)]
     (if (and db-pwd (.checkPassword (StrongPasswordEncryptor.) pwd db-pwd))
