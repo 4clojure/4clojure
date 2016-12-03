@@ -57,7 +57,7 @@
              {:_id 6
               :title "Intro to Vectors"
               :times-solved 0
-              :description "Vectors can be constructed several ways.  You can compare them with lists."
+              :description "Vectors can be constructed several ways.  You can compare them with lists.<br/><br/>Note: the brackets [] surrounding the blanks __ are part of the test case."
               :tags["elementary"]
               :approved true
               :tests ["(= [__] (list :a :b :c) (vec '(:a :b :c)) (vector :a :b :c))"]})
