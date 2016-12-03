@@ -59,6 +59,12 @@ var CodeBox = {
     $("#code-box").closest("form").submit();
   },
 
+  submitProblem: function(e) {
+    e.preventDefault();
+    $("#code-box").val(this.getCode());
+    $("#code-box").closest("form").submit();
+  },
+
   run: function(e) {
     e.preventDefault();
 
