@@ -869,7 +869,7 @@ number of prime numbers."
            :tags ["medium"]
 	   :approved true
            :tests ["(= (__ [\"meat\" \"mat\" \"team\" \"mate\" \"eat\"])\n   #{#{\"meat\" \"team\" \"mate\"}})"
-		   "(= (__ [\"veer\" \"lake\" \"item\" \"kale\" \"mite\" \"ever\"])\n   #{#{\"veer\" \"ever\"} #{\"lake\" \"kale\"} #{\"mite\" \"item\"}})"]})
+		   "(= (__ [\"veer\" \"lake\" \"item\" \"kale\" \"mite\" \"ever\" \"rev\"])\n   #{#{\"veer\" \"ever\"} #{\"lake\" \"kale\"} #{\"mite\" \"item\"}})"]})
       
       (insert! :problems
            {:_id 78
