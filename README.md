@@ -1,3 +1,7 @@
+# 4clojure.com has been discontinued
+
+Another site may take over the domain name at some point, but for now 4clojure.com is down on purpose. [More details on the forum](https://groups.google.com/g/clojure/c/ZWmDEzvn-Js).
+
 # 4Clojure
 
 An interactive problem website for learning Clojure:
