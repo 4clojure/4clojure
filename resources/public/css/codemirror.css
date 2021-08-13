@@ -160,7 +160,9 @@ span.cm-link {text-decoration: underline;}
 
 span.cm-invalidchar {color: #f00;}
 
-div.CodeMirror span.CodeMirror-matchingbracket {color: #0f0;}
+div.CodeMirror span.CodeMirror-matchingbracket {color: inherit !important;
+                                                font-weight:bold;
+                                                background-color: #777;}
 div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
 
 @media print {

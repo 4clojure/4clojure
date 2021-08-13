@@ -26,6 +26,7 @@
        (js "vendor/script/jquery-1.5.2.min.js" "vendor/script/jquery.dataTables.min.js" "vendor/script/jquery.flipCounter.1.1.pack.js" "vendor/script/jquery.easing.1.3.js" "vendor/script/jquery.dataTables.fnSetFilteringDelay.js")
        (js "script/codebox.js" "script/foreclojure.js")
        (js "vendor/script/codemirror-clojure-compressed.js")
+       (js "vendor/script/matchbrackets.js")
        (js "vendor/script/detectmobilebrowser.js")
        (javascript-tag (format "CodeBox.theme = '%s';" (get-theme)))]
       [:body
