@@ -46,3 +46,24 @@
          (:user (first (datatable-filter "4" users))) => "user4"
          (:user (second (datatable-filter "1" users))) => "user10"
          (count (datatable-filter nil users)) => 10))
+
+;; some test to try and own the code regarding the followers
+
+(fact "follow-url"
+  (follow-url "user-test" true) => "/user/follow/user-test"
+  (follow-url "user-test" false) => "/user/unfollow/user-test")
+
+(fact "following checkbox - if the user follows someone, the checkbox on this line for this someone will be checked. The post action will be to unfollow him."
+  (following-checkbox :cur-user #{:user-id-followed :do :not :care}
+                      :user-id-followed "user-name-followed")
+  => [:form {:method "POST" :action "/user/unfollow/user-name-followed"}
+      [:input.following {:type "checkbox", :checked true}]
+      [:span.following "yes"]])
+
+;; new function to retrieve a user by its id
+(fact
+  (get-user-from-id :id-some-user) => :some-user
+  (provided
+    (somnium.congomongo/fetch-one :users :where {:_id :id-some-user}) => :some-user))
+
+

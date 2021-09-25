@@ -19,6 +19,11 @@
                        (when (:golfing-active config)
                          [:golfer])))
 
+(defn get-user-from-id "Retrieve a user by its id"
+  [id]
+  (fetch-one :users
+             :where {:_id id}))
+
 (defn get-user-id [name]
   (:_id
    (fetch-one :users
@@ -132,6 +137,24 @@
                       [:td (following-checkbox user-id following _id user)]])
                    user-set)])))
 
+(defn generate-following-list [user-set table-name]
+  (let [[user-id following] (if-user [{:keys [_id following]}]
+                              [_id (set following)])]
+    (list
+     [:br]
+     [:table.my-table {:id table-name}
+      [:thead
+       [:tr
+        [:th {:style "width: 200px;"} "Username"]
+        [:th {:style "width: 180px;"} "Problems Solved"]]]
+      (map-indexed (fn [rownum {:keys [_id email user contributor solved]}]
+                     [:tr (row-class rownum)
+                      [:td
+                       (gravatar-img {:email email :class "gravatar"})
+                       [:a.user-profile-link {:href (str "/user/" user)} user (when contributor [:span.contributor " *"])]]
+                      [:td.centered (count solved)]])
+                   user-set)])))
+
 (defn generate-datatable-users-list [user-set]
   (let [[user-id following] (if-user [{:keys [_id following]}]
                               [_id (set following)])]
@@ -228,6 +251,16 @@
          (count (get-solved username)) "/"
          (count (get-problems))]]])}))
 
+;; page referencing the users 'username' follows
+(def-page following-page [user]
+  {:title "Following people"
+   :content
+   (content-page
+    {:heading "People I follow"
+     :heading-note [:span#all-users-link]
+     :main (let [following (map get-user-from-id (:following user))]
+             (generate-following-list following "following"))})})
+
 (defn follow-user [username follow?]
   (with-user [{:keys [_id]}]
     (let [follow-id (:_id (get-user username))
@@ -307,6 +340,14 @@
     (if (nil? (get-user username))
       {:status 404 :headers {"Content-Type" "text/plain"} :body "Error: This user does not exist, nice try though."}
       (user-profile username)))
+  (GET "/user/:username/following" [username]
+    (let [user (get-user username)]
+      (if (nil? user)
+        {:status 404
+         :headers {"Content-Type" "text/plain"}
+         :body "Error: This user does not exist, nice try though."}
+        (following-page user))))
+
   (POST "/user/follow/:username" [username] (static-follow-user username true))
   (POST "/user/unfollow/:username" [username] (static-follow-user username false))
   (POST "/rest/user/follow/:username" [username] (rest-follow-user username true))
