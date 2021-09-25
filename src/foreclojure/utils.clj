@@ -7,7 +7,7 @@
             [clojure.string           :as   string]
             [foreclojure.git          :as   git]
             [hiccup.page              :as   hiccup])
-  (:import  [java.net                 URLEncoder]
+  (:import  [java.net                 URLEncoder URLDecoder]
             (org.apache.commons.lang  StringEscapeUtils)
             (org.apache.commons.mail  HtmlEmail))
   (:use     [hiccup.core              :only [html]]
@@ -16,7 +16,7 @@
             [hiccup.form              :only [label]]
             [useful.fn                :only [to-fix]]
             [somnium.congomongo       :only [fetch-one]]
-            [foreclojure.ring-utils   :only [*url* static-url]]
+            [foreclojure.ring-utils   :only [*url* static-url universal-url]]
             [foreclojure.config       :only [config repo-url]]))
 
 (defn make-user-url [user]
@@ -86,6 +86,19 @@
          (dissoc m k))))
   ([m ks f & args]
      (maybe-update m ks #(apply f % args))))
+
+(defn decode-url [url]
+  (URLDecoder/decode url))
+
+(defn encode-url [url]
+  (URLEncoder/encode url))
+
+(defn sanitize-url [url]
+  (if (nil? url)
+    nil
+    (let [decoded-url (decode-url url)]
+    (if (re-matches #"[a-zA-Z0-9/]+" decoded-url)
+      (str (encode-url (universal-url decoded-url)))))))
 
 (defn login-url
   ([] (login-url *url*))
